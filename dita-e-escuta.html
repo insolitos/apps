@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dita e Escuta</title>
+<style>
+:root{color-scheme:light;--bg:#edf5fb;--card:#fff;--ink:#173552;--muted:#496079;--line:#a9bfd2;--soft:#e7f2ff;--blue:#154f82;--red:#b42332;--focus:#805500}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;padding:28px 16px}main{max-width:960px;margin:auto;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:clamp(20px,4vw,40px);box-shadow:0 14px 45px #183b5610}header{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:clamp(2rem,5vw,2.8rem);letter-spacing:-.04em}h2{font-size:1.1rem;margin:0 0 12px}p{margin:8px 0 16px}header p,.hint,footer{color:var(--muted)}button,select,input,textarea{font:inherit}button,select{min-height:48px;border:1px solid var(--line);border-radius:12px;padding:10px 16px;background:var(--card);color:var(--ink)}button{cursor:pointer;font-weight:650}button:not(:disabled):hover{box-shadow:0 0 0 2px var(--blue)}button:disabled{opacity:.48;cursor:not-allowed}.primary{background:var(--blue);color:#fff;border-color:var(--blue)}#dictate.active{background:var(--red);border-color:var(--red);color:#fff;opacity:1}.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}section{margin-top:24px}.status{display:flex;align-items:center;gap:10px;background:var(--soft);border-radius:12px;padding:12px 16px;margin:22px 0 10px;font-weight:700}.dot{width:12px;height:12px;border-radius:50%;background:var(--blue);flex-shrink:0}.listening .dot{background:var(--red);animation:pulse 1.2s infinite}.reading{outline:2px solid var(--blue)}@keyframes pulse{50%{transform:scale(.65);opacity:.5}}#notice{min-height:1.6em;color:var(--muted)}label{font-weight:650;display:block}textarea{display:block;width:100%;min-height:300px;resize:vertical;border:2px solid var(--line);border-radius:14px;padding:18px;background:var(--card);color:var(--ink);line-height:1.8;margin-top:8px}textarea::placeholder{color:var(--muted)}.meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.9rem;margin-top:8px}.preview{background:var(--soft);border-left:4px solid var(--blue);padding:12px 16px;border-radius:8px;margin-top:12px;overflow-wrap:anywhere}.preview p{margin:4px 0;white-space:pre-wrap}.settings{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin:18px 0}select{width:100%;max-width:100%}input[type=range]{width:100%;min-height:44px;accent-color:var(--blue)}input[type=checkbox]{width:22px;height:22px;accent-color:var(--blue)}.selection{display:flex;gap:10px;align-items:center;margin-bottom:14px}.hint{font-size:.9rem}footer{max-width:900px;margin:22px auto 0;font-size:.82rem}a{color:var(--blue)}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}[hidden]{display:none!important}body.contrast{--bg:#000;--card:#080808;--ink:#fff;--muted:#eee;--line:#fff;--soft:#152535;--blue:#94d5ff;--focus:#ffdf00;color-scheme:dark}.contrast .primary{color:#000}.contrast button:disabled{opacity:.6}@media(max-width:600px){body{padding:12px 8px}main{border-radius:18px}.settings{grid-template-columns:1fr}.row button{flex:1 1 145px}textarea{min-height:260px}}@media(prefers-reduced-motion:reduce){.listening .dot{animation:none}}
+</style>
+</head>
+<body>
+<main>
+<header><div><h1>Dita e Escuta</h1><p>Fala, revê o texto e escuta o resultado</p></div><button id="contrast" type="button" aria-pressed="false"><span aria-hidden="true">◐</span> Alto contraste</button></header>
+<div id="statusBox" class="status"><span class="dot" aria-hidden="true"></span><span id="status" role="status" aria-live="polite">Pronto para começar</span></div>
+<p id="notice" role="status" aria-live="polite" aria-atomic="true">Começa por ditar ou escrever. Depois, revê e escuta.</p>
+<p id="support" class="hint"></p>
+<p id="embedded" class="hint" hidden>O microfone pode estar bloqueado nesta incorporação. <a id="openApp" target="_blank" rel="noopener">Abrir a aplicação numa nova janela</a>.</p>
+<section aria-labelledby="dictationTitle"><h2 id="dictationTitle">1. Fala</h2><div class="row"><button id="dictate" class="primary" type="button"><span aria-hidden="true">●</span> Começar a ditar</button><button id="stopDictation" type="button" disabled><span aria-hidden="true">■</span> Parar o ditado</button></div><div class="preview" id="preview" hidden><strong>A reconhecer — texto provisório</strong><p id="interim" aria-live="off"></p></div></section>
+<section aria-labelledby="editTitle"><h2 id="editTitle">2. Revê</h2><label for="editor">O teu texto</label><textarea id="editor" aria-label="Texto ditado ou escrito por ti" aria-describedby="editHelp" placeholder="A tua voz transforma-se em palavras aqui… Também podes escrever." spellcheck="true" lang="pt-PT"></textarea><div class="meta"><span id="count">0 palavras</span><span id="editHelp" class="hint">Ao escreveres, o ditado e a leitura param para poderes corrigir.</span></div></section>
+<section aria-labelledby="readTitle"><h2 id="readTitle">3. Escuta</h2><div class="settings"><div><label for="voice">Voz portuguesa</label><select id="voice" aria-describedby="voiceHelp"></select><p id="voiceHelp" class="hint"></p></div><div><label for="rate">Velocidade: <output id="rateValue" for="rate">1×</output></label><input id="rate" aria-label="Velocidade da leitura" type="range" min="0.5" max="2" step="0.1" value="1"></div></div><label class="selection"><input id="selectionOnly" type="checkbox" disabled> Ler apenas o texto selecionado <span id="selectionInfo" class="hint"></span></label><div class="row"><button id="read" class="primary" type="button"><span aria-hidden="true">▶</span> Ouvir o texto</button><button id="pause" type="button" disabled><span aria-hidden="true">Ⅱ</span> Pausar</button><button id="resume" type="button" disabled><span aria-hidden="true">▶</span> Continuar</button><button id="stopReading" type="button" disabled><span aria-hidden="true">■</span> Parar a leitura</button></div></section>
+<section aria-label="Guardar uma cópia ou limpar o texto"><div class="row"><button id="copy" type="button" disabled><span aria-hidden="true">▣</span> Copiar</button><button id="download" type="button" disabled><span aria-hidden="true">↓</span> Descarregar</button><button id="clear" type="button" disabled><span aria-hidden="true">×</span> Limpar</button></div><p class="hint">O texto desaparece ao fechar ou atualizar a página. Descarrega uma cópia se o quiseres guardar.</p></section>
+<noscript>Ativa o JavaScript no navegador para utilizar a aplicação.</noscript>
+</main>
+<footer>A aplicação não guarda o texto nem cria contas. O reconhecimento de voz pode ser processado pelo serviço de voz do navegador. Não digites nem dites dados pessoais ou confidenciais.</footer>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const editor = $('editor');
+const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const synth = window.speechSynthesis;
+const canSpeak = !!(synth && window.SpeechSynthesisUtterance);
+let recognition = null, wanted = false, accepting = false, microphone = false;
+let retryTimer = null, emptySessions = 0;
+let voices = [], reading = false, paused = false, utterance = null;
+let generation = 0, chunks = [], chunkIndex = 0, chosenVoice = null, chosenRate = 1;
+let selection = {start:0,end:0};
+function tell(message){ $('notice').textContent = message; }
+function state(message){ $('status').textContent = message; sync(); }
+function sync(){
+  const dictating = wanted || recognition !== null;
+  const hasText = !!editor.value.trim();
+  $('dictate').disabled = !Recognition || dictating || reading;
+  $('dictate').classList.toggle('active', microphone);
+  $('stopDictation').disabled = !wanted;
+  $('read').disabled = !canSpeak || !voices.length || dictating;
+  $('pause').disabled = !reading || paused;
+  $('resume').disabled = !reading || !paused;
+  $('stopReading').disabled = !reading;
+  $('voice').disabled = !voices.length || reading;
+  $('rate').disabled = !canSpeak || reading;
+  for(const id of ['copy','download','clear']) $(id).disabled = !hasText || dictating;
+  $('statusBox').classList.toggle('listening', microphone);
+  $('statusBox').classList.toggle('reading', reading);
+  const words = editor.value.trim().match(/\S+/gu) || [];
+  $('count').textContent = words.length + (words.length === 1 ? ' palavra' : ' palavras');
+}
+function preview(text=''){
+  $('interim').textContent = text;
+  $('preview').hidden = !text;
+}
+function append(text){
+  const piece = text.trim();
+  if(!piece) return;
+  const before = editor.value;
+  const gap = before && !/\s$/u.test(before) && !/^[,.;:!?…)]/u.test(piece) ? ' ' : '';
+  const start = editor.selectionStart, end = editor.selectionEnd;
+  editor.value = before + gap + piece;
+  editor.setSelectionRange(start,end);
+  sync();
+}
+function stopDictation(discard=false){
+  wanted = false;
+  clearTimeout(retryTimer);
+  retryTimer = null;
+  if(discard) accepting = false;
+  preview();
+  if(recognition){
+    try{ discard ? recognition.abort() : recognition.stop(); }
+    catch(error){ tell('A aguardar que o microfone termine. Se necessário, atualiza a página depois de copiares o texto.'); }
+  }
+  state('Ditado interrompido');
+}
+function startSession(){
+  if(!wanted || recognition || reading) return;
+  const r = new Recognition();
+  recognition = r;
+  accepting = true;
+  let received = false;
+  const committed = new Set();
+  r.lang = 'pt-PT';
+  r.continuous = true;
+  r.interimResults = true;
+  r.maxAlternatives = 1;
+  r.onstart = () => {
+    if(recognition !== r) return;
+    if(!wanted){ try{r.abort();}catch(error){} return; }
+    microphone = true;
+    state('A ouvir…');
+  };
+  r.onresult = event => {
+    if(recognition !== r || !accepting) return;
+    const pending = [];
+    for(let i=0;i<event.results.length;i++){
+      const result = event.results[i];
+      if(result.isFinal){
+        if(!committed.has(i)){
+          committed.add(i);
+          append(result[0].transcript);
+          received = true;
+          emptySessions = 0;
+        }
+      }else pending.push(result[0].transcript);
+    }
+    preview(wanted ? pending.join(' ') : '');
+  };
+  r.onerror = event => {
+    if(recognition !== r) return;
+    const messages = {
+      'not-allowed':'O acesso ao microfone foi recusado. Permite-o nas definições do navegador e tenta novamente.',
+      'service-not-allowed':'O serviço de ditado não está autorizado neste navegador ou dispositivo.',
+      'audio-capture':'O microfone está indisponível. Verifica a ligação e se outra aplicação o está a utilizar.',
+      'no-speech':'Não detetei fala. Aproxima-te do microfone e tenta falar novamente.',
+      'network':'A ligação ao serviço de voz falhou. Verifica a Internet e tenta novamente.',
+      'language-not-supported':'O serviço de voz deste navegador não suporta português de Portugal.',
+      'aborted':'O ditado foi interrompido.'
+    };
+    if(event.error === 'aborted' && !wanted) return;
+    tell(messages[event.error] || 'Não foi possível continuar o ditado. Tenta novamente neste navegador ou noutro dispositivo.');
+    if(event.error !== 'no-speech'){
+      wanted = false;
+      accepting = false;
+      clearTimeout(retryTimer);
+      state('Ditado interrompido');
+    }
+  };
+  r.onend = () => {
+    if(recognition !== r) return;
+    recognition = null;
+    microphone = false;
+    accepting = false;
+    preview();
+    if(wanted){
+      emptySessions = received ? 0 : emptySessions + 1;
+      if(emptySessions >= 4){
+        wanted = false;
+        tell('O ditado parou após várias tentativas sem fala. Carrega em «Começar a ditar» quando estiveres pronto.');
+      }else{
+        state('A retomar o ditado…');
+        retryTimer = setTimeout(startSession, Math.min(600 * (emptySessions + 1),2400));
+        return;
+      }
+    }
+    state('Ditado interrompido');
+  };
+  try{ r.start(); sync(); }
+  catch(error){
+    recognition = null;
+    accepting = wanted = microphone = false;
+    tell('Não foi possível iniciar o microfone. Verifica as permissões e abre a aplicação numa página HTTPS.');
+    state('Ditado interrompido');
+  }
+}
+$('dictate').onclick = () => {
+  if(!Recognition || recognition || wanted || reading) return;
+  wanted = true;
+  emptySessions = 0;
+  tell('Fala com calma. As palavras definitivas são acrescentadas ao fim do teu texto.');
+  state('A preparar o microfone…');
+  startSession();
+};
+$('stopDictation').onclick = () => stopDictation();
+function loadVoices(){
+  const previous = $('voice').value;
+  voices = canSpeak ? synth.getVoices().filter(v => /^pt(?:[-_]|$)/i.test(v.lang)) : [];
+  voices.sort((a,b) => Number(/^pt[-_]pt$/i.test(b.lang)) - Number(/^pt[-_]pt$/i.test(a.lang)) || a.name.localeCompare(b.name,'pt-PT'));
+  $('voice').replaceChildren();
+  for(const v of voices){
+    const option = document.createElement('option');
+    option.value = v.voiceURI;
+    option.textContent = v.name + ' — ' + v.lang;
+    $('voice').append(option);
+  }
+  if(voices.some(v => v.voiceURI === previous)) $('voice').value = previous;
+  if(!voices.length){
+    const option = document.createElement('option');
+    option.textContent = 'Nenhuma voz portuguesa disponível';
+    $('voice').append(option);
+  }
+  $('voiceHelp').textContent = !canSpeak ? 'Este navegador não suporta leitura em voz alta.' : !voices.length ? 'Adiciona uma voz portuguesa nas definições de voz do dispositivo e volta a abrir a aplicação.' : voices.some(v => /^pt[-_]pt$/i.test(v.lang)) ? 'As vozes de português de Portugal aparecem primeiro.' : 'Não existe uma voz pt-PT neste dispositivo. Podes escolher outra voz portuguesa.';
+  sync();
+}
+function rememberSelection(){
+  selection = {start:editor.selectionStart,end:editor.selectionEnd};
+  const length = selection.end - selection.start;
+  $('selectionOnly').disabled = !length;
+  if(!length) $('selectionOnly').checked = false;
+  $('selectionInfo').textContent = length ? '(' + length + ' caracteres)' : '';
+}
+for(const event of ['select','keyup','pointerup','blur']) editor.addEventListener(event,rememberSelection);
+function splitText(text){
+  const result = [];
+  while(text.length){
+    let n = Math.min(180,text.length);
+    if(n < text.length){
+      const part = text.slice(0,n);
+      const boundary = Math.max(part.lastIndexOf('. '),part.lastIndexOf('? '),part.lastIndexOf('! '),part.lastIndexOf('\n'));
+      const space = part.lastIndexOf(' ');
+      if(boundary >= 60) n = boundary + 1;
+      else if(space > 0) n = space + 1;
+      if(/[\uD800-\uDBFF]/u.test(text[n-1])) n--;
+    }
+    result.push(text.slice(0,n));
+    text = text.slice(n);
+  }
+  return result;
+}
+function cancelReading(announce=false){
+  generation++;
+  reading = paused = false;
+  utterance = null;
+  if(canSpeak) synth.cancel();
+  if(announce) state('Leitura interrompida');
+  else sync();
+}
+function speakNext(token){
+  if(token !== generation || !reading || paused) return;
+  if(chunkIndex >= chunks.length){
+    reading = false;
+    utterance = null;
+    state('Leitura terminada');
+    return;
+  }
+  const u = new SpeechSynthesisUtterance(chunks[chunkIndex]);
+  utterance = u;
+  u.voice = chosenVoice;
+  u.lang = chosenVoice.lang;
+  u.rate = chosenRate;
+  u.onend = () => {
+    if(token !== generation) return;
+    utterance = null;
+    chunkIndex++;
+    speakNext(token);
+  };
+  u.onerror = () => {
+    if(token !== generation) return;
+    cancelReading();
+    tell('A leitura foi interrompida pelo navegador. Tenta outra voz ou volta a carregar em «Ouvir o texto».');
+    state('Leitura interrompida');
+  };
+  try{synth.speak(u);}catch(error){u.onerror();}
+}
+$('read').onclick = () => {
+  if(wanted || recognition) return;
+  if(!editor.value.trim()){tell('Primeiro, dita ou escreve algum texto.');editor.focus();return;}
+  if(!canSpeak || !voices.length) return;
+  const text = $('selectionOnly').checked && selection.end > selection.start ? editor.value.slice(selection.start,selection.end) : editor.value;
+  if(!text.trim()){tell('Seleciona algumas palavras ou escolhe ler todo o texto.');return;}
+  cancelReading();
+  chosenVoice = voices.find(v => v.voiceURI === $('voice').value) || voices[0];
+  chosenRate = Number($('rate').value);
+  chunks = splitText(text);
+  chunkIndex = 0;
+  reading = true;
+  tell('Escuta com atenção. Podes pausar ou parar a leitura.');
+  state('A ler o texto…');
+  synth.resume();
+  speakNext(generation);
+};
+$('pause').onclick = () => {if(reading && !paused){paused=true;synth.pause();state('Leitura em pausa');}};
+$('resume').onclick = () => {if(reading && paused){paused=false;synth.resume();state('A ler o texto…');if(!utterance) speakNext(generation);}};
+$('stopReading').onclick = () => cancelReading(true);
+editor.addEventListener('input',() => {
+  if(wanted || recognition) stopDictation(true);
+  if(reading) cancelReading(true);
+  rememberSelection();
+  sync();
+});
+$('rate').oninput = () => {$('rateValue').textContent = Number($('rate').value).toLocaleString('pt-PT') + '×';};
+$('contrast').onclick = () => {
+  const active = document.body.classList.toggle('contrast');
+  $('contrast').setAttribute('aria-pressed',String(active));
+};
+$('clear').onclick = () => {
+  if(!window.confirm('Queres apagar todo o texto? Esta ação não pode ser desfeita.')) return;
+  cancelReading();
+  editor.value = '';
+  preview();
+  rememberSelection();
+  state('Pronto para começar');
+  tell('O texto foi apagado. Podes começar de novo.');
+  editor.focus();
+};
+$('copy').onclick = async () => {
+  const text = editor.value;
+  try{
+    if(!navigator.clipboard || !window.isSecureContext) throw new Error('clipboard');
+    await navigator.clipboard.writeText(text);
+    tell('Texto copiado.');
+  }catch(error){
+    if(reading) cancelReading(true);
+    editor.focus();
+    editor.select();
+    rememberSelection();
+    tell('Não foi possível copiar automaticamente. O texto ficou selecionado: usa Ctrl+C, ⌘C ou a opção «Copiar» do dispositivo.');
+  }
+};
+$('download').onclick = () => {
+  const url = URL.createObjectURL(new Blob([editor.value],{type:'text/plain;charset=utf-8'}));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'dita-e-escuta.txt';
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url),10000);
+  tell('Foi pedido o descarregamento do texto. Verifica a pasta de transferências.');
+};
+$('support').textContent = Recognition ? 'O ditado depende do navegador, do dispositivo, das permissões e do serviço de voz. Experimenta no Chrome ou no Edge atualizados; pode precisar de Internet.' : 'Este navegador não disponibiliza reconhecimento de voz. Podes escrever e, se houver vozes disponíveis, ouvir o texto. Experimenta o Chrome ou o Edge num dispositivo compatível.';
+if(window.self !== window.top){
+  $('embedded').hidden = false;
+  if(/^https?:$/.test(location.protocol)) $('openApp').href = location.href;
+  else $('openApp').hidden = true;
+}
+if(canSpeak) synth.addEventListener('voiceschanged',loadVoices);
+window.addEventListener('pagehide',() => {stopDictation(true);cancelReading();});
+document.addEventListener('visibilitychange',() => {if(document.hidden){if(wanted || recognition) stopDictation(true);if(reading) cancelReading(true);}});
+loadVoices();
+sync();
+</script>
+</body>
+</html>
