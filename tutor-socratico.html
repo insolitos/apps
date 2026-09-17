@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#183b56">
+  <title>Pergunta, Pensa, Aprende — Tutor socrático</title>
+  <style>
+    :root {
+      --ink: #183b56;
+      --ink-2: #315a74;
+      --accent: #e4a853;
+      --accent-2: #f5ead8;
+      --cream: #fbfaf7;
+      --paper: #ffffff;
+      --muted: #65737d;
+      --line: #dce4e7;
+      --success: #2d765b;
+      --danger: #a44747;
+      --shadow: 0 18px 50px rgba(24, 59, 86, .12);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: linear-gradient(140deg, #edf5f3 0%, #fbfaf7 48%, #f8f0df 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+    }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    .app-shell { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 24px 0 40px; }
+    header {
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      margin-bottom: 20px;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-mark {
+      width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center;
+      background: var(--ink); color: #fff; font-size: 25px; box-shadow: 0 10px 22px rgba(24,59,86,.2);
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 4px; font-size: clamp(1.35rem, 3vw, 2rem); letter-spacing: -.03em; }
+    .tagline { color: var(--muted); margin: 0; }
+    .header-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+    .btn {
+      border: 1px solid transparent; border-radius: 12px; padding: 10px 14px; font-weight: 700;
+      color: var(--ink); background: #fff; transition: transform .15s, box-shadow .15s, background .15s;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 7px 16px rgba(24,59,86,.12); }
+    .btn:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid rgba(228,168,83,.5); outline-offset: 2px; }
+    .btn-primary { background: var(--ink); color: #fff; }
+    .btn-accent { background: var(--accent); color: #302514; }
+    .btn-quiet { border-color: var(--line); background: rgba(255,255,255,.7); }
+    .btn-danger { color: var(--danger); border-color: #e7caca; }
+    .layout { display: grid; grid-template-columns: 315px minmax(0, 1fr); gap: 20px; align-items: start; }
+    .card { background: rgba(255,255,255,.88); border: 1px solid rgba(220,228,231,.9); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .setup-card { padding: 22px; position: sticky; top: 18px; }
+    .setup-card h2 { font-size: 1.05rem; margin-bottom: 14px; }
+    .field { margin-bottom: 15px; }
+    .field label { display: block; font-weight: 750; margin-bottom: 7px; font-size: .91rem; }
+    .field small { display: block; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+    input, textarea, select {
+      width: 100%; border: 1px solid var(--line); border-radius: 11px; padding: 11px 12px;
+      background: var(--paper); color: var(--ink);
+    }
+    textarea { resize: vertical; min-height: 105px; line-height: 1.5; }
+    #material { min-height: 160px; }
+    .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .choice { position: relative; }
+    .choice input { position: absolute; opacity: 0; pointer-events: none; }
+    .choice label {
+      display: block; padding: 10px 9px; border: 1px solid var(--line); border-radius: 11px;
+      font-size: .82rem; font-weight: 700; color: var(--ink-2); cursor: pointer; background: #fff;
+    }
+    .choice input:checked + label { background: var(--accent-2); border-color: var(--accent); color: #493516; }
+    .privacy { font-size: .78rem; line-height: 1.45; color: var(--muted); background: #f3f7f5; border-radius: 12px; padding: 10px; margin: 14px 0; }
+    .setup-actions { display: flex; gap: 8px; }
+    .setup-actions .btn { flex: 1; }
+    .progress-card { padding: 16px 18px; margin-bottom: 12px; }
+    .progress-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; font-size: .84rem; color: var(--muted); margin-bottom: 8px; }
+    .phase-name { font-weight: 800; color: var(--ink); }
+    .progress-track { height: 8px; background: #e7eeec; border-radius: 99px; overflow: hidden; }
+    .progress-value { height: 100%; background: linear-gradient(90deg, var(--accent), #d8875e); border-radius: inherit; width: 8%; transition: width .3s ease; }
+    .chat-card { overflow: hidden; }
+    .chat-head { padding: 15px 18px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .chat-head-title { font-weight: 850; }
+    .session-label { font-size: .78rem; color: var(--muted); }
+    .chat { padding: 20px; min-height: 470px; max-height: 64vh; overflow-y: auto; background: linear-gradient(180deg, #fcfdfc, #f8fbfa); }
+    .empty-state { max-width: 600px; margin: 44px auto; text-align: center; color: var(--muted); }
+    .empty-state .big-mark { font-size: 3rem; margin-bottom: 10px; }
+    .message { display: flex; margin: 0 0 16px; gap: 10px; animation: rise .18s ease-out; }
+    .message.user { flex-direction: row-reverse; }
+    .avatar { width: 32px; height: 32px; flex: 0 0 32px; border-radius: 50%; display: grid; place-items: center; font-size: .9rem; font-weight: 900; background: var(--accent-2); color: #60461e; }
+    .user .avatar { background: #dcebf2; color: var(--ink); }
+    .bubble { max-width: min(86%, 700px); padding: 12px 14px; border-radius: 15px; line-height: 1.5; font-size: .96rem; white-space: pre-wrap; }
+    .assistant .bubble { background: #fff; border: 1px solid var(--line); border-top-left-radius: 4px; }
+    .user .bubble { background: var(--ink); color: #fff; border-top-right-radius: 4px; }
+    .meta { font-size: .68rem; color: var(--muted); margin-top: 5px; }
+    .user .meta { text-align: right; }
+    .input-zone { border-top: 1px solid var(--line); padding: 15px 18px; background: #fff; }
+    .input-row { display: flex; gap: 10px; align-items: flex-end; }
+    #reply { min-height: 74px; max-height: 180px; }
+    .send-btn { min-height: 48px; }
+    .commands { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+    .command-btn { border: 1px solid #d4e0e3; background: #f5f9f8; color: var(--ink-2); border-radius: 99px; padding: 7px 10px; font-size: .75rem; font-weight: 800; }
+    .command-btn:hover { background: var(--accent-2); border-color: var(--accent); }
+    .hidden { display: none !important; }
+    .help-box { background: #fff8e9; border: 1px solid #f0d69f; padding: 14px; border-radius: 13px; margin-top: 12px; }
+    .material-pill { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); background: #edf4f3; padding: 5px 9px; border-radius: 99px; font-size: .75rem; font-weight: 800; }
+    .professor-panel { padding: 20px; background: #fff; }
+    .professor-panel h2 { margin-bottom: 5px; }
+    .professor-panel .lead { color: var(--muted); }
+    .prof-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+    .prof-block { border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: #fbfdfc; }
+    .prof-block h3 { font-size: .94rem; margin-bottom: 8px; }
+    .prof-block ol, .prof-block ul { padding-left: 20px; margin: 0; line-height: 1.55; font-size: .87rem; }
+    .rubric { width: 100%; border-collapse: collapse; font-size: .81rem; }
+    .rubric th, .rubric td { border: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
+    .rubric th { background: #f1f6f5; }
+    .image-preview { margin-top: 8px; border-radius: 12px; max-height: 170px; max-width: 100%; object-fit: contain; background: #f4f6f5; }
+    .footer-note { margin-top: 16px; text-align: center; color: var(--muted); font-size: .75rem; }
+    @keyframes rise { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 850px) {
+      .layout { grid-template-columns: 1fr; }
+      .setup-card { position: static; }
+      .chat { max-height: none; }
+    }
+    @media (max-width: 540px) {
+      .app-shell { width: min(100% - 16px, 1180px); padding-top: 12px; }
+      header { align-items: flex-start; flex-direction: column; }
+      .header-actions { justify-content: flex-start; }
+      .choice-grid, .prof-grid { grid-template-columns: 1fr; }
+      .input-row { flex-direction: column; align-items: stretch; }
+      .send-btn { width: 100%; }
+      .chat { padding: 14px 10px; }
+    }
+    @media print {
+      body { background: #fff; }
+      header, .setup-card, .input-zone, .progress-card, .header-actions { display: none !important; }
+      .app-shell { width: 100%; padding: 0; }
+      .layout { display: block; }
+      .chat-card { box-shadow: none; border: 0; }
+      .chat { max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">?</div>
+        <div>
+          <h1>Pergunta, Pensa, Aprende</h1>
+          <p class="tagline">Tutor socrático de Português · pensa antes de responder</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-quiet" id="saveBtn" type="button">Guardar sessão</button>
+        <button class="btn btn-quiet" id="reportBtn" type="button">Descarregar relatório</button>
+        <button class="btn btn-quiet" id="printBtn" type="button">Imprimir</button>
+        <button class="btn btn-danger" id="resetBtn" type="button">Nova sessão</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="card setup-card" aria-labelledby="setupTitle">
+        <h2 id="setupTitle">Começar uma conversa</h2>
+        <form id="setupForm">
+          <div class="field">
+            <label for="year">Em que ano estás?</label>
+            <select id="year" required>
+              <option value="">Escolhe…</option>
+              <option value="7.º ano">7.º ano</option>
+              <option value="8.º ano">8.º ano</option>
+              <option value="9.º ano">9.º ano</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="objective">O que queres fazer?</label>
+            <select id="objective" required>
+              <option value="">Escolhe…</option>
+              <option value="perceber">Perceber melhor</option>
+              <option value="preparar teste">Preparar um teste</option>
+              <option value="escrever">Escrever ou melhorar um texto</option>
+              <option value="discutir">Discutir um tema</option>
+              <option value="gramática">Estudar gramática</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Que material vais explorar?</label>
+            <div class="choice-grid" role="radiogroup" aria-label="Tipo de material">
+              <div class="choice"><input id="type-text" name="materialType" value="texto" type="radio" checked><label for="type-text">Texto / obra</label></div>
+              <div class="choice"><input id="type-image" name="materialType" value="imagem" type="radio"><label for="type-image">Imagem</label></div>
+              <div class="choice"><input id="type-news" name="materialType" value="notícia" type="radio"><label for="type-news">Notícia / artigo</label></div>
+              <div class="choice"><input id="type-grammar" name="materialType" value="gramática" type="radio"><label for="type-grammar">Gramática</label></div>
+              <div class="choice"><input id="type-own" name="materialType" value="texto meu" type="radio"><label for="type-own">Texto meu</label></div>
+              <div class="choice"><input id="type-other" name="materialType" value="outro" type="radio"><label for="type-other">Outro tema</label></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="material">Cola o texto, a pergunta ou o tema</label>
+            <textarea id="material" placeholder="Podes colar aqui um excerto, uma notícia, uma pergunta de gramática ou uma descrição do tema."></textarea>
+            <small>Não incluas nomes completos, contactos, fotografias com rostos ou outros dados pessoais.</small>
+          </div>
+          <div class="field" id="imageField">
+            <label for="imageFile">Ou anexa uma imagem</label>
+            <input id="imageFile" type="file" accept="image/*">
+            <img id="imagePreview" class="image-preview hidden" alt="Pré-visualização da imagem anexada">
+            <small>Se a imagem tiver texto, garante que está bem iluminada e que a página inteira fica visível.</small>
+          </div>
+          <div class="privacy">A app foi pensada para estudar: faz perguntas, dá pistas e não atribui notas. Se aparecer uma situação de sofrimento ou perigo, fala com um adulto de confiança. Em perigo imediato, liga 112.</div>
+          <div class="setup-actions">
+            <button class="btn btn-primary" type="submit">Começar</button>
+            <button class="btn btn-quiet" id="resumeBtn" type="button">Retomar</button>
+          </div>
+        </form>
+        <p class="footer-note">Comandos durante a conversa: pista · outra pergunta · mais difícil · mais fácil · explica-me · terminar</p>
+      </aside>
+
+      <section>
+        <div class="card progress-card" aria-live="polite">
+          <div class="progress-top"><span><span class="phase-name" id="phaseName">Preparação</span> · <span id="turnLabel">ainda não começaste</span></span><span class="material-pill" id="typePill">sem material</span></div>
+          <div class="progress-track" aria-label="Progresso da conversa"><div class="progress-value" id="progressValue"></div></div>
+        </div>
+        <div class="card chat-card">
+          <div class="chat-head">
+            <span class="chat-head-title">Conversa</span>
+            <span class="session-label" id="sessionLabel">Nova sessão</span>
+          </div>
+          <div class="chat" id="chat" aria-live="polite">
+            <div class="empty-state" id="emptyState">
+              <div class="big-mark" aria-hidden="true">💬</div>
+              <h2>Uma boa resposta começa com uma boa pergunta.</h2>
+              <p>Escolhe o teu ano, indica o que queres explorar e envia um texto, uma imagem ou um tema. O tutor acompanha o teu raciocínio, passo a passo.</p>
+            </div>
+          </div>
+          <div class="input-zone">
+            <div class="input-row">
+              <textarea id="reply" placeholder="Escreve a tua resposta…" aria-label="Resposta do aluno" disabled></textarea>
+              <button class="btn btn-primary send-btn" id="sendBtn" type="button" disabled>Enviar</button>
+            </div>
+            <div class="commands" aria-label="Comandos rápidos">
+              <button class="command-btn" data-command="pista" type="button">💡 Pista</button>
+              <button class="command-btn" data-command="outra pergunta" type="button">↻ Outra pergunta</button>
+              <button class="command-btn" data-command="mais difícil" type="button">↑ Mais difícil</button>
+              <button class="command-btn" data-command="mais fácil" type="button">↓ Mais fácil</button>
+              <button class="command-btn" data-command="explica-me" type="button">◌ Explica-me</button>
+              <button class="command-btn" data-command="terminar" type="button">■ Terminar</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    'use strict';
+
+    // Altere este código antes de publicar se quiser outro acesso ao modo professor.
+    const PROFESSOR_CODE = 'PPA-2026';
+    const STORAGE_KEY = 'pergunta-pensa-aprende-v1';
+    const MAX_MESSAGE_WORDS = 80;
+    const phases = [
+      { key: 'observar', label: 'Observar' },
+      { key: 'compreender', label: 'Compreender' },
+      { key: 'esclarecer', label: 'Esclarecer' },
+      { key: 'inferir', label: 'Inferir' },
+      { key: 'linguagem', label: 'Analisar a linguagem' },
+      { key: 'avaliar', label: 'Avaliar' },
+      { key: 'criar', label: 'Criar / transferir' },
+      { key: 'refletir', label: 'Refletir' }
+    ];
+    const phaseForType = {
+      texto: 'texto narrativo', imagem: 'imagem', notícia: 'notícia', gramática: 'gramática', 'texto meu': 'escrita', outro: 'tema'
+    };
+    const questions = {
+      observar: [
+        ['aberta', 'Que tipo de material tens diante de ti? Indica um sinal concreto: o título «{title}», a organização ou uma palavra que te chamou a atenção.'],
+        ['escolha', 'O que te prende primeiro em «{title}»: o tema, a forma como está apresentado ou uma palavra específica? Escolhe uma opção e justifica.'],
+        ['localizar', 'Se tivesses de sublinhar apenas três elementos em «{title}», quais escolhias? Explica o que cada um te faz prever.'],
+        ['pergunta', 'Antes de analisares melhor «{title}», que pergunta te surge? Torna-a tão concreta quanto possível.']
+      ],
+      compreender: [
+        ['resumo', 'Qual é o assunto de «{title}», numa frase? Apoia a resposta numa palavra ou expressão do material.'],
+        ['localizar', 'Que parte do material resume melhor a ideia principal? Indica uma frase curta ou descreve exatamente o pormenor.'],
+        ['ordenar', 'Ordena estes passos da tua compreensão: identificar o assunto, localizar uma prova e explicar o sentido. Qual fizeste primeiro e porquê?'],
+        ['verdadeiro/falso', 'Verdadeiro ou falso: «A primeira impressão basta para compreender o material». Responde e apoia-te num pormenor de «{title}».']
+      ],
+      esclarecer: [
+        ['pergunta', 'O que ficou pouco claro em «{title}»? Transforma essa dificuldade numa pergunta que comece por «Porquê» ou «Como».'],
+        ['aprofundar', 'A tua primeira pergunta localiza ou já exige interpretação? Reescreve-a para subir um degrau.'],
+        ['escolha', 'Qual pergunta ajudaria mais: «O que acontece?» ou «Porque terá acontecido isto?» Escolhe e explica o que falta saber.'],
+        ['criar', 'Faz uma pergunta que só possa ser respondida depois de reler atentamente uma parte de «{title}».']
+      ],
+      inferir: [
+        ['inferência', 'O material não diz tudo: o que podemos concluir sobre «{keyword}» a partir de «{snippet}»? Distingue pista e conclusão.'],
+        ['prova', 'Que pormenor de «{title}» sustenta melhor a tua interpretação? Explica a ligação entre o pormenor e a ideia.'],
+        ['comparar', 'Qual destas conclusões é mais segura: uma que está escrita ou uma que se deduz? Escolhe uma e mostra a prova.'],
+        ['ponto de vista', 'Como mudaria a tua leitura se observasses «{title}» do ponto de vista de outra personagem, leitor ou jornalista?']
+      ],
+      linguagem: [
+        ['palavra', 'Porque terá sido escolhida a palavra «{word}»? Que efeito teria substituí-la por uma palavra parecida?'],
+        ['estrutura', 'Que efeito produz a frase ou expressão «{snippet}»: torna a ideia mais rápida, mais intensa, mais duvidosa ou mais próxima do leitor? Justifica.'],
+        ['gramática', 'Que palavra liga ou organiza melhor esta parte de «{title}»? Explica que relação estabelece: causa, tempo, fim, oposição ou outra.'],
+        ['pontuação', 'Escolhe um sinal de pontuação que mereça atenção em «{title}». Que mudança de ritmo ou de sentido provoca?']
+      ],
+      avaliar: [
+        ['acordo', 'Concordas com a ideia principal de «{title}»? Dá uma razão e apoia-a num elemento concreto.'],
+        ['advogado', 'Faz de advogado de defesa da pessoa, ideia ou decisão central de «{title}». Que argumento usarias?'],
+        ['contra-argumento', 'Alguém que discordasse da tua leitura diria o quê? Como responderias sem ignorar essa objeção?'],
+        ['fiabilidade', 'Que informação precisarias de confirmar para fazer uma avaliação justa de «{title}»?']
+      ],
+      criar: [
+        ['título', 'Que título alternativo darias a «{title}»? Justifica-o numa frase que revele a tua interpretação.'],
+        ['e se', 'E se um acontecimento ou elemento central de «{title}» fosse diferente? O que mudaria no sentido?'],
+        ['transferir', 'Como explicarias a ideia principal de «{title}» a um aluno mais novo, sem perder o essencial?'],
+        ['pergunta de teste', 'Cria uma pergunta de teste sobre «{title}» que exija mais do que copiar uma frase — e indica o que seria uma boa resposta.']
+      ],
+      refletir: [
+        ['metacognição', 'Como chegaste à tua última resposta? Indica uma estratégia: reler, sublinhar, procurar palavras-chave, comparar ou outra.'],
+        ['segurança', 'Quão segura está a tua interpretação: pouco, mais ou menos ou muito? Que prova poderia torná-la mais segura?'],
+        ['mudança', 'O que mudou na tua maneira de pensar sobre «{title}» desde a primeira pergunta?'],
+        ['próximo passo', 'Que pergunta nova gostarias de investigar depois desta conversa?']
+      ]
+    };
+    const typeQuestions = {
+      imagem: {
+        observar: ['VER primeiro: que elementos consegues descrever sem interpretar — objetos, cores, pessoas sem as identificar, palavras ou enquadramento?'],
+        inferir: ['Que significado parece sugerir a imagem? Indica o pormenor visual que sustenta essa leitura.'],
+        linguagem: ['Como trabalham juntos a imagem e as palavras, se existirem? O que mudaria se uma delas desaparecesse?']
+      },
+      gramática: {
+        observar: ['Que palavras, expressões ou frases te parecem estar em jogo? Copia apenas os exemplos necessários.'],
+        compreender: ['Que diferença de sentido notas entre os dois exemplos mais importantes?'],
+        linguagem: ['Que regra consegues descobrir a partir dos exemplos, antes de a procurares num manual? Cria uma frase tua.']
+      },
+      notícia: {
+        observar: ['O título informa, chama a atenção ou tenta provocar uma reação? Que palavra te dá essa pista?'],
+        compreender: ['A notícia responde a quem, o quê, quando, onde, como e porquê? Indica os elementos que encontras e o que falta.'],
+        avaliar: ['Que fonte ou dado deverias confirmar antes de partilhares esta informação? Porquê?']
+      },
+      'texto meu': {
+        observar: ['Qual é a ideia principal do teu texto, numa frase? O teu início deixa essa ideia clara?'],
+        compreender: ['Que parte do teu texto está mais conseguida e que pormenor mostra isso?'],
+        linguagem: ['Escolhe uma frase que possas tornar mais precisa. O que gostarias de melhorar: vocabulário, estrutura, coesão ou pontuação?']
+      }
+    };
+
+    const $ = (id) => document.getElementById(id);
+    let state = freshState();
+
+    function freshState() {
+      return {
+        year: '', objective: '', materialType: 'texto', material: '', imageData: '', imageName: '',
+        phaseIndex: 0, turn: 0, difficulty: 2, helpLevel: 0, questionsAsked: 0,
+        usedQuestions: [], messages: [], startedAt: '', lastQuestion: '', lastFormat: '',
+        attemptsOnQuestion: 0, closingAwaitMood: false, finished: false, professorMode: false
+      };
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (ch) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[ch]));
+    }
+    function renderText(value) {
+      return escapeHtml(value).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    }
+    function wordCount(value) { return String(value || '').trim().split(/\s+/).filter(Boolean).length; }
+    function trimMessage(value, max = MAX_MESSAGE_WORDS) {
+      const words = String(value).trim().split(/\s+/);
+      return words.length <= max ? String(value).trim() : words.slice(0, max).join(' ') + '…';
+    }
+    function normalise(value) { return String(value || '').toLocaleLowerCase('pt-PT').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim(); }
+    function currentPhase() { return phases[Math.min(state.phaseIndex, phases.length - 1)]; }
+    function currentTypeLabel() { return phaseForType[state.materialType] || 'material'; }
+    function shortSnippet() {
+      const text = state.material.replace(/\s+/g, ' ').trim();
+      if (!text) return state.imageName ? 'a imagem anexada' : 'o material';
+      return text.length > 72 ? text.slice(0, 69).replace(/[,.!?;:]?\s*$/, '') + '…' : text;
+    }
+    function titleFromMaterial() {
+      const text = state.material.replace(/\s+/g, ' ').trim();
+      if (!text) return state.imageName || 'o material enviado';
+      const firstLine = state.material.split(/\n+/).map(x => x.trim()).find(Boolean) || text;
+      if (firstLine.length <= 68) return firstLine.replace(/[.!?]$/, '');
+      return firstLine.slice(0, 65).replace(/\s+\S*$/, '') + '…';
+    }
+    function keyWord() {
+      const stop = new Set('a o e de do da dos das um uma os as que em no na nos nas por para com sem se ao aos às é foi ser ter este esta isto isso como mais menos muito muito'.split(' '));
+      const words = state.material.toLocaleLowerCase('pt-PT').match(/[a-záàâãéêíóôõúç]{5,}/gi) || [];
+      return words.find(w => !stop.has(normalise(w))) || 'a ideia central';
+    }
+    function fill(template) {
+      return template.replaceAll('{title}', titleFromMaterial()).replaceAll('{snippet}', shortSnippet()).replaceAll('{keyword}', keyWord()).replaceAll('{word}', keyWord());
+    }
+    function chooseQuestion(phaseKey = currentPhase().key) {
+      let options = (typeQuestions[state.materialType] && typeQuestions[state.materialType][phaseKey]) || [];
+      let pool = options.length ? options.map(x => ['específica', x]) : (questions[phaseKey] || questions.observar);
+      const recent = state.usedQuestions.slice(-4);
+      let selected = pool.find(([format, text]) => !recent.includes(normalise(fill(text))) && format !== state.lastFormat);
+      if (!selected) selected = pool.find(([format, text]) => !recent.includes(normalise(fill(text))));
+      if (!selected) selected = pool[state.questionsAsked % pool.length];
+      const [format, template] = selected;
+      const q = fill(template);
+      state.usedQuestions.push(normalise(q));
+      state.lastQuestion = q;
+      state.lastFormat = format;
+      state.questionsAsked += 1;
+      return q;
+    }
+    function feedbackFor(answer) {
+      const text = String(answer).trim();
+      if (!text) return 'Ainda não vejo a tua ideia. Podes começar por uma palavra, um pormenor ou uma dúvida concreta.';
+      const anchor = titleFromMaterial();
+      const lower = normalise(text);
+      const inText = state.material && lower.split(' ').some(w => w.length > 4 && normalise(state.material).includes(w));
+      if (state.materialType === 'imagem' && state.turn === 1) return 'Começaste pelo plano do visível. Isso é importante: primeiro descrevemos, depois interpretamos.';
+      if (inText) return `Encontraste uma pista em «${anchor}» e ligaste-a à tua resposta. Estás a trabalhar no que está no texto.`;
+      if (lower.includes('acho') || lower.includes('penso') || lower.includes('parece')) return `Apresentaste uma interpretação sobre «${anchor}». Agora precisamos de distinguir a tua opinião da prova que a apoia.`;
+      if (text.length > 90) return 'Desenvolveste a ideia com algum detalhe. Vamos escolher agora o pormenor mais importante para a tornar mais precisa.';
+      return 'A tua resposta mostra uma primeira leitura. Vamos ligá-la a um elemento concreto do material para percebermos melhor o teu raciocínio.';
+    }
+    function hintFor() {
+      const phase = currentPhase().key;
+      const hints = {
+        observar: `Relê o título ou observa a organização de «${titleFromMaterial()}». Escolhe um sinal visível.`,
+        compreender: `Começa por responder a «sobre o quê?». Depois procura uma palavra do material que confirme a tua ideia.`,
+        esclarecer: 'Divide a dificuldade em duas partes: o que percebes e o que ainda não consegues explicar.',
+        inferir: `Procura uma pista antes de tirar a conclusão. Pergunta: «Que pormenor me faz pensar isto?»`,
+        linguagem: `Escolhe uma palavra pequena, um verbo ou um sinal de pontuação em «${shortSnippet()}».`,
+        avaliar: 'Dá primeiro a tua posição. Em seguida, acrescenta uma razão e um exemplo ou prova.',
+        criar: 'Mantém o sentido essencial, mas imagina uma mudança de ponto de vista, título ou situação.',
+        refletir: 'Pensa no que fizeste para responder, não apenas no resultado.'
+      };
+      return hints[phase] || 'Volta a ler a pergunta e escolhe um único pormenor para começar.';
+    }
+    function addMessage(role, text, meta = '') {
+      const message = { role, text, meta, at: new Date().toISOString() };
+      state.messages.push(message);
+      const chat = $('chat');
+      $('emptyState')?.remove();
+      const wrapper = document.createElement('div');
+      wrapper.className = `message ${role}`;
+      wrapper.innerHTML = `<div class="avatar" aria-hidden="true">${role === 'assistant' ? 'P' : 'A'}</div><div><div class="bubble">${renderText(text)}</div>${meta ? `<div class="meta">${escapeHtml(meta)}</div>` : ''}</div>`;
+      chat.appendChild(wrapper);
+      chat.scrollTop = chat.scrollHeight;
+    }
+    function assistant(text, meta = '', allowLong = false) { addMessage('assistant', allowLong ? text : trimMessage(text), meta); }
+    function userMessage(text) { addMessage('user', text); }
+    function updateUI() {
+      const started = Boolean(state.startedAt);
+      $('reply').disabled = !started || state.finished || state.professorMode;
+      $('sendBtn').disabled = !started || state.finished || state.professorMode;
+      $('phaseName').textContent = started ? currentPhase().label : 'Preparação';
+      $('turnLabel').textContent = started ? `${state.turn} ${state.turn === 1 ? 'troca' : 'trocas'}` : 'ainda não começaste';
+      $('typePill').textContent = started ? currentTypeLabel() : 'sem material';
+      $('sessionLabel').textContent = started ? `${state.year} · ${state.objective}` : 'Nova sessão';
+      $('progressValue').style.width = started ? `${Math.min(100, Math.max(8, ((state.phaseIndex + 1) / phases.length) * 100))}%` : '0%';
+    }
+    function startSession(event) {
+      event?.preventDefault();
+      const year = $('year').value;
+      const objective = $('objective').value;
+      if (!year || !objective) { alert('Escolhe o teu ano e o objetivo da conversa.'); return; }
+      state = freshState();
+      state.year = year; state.objective = objective; state.materialType = document.querySelector('input[name="materialType"]:checked')?.value || 'texto';
+      state.material = $('material').value.trim(); state.imageData = $('imagePreview').getAttribute('src') || ''; state.imageName = $('imageFile').files[0]?.name || '';
+      state.startedAt = new Date().toISOString();
+      $('chat').innerHTML = '';
+      updateUI();
+      const imageNotice = state.imageData && state.materialType === 'imagem' ? ' Vejo que anexaste uma imagem; começa por descrever apenas o que está lá.' : '';
+      assistant(`Sou o «Pergunta, Pensa, Aprende». Vou ajudar-te a pensar sobre o teu material através de perguntas, sem fazer o trabalho por ti.${imageNotice} Não envies dados pessoais.`, 'Arranque');
+      const opening = state.materialType === 'imagem' && !state.material ? 'O que vês na imagem, sem ainda dizeres o que significa? Descreve dois ou três pormenores concretos.' : chooseQuestion('observar');
+      assistant(`**${opening}**`, `${currentPhase().label} · pergunta 1`);
+      updateUI();
+      $('reply').focus();
+      persist(false);
+    }
+    function advancePhase() {
+      if (state.turn > 0 && state.turn % 2 === 0 && state.phaseIndex < phases.length - 1) state.phaseIndex += 1;
+      state.helpLevel = 0; state.attemptsOnQuestion = 0;
+    }
+    function handleAnswer(answer) {
+      const text = String(answer || '').trim();
+      if (!text) return;
+      userMessage(text);
+      state.turn += 1;
+      if (state.closingAwaitMood) { finishSession(text); return; }
+      const feedback = feedbackFor(text);
+      advancePhase();
+      const next = chooseQuestion();
+      assistant(`${feedback}\n\n**${next}**`, `${currentPhase().label} · pergunta ${state.questionsAsked}`);
+      persist(false); updateUI();
+    }
+    function handleCommand(command) {
+      const cmd = normalise(command);
+      if (!state.startedAt) { assistant('Começa por escolher o teu ano, o objetivo e o material.'); return; }
+      if (cmd.startsWith('modo professor')) {
+        const supplied = String(command).replace(/^modo professor\s*/i, '').trim();
+        if (supplied && supplied === PROFESSOR_CODE) { state.professorMode = true; renderProfessorPanel(); persist(false); updateUI(); }
+        else assistant('Continuamos em modo aluno. Podes usar «pista», «outra pergunta», «mais difícil», «mais fácil», «explica-me» ou «terminar».');
+        return;
+      }
+      if (cmd === 'terminar') { state.closingAwaitMood = true; assistant('Antes de fecharmos: **como te sentiste hoje: seguro, mais ou menos, ou com dificuldades?**', 'Fecho · primeiro passo'); updateUI(); persist(false); return; }
+      if (cmd === 'pista') { state.helpLevel = Math.min(7, state.helpLevel + 1); state.attemptsOnQuestion += 1; assistant(`${hintFor()}\n\n**${state.lastQuestion}**`, `Pista ${state.helpLevel}/7 · ${currentPhase().label}`); persist(false); return; }
+      if (cmd === 'outra pergunta') { const next = chooseQuestion(); assistant(`Vamos olhar para o mesmo material por outro ângulo.\n\n**${next}**`, `${currentPhase().label} · formato diferente`); persist(false); return; }
+      if (cmd === 'mais difícil') { state.difficulty = Math.min(4, state.difficulty + 1); if (state.phaseIndex < phases.length - 1) state.phaseIndex += 1; const next = chooseQuestion(); assistant(`Vamos subir um degrau: agora precisas de relacionar ideias e justificar melhor.\n\n**${next}**`, `Desafio ${state.difficulty}/4 · ${currentPhase().label}`); updateUI(); persist(false); return; }
+      if (cmd === 'mais fácil') { state.difficulty = Math.max(1, state.difficulty - 1); if (state.phaseIndex > 0) state.phaseIndex -= 1; const next = chooseQuestion(); assistant(`Vamos simplificar. Concentra-te num único pormenor antes de avançar.\n\n**${next}**`, `Apoio ${state.difficulty}/4 · ${currentPhase().label}`); updateUI(); persist(false); return; }
+      if (cmd === 'explica-me') { explainAndReformulate(); return; }
+      handleAnswer(command);
+    }
+    function explainAndReformulate() {
+      state.attemptsOnQuestion += 1;
+      const explanation = {
+        observar: 'Observar significa dizer apenas o que está visível ou escrito, sem explicar ainda o significado.',
+        compreender: 'Compreender é conseguir dizer por palavras tuas o assunto ou o que acontece, apoiando-te no material.',
+        esclarecer: 'Esclarecer é transformar uma dificuldade vaga numa pergunta concreta, com uma pessoa, ideia ou pormenor.',
+        inferir: 'Inferir é chegar a uma conclusão que não está escrita exatamente assim, mas que é apoiada por pistas.',
+        linguagem: 'Analisar a linguagem é reparar numa escolha de palavras, numa frase ou num sinal e explicar o seu efeito.',
+        avaliar: 'Avaliar é tomar uma posição e justificá-la com uma razão e uma prova, sem esquecer que pode haver outra perspetiva.',
+        criar: 'Criar ou transferir é usar o que compreendeste numa situação nova, mantendo uma ligação clara ao material.',
+        refletir: 'Refletir é pensar sobre o caminho que usaste para aprender, não apenas sobre a resposta final.'
+      }[currentPhase().key];
+      assistant(`${explanation} Agora reformula a ideia com palavras tuas.\n\n**${state.lastQuestion}**`, `Explicação · ${currentPhase().label}`);
+      persist(false);
+    }
+    function finishSession(mood) {
+      state.finished = true; state.closingAwaitMood = false;
+      const answerMessages = state.messages.filter(m => m.role === 'user').map(m => m.text).filter(Boolean);
+      const best = answerMessages.slice(-1)[0] || 'Ainda não ficou registada uma resposta final.';
+      const summary = [
+        `**Síntese da conversa**`,
+        `• Compreendeste: trabalhaste «${titleFromMaterial()}» através de perguntas e justificações.`,
+        `• Uma ideia que justificaste bem: «${trimMessage(best, 24)}».`,
+        `• A melhor pergunta que fizeste: revê as tuas perguntas no histórico e escolhe a que te obrigou a pensar mais.`,
+        `• Uma dúvida que fica: identifica a questão que ainda gostarias de confirmar no manual, no texto ou com o professor.`,
+        `• Próximo passo: relê o material e escreve uma resposta final em três frases.`,
+        `Registo do teu estado: ${mood}.`,
+        `\n**Que pergunta nova levas contigo depois desta conversa?**`
+      ].join('\n');
+      assistant(summary, 'Fecho · síntese', true); updateUI(); persist(false);
+    }
+    function renderProfessorPanel() {
+      const title = titleFromMaterial();
+      $('chat').innerHTML = '';
+      const panel = document.createElement('div'); panel.className = 'professor-panel';
+      panel.innerHTML = `<h2>Modo professor</h2><p class="lead">Sequência ajustável para <strong>${escapeHtml(title)}</strong> · ${escapeHtml(state.year)} · ${escapeHtml(currentTypeLabel())}</p>
+        <div class="prof-grid">
+          <section class="prof-block"><h3>Sequência socrática</h3><ol>${phases.slice(0,7).map(p => `<li><strong>${p.label}:</strong> ${escapeHtml(fill((questions[p.key] || questions.observar)[0][1]))}</li>`).join('')}</ol></section>
+          <section class="prof-block"><h3>Respostas prováveis e equívocos</h3><ul><li>Confundir o que está explícito com uma inferência.</li><li>Dar uma opinião sem prova ou exemplo.</li><li>Resumir copiando, sem reformular.</li><li>Identificar uma palavra, mas não explicar o seu efeito.</li></ul></section>
+          <section class="prof-block"><h3>Pistas graduadas</h3><ol><li>Reformular a pergunta.</li><li>Dividir a tarefa.</li><li>Apontar uma zona do material.</li><li>Oferecer duas hipóteses.</li><li>Pedir uma reformulação autónoma.</li></ol></section>
+          <section class="prof-block"><h3>Adaptações</h3><ul><li><strong>Mais apoio:</strong> perguntas concretas e escolha entre hipóteses.</li><li><strong>Progressão:</strong> pedir sempre uma prova.</li><li><strong>Desafio:</strong> contra-argumento, mudança de ponto de vista e transferência.</li></ul></section>
+        </div>
+        <div class="prof-block" style="margin-top:12px"><h3>Grelha rápida de observação</h3><table class="rubric"><thead><tr><th>Critério</th><th>Emergente</th><th>Em desenvolvimento</th><th>Consolidado</th></tr></thead><tbody><tr><td>Qualidade da pergunta</td><td>Localiza apenas.</td><td>Relaciona ou interpreta.</td><td>Questiona pressupostos e cria.</td></tr><tr><td>Uso de provas</td><td>Opinião sem apoio.</td><td>Indica um pormenor.</td><td>Explica a ligação entre prova e ideia.</td></tr><tr><td>Metacognição</td><td>Diz apenas se sabe.</td><td>Nomeia uma estratégia.</td><td>Explica como mudou de ideia.</td></tr></tbody></table></div>
+        <div class="prof-block" style="margin-top:12px"><h3>Cartão de saída</h3><p style="margin:0">Hoje compreendi… · A prova que usei foi… · A pergunta que fica é… · Na próxima leitura vou…</p></div>`;
+      $('chat').appendChild(panel);
+      $('reply').disabled = true; $('sendBtn').disabled = true;
+      $('sessionLabel').textContent = 'Modo professor'; updateUI();
+    }
+    function serialisableState() { return JSON.parse(JSON.stringify(state)); }
+    function persist(showNotice = false) {
+      if (!state.startedAt) return;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(serialisableState()));
+      if (showNotice) alert('Sessão guardada neste dispositivo.');
+    }
+    function loadSaved() {
+      try { const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); return saved && saved.startedAt ? saved : null; } catch { return null; }
+    }
+    function resumeSession() {
+      const saved = loadSaved();
+      if (!saved) { alert('Não encontrei nenhuma sessão guardada neste dispositivo.'); return; }
+      state = Object.assign(freshState(), saved);
+      $('year').value = state.year; $('objective').value = state.objective;
+      const radio = document.querySelector(`input[name="materialType"][value="${CSS.escape(state.materialType)}"]`); if (radio) radio.checked = true;
+      $('material').value = state.material || '';
+      $('chat').innerHTML = '';
+      state.messages.forEach(m => addMessage(m.role, m.text, m.meta));
+      updateUI();
+      if (!state.finished && !state.professorMode) $('reply').focus();
+    }
+    function downloadReport() {
+      if (!state.startedAt) { alert('Inicia uma sessão antes de descarregar o relatório.'); return; }
+      const lines = [`PERGUNTA, PENSA, APRENDE`, `Tutor socrático de Português`, `Ano: ${state.year}`, `Objetivo: ${state.objective}`, `Material: ${currentTypeLabel()}`, `Início: ${new Date(state.startedAt).toLocaleString('pt-PT')}`, '', 'CONVERSA', ''];
+      state.messages.forEach(m => lines.push(`${m.role === 'assistant' ? 'Tutor' : 'Aluno'}: ${m.text}`, ''));
+      lines.push('NOTA: Esta síntese regista o percurso de reflexão; não é uma classificação.');
+      const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'relatorio-pergunta-pensa-aprende.txt'; a.click(); URL.revokeObjectURL(url);
+    }
+    function handleImage(event) {
+      const file = event.target.files[0]; if (!file) return;
+      const reader = new FileReader(); reader.onload = () => { $('imagePreview').src = reader.result; $('imagePreview').classList.remove('hidden'); }; reader.readAsDataURL(file);
+    }
+
+    $('setupForm').addEventListener('submit', startSession);
+    $('imageFile').addEventListener('change', handleImage);
+    $('resumeBtn').addEventListener('click', resumeSession);
+    $('sendBtn').addEventListener('click', () => { const text = $('reply').value.trim(); if (text) { $('reply').value = ''; handleCommand(text); } });
+    $('reply').addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); $('sendBtn').click(); } });
+    document.querySelectorAll('.command-btn').forEach(btn => btn.addEventListener('click', () => handleCommand(btn.dataset.command)));
+    $('saveBtn').addEventListener('click', () => persist(true));
+    $('reportBtn').addEventListener('click', downloadReport);
+    $('printBtn').addEventListener('click', () => window.print());
+    $('resetBtn').addEventListener('click', () => { if (confirm('Começar uma nova sessão? O histórico atual ficará guardado apenas se já tiveres descarregado o relatório.')) { state = freshState(); $('chat').innerHTML = '<div class="empty-state" id="emptyState"><div class="big-mark" aria-hidden="true">💬</div><h2>Uma boa resposta começa com uma boa pergunta.</h2><p>Escolhe o teu ano, indica o que queres explorar e envia um texto, uma imagem ou um tema.</p></div>'; $('reply').value = ''; updateUI(); } });
+    updateUI();
+  </script>
+</body>
+</html>
