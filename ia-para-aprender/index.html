@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IA para Aprender — Guia para Estudantes</title>
+<style>
+  :root {
+    --bg: #07111f;
+    --bg2: #0e1f35;
+    --card: #132540;
+    --card2: #1a2f4a;
+    --border: #1e3a5f;
+    --primary: #f97316;
+    --primary-light: #fb923c;
+    --secondary: #fbbf24;
+    --accent: #22d3ee;
+    --green: #34d399;
+    --red: #f87171;
+    --text: #e2eaf4;
+    --text-muted: #7fa8cc;
+    --text-dim: #4a7fa8;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --glow: 0 0 20px rgba(249,115,22,0.25);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ===== TYPOGRAPHY ===== */
+  h1, h2, h3 { font-family: Georgia, 'Times New Roman', serif; }
+  h1 { font-size: clamp(1.8rem, 5vw, 3rem); line-height: 1.15; }
+  h2 { font-size: clamp(1.3rem, 3vw, 1.9rem); line-height: 1.25; }
+  h3 { font-size: clamp(1rem, 2.5vw, 1.3rem); }
+  p { color: var(--text-muted); font-size: 0.97rem; }
+  strong { color: var(--text); }
+  a { color: var(--accent); text-decoration: none; }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ===== LAYOUT ===== */
+  .app { max-width: 960px; margin: 0 auto; padding: 0 1rem 4rem; }
+
+  /* ===== HEADER ===== */
+  .site-header {
+    background: linear-gradient(135deg, var(--bg2) 0%, #0a1929 100%);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+  .header-inner {
+    max-width: 960px; margin: 0 auto;
+    padding: 0.75rem 1rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 0.6rem;
+    cursor: pointer; user-select: none;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: var(--glow);
+  }
+  .logo-text { font-family: Georgia, serif; font-size: 1.1rem; color: var(--text); font-weight: bold; }
+  .logo-sub { font-size: 0.7rem; color: var(--text-muted); display: block; }
+  .back-btn {
+    display: none;
+    align-items: center; gap: 0.4rem;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text-muted); padding: 0.4rem 0.9rem;
+    border-radius: 20px; cursor: pointer; font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { background: var(--card2); color: var(--text); border-color: var(--primary); }
+  .back-btn.visible { display: flex; }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-bar-wrap {
+    height: 3px; background: var(--bg2);
+    position: sticky; top: 0; z-index: 99;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    width: 0%; transition: width 0.4s ease;
+  }
+
+  /* ===== VIEWS ===== */
+  .view { display: none; animation: fadeSlide 0.35s ease; }
+  .view.active { display: block; }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    text-align: center;
+    padding: 3.5rem 1rem 2.5rem;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+    width: 500px; height: 300px;
+    background: radial-gradient(ellipse, rgba(249,115,22,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: rgba(249,115,22,0.15); border: 1px solid rgba(249,115,22,0.3);
+    color: var(--primary-light); padding: 0.3rem 0.9rem;
+    border-radius: 20px; font-size: 0.8rem; margin-bottom: 1.2rem;
+  }
+  .hero h1 { margin-bottom: 1rem; }
+  .hero h1 span { color: var(--primary); }
+  .hero p { font-size: 1.05rem; max-width: 580px; margin: 0 auto 2rem; color: var(--text-muted); }
+  .hero-stats {
+    display: flex; justify-content: center; gap: 2rem;
+    flex-wrap: wrap; margin-bottom: 2rem;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-size: 1.6rem; font-weight: bold; color: var(--secondary); display: block; }
+  .stat-label { font-size: 0.75rem; color: var(--text-dim); }
+
+  /* ===== MODULE GRID ===== */
+  .section-label {
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-dim); margin: 2.5rem 0 1rem;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+  .module-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative; overflow: hidden;
+  }
+  .module-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--color, var(--primary));
+    opacity: 0; transition: opacity 0.25s;
+  }
+  .module-card:hover { background: var(--card2); transform: translateY(-3px); box-shadow: var(--shadow); }
+  .module-card:hover::before { opacity: 1; }
+  .card-icon { font-size: 2rem; margin-bottom: 0.7rem; display: block; }
+  .card-title { font-size: 1rem; font-weight: bold; color: var(--text); margin-bottom: 0.4rem; }
+  .card-desc { font-size: 0.82rem; color: var(--text-muted); }
+  .card-tag {
+    display: inline-block; margin-top: 0.8rem;
+    background: rgba(249,115,22,0.1); color: var(--primary);
+    font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 12px;
+  }
+  .module-card.done .card-icon::after { content: ' ✓'; font-size: 1rem; color: var(--green); }
+
+  /* ===== MODULE CONTENT ===== */
+  .module-header {
+    padding: 2rem 0 1.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+  }
+  .module-header .mod-icon { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+  .module-header h2 { color: var(--text); }
+  .module-header p { margin-top: 0.5rem; }
+  .module-header .time-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text-dim); padding: 0.25rem 0.7rem;
+    border-radius: 12px; font-size: 0.75rem; margin-top: 0.8rem;
+  }
+
+  /* ===== CONTENT BLOCKS ===== */
+  .content-block { margin-bottom: 2rem; }
+  .content-block h3 { color: var(--secondary); margin-bottom: 0.8rem; }
+
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1rem;
+  }
+  .info-card.highlight { border-color: rgba(249,115,22,0.4); background: rgba(249,115,22,0.06); }
+  .info-card.tip { border-color: rgba(34,211,238,0.3); background: rgba(34,211,238,0.05); }
+  .info-card.tip h4::before { content: '💡 '; }
+  .info-card.warning { border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.05); }
+  .info-card.warning h4::before { content: '⚠️ '; }
+  .info-card.success { border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.05); }
+  .info-card.success h4::before { content: '✅ '; }
+  .info-card h4 { color: var(--text); margin-bottom: 0.5rem; font-size: 0.95rem; }
+  .info-card p, .info-card li { font-size: 0.88rem; color: var(--text-muted); }
+  .info-card ul { padding-left: 1.2rem; margin-top: 0.4rem; }
+  .info-card li { margin-bottom: 0.3rem; }
+
+  /* ===== COMPARISON ===== */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  @media (max-width: 540px) { .compare-grid { grid-template-columns: 1fr; } }
+  .compare-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+  }
+  .compare-box.bad { border-color: rgba(248,113,113,0.3); }
+  .compare-box.good { border-color: rgba(52,211,153,0.3); }
+  .compare-label {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 0.6rem; font-weight: bold;
+  }
+  .compare-box.bad .compare-label { color: var(--red); }
+  .compare-box.good .compare-label { color: var(--green); }
+  .compare-prompt {
+    background: rgba(0,0,0,0.3); border-radius: var(--radius-sm);
+    padding: 0.7rem 0.9rem; font-size: 0.85rem; color: var(--text); margin-bottom: 0.6rem;
+    font-style: italic; border-left: 3px solid;
+  }
+  .compare-box.bad .compare-prompt { border-color: var(--red); }
+  .compare-box.good .compare-prompt { border-color: var(--green); }
+  .compare-why { font-size: 0.78rem; color: var(--text-muted); }
+
+  /* ===== PROMPT BUILDER ===== */
+  .prompt-builder {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+  .prompt-builder h4 { color: var(--accent); margin-bottom: 1rem; font-size: 0.95rem; }
+  .builder-fields { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1rem; }
+  .field-row { display: flex; flex-direction: column; gap: 0.3rem; }
+  .field-row label { font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
+  .field-row select, .field-row input, .field-row textarea {
+    background: var(--bg2); border: 1px solid var(--border);
+    color: var(--text); padding: 0.55rem 0.8rem;
+    border-radius: var(--radius-sm); font-size: 0.88rem;
+    font-family: inherit; resize: vertical;
+    transition: border-color 0.2s;
+  }
+  .field-row select:focus, .field-row input:focus, .field-row textarea:focus {
+    outline: none; border-color: var(--primary);
+  }
+  .field-row select option { background: var(--bg2); }
+  .build-btn {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white; border: none; padding: 0.65rem 1.5rem;
+    border-radius: 20px; cursor: pointer; font-size: 0.88rem; font-weight: bold;
+    transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem;
+  }
+  .build-btn:hover { transform: scale(1.04); box-shadow: var(--glow); }
+  .prompt-result {
+    display: none;
+    background: rgba(249,115,22,0.06); border: 1px solid rgba(249,115,22,0.25);
+    border-radius: var(--radius-sm); padding: 1rem; margin-top: 1rem;
+  }
+  .prompt-result.visible { display: block; animation: fadeSlide 0.3s; }
+  .prompt-result label { font-size: 0.72rem; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 0.5rem; }
+  .prompt-result p { font-size: 0.9rem; color: var(--text); font-style: italic; }
+  .copy-btn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-muted); padding: 0.3rem 0.7rem;
+    border-radius: 12px; cursor: pointer; font-size: 0.75rem;
+    margin-top: 0.7rem; transition: all 0.2s;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ===== FLIP CARDS ===== */
+  .flip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+  .flip-card { perspective: 800px; cursor: pointer; height: 140px; }
+  .flip-inner {
+    position: relative; width: 100%; height: 100%;
+    transform-style: preserve-3d; transition: transform 0.5s;
+    border-radius: var(--radius);
+  }
+  .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+  .flip-front, .flip-back {
+    position: absolute; width: 100%; height: 100%;
+    backface-visibility: hidden;
+    border-radius: var(--radius);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 1rem; text-align: center;
+  }
+  .flip-front {
+    background: var(--card); border: 1px solid var(--border);
+    gap: 0.5rem;
+  }
+  .flip-front .fi { font-size: 1.8rem; }
+  .flip-front p { font-size: 0.82rem; color: var(--text-muted); }
+  .flip-back {
+    background: var(--card2); border: 1px solid rgba(34,211,238,0.3);
+    transform: rotateY(180deg);
+  }
+  .flip-back p { font-size: 0.82rem; color: var(--text-muted); }
+  .flip-hint { font-size: 0.7rem; color: var(--text-dim); margin-top: 0.3rem; }
+
+  /* ===== CHECKLIST ===== */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 0.7rem;
+    padding: 0.7rem 0; border-bottom: 1px solid var(--border);
+    font-size: 0.88rem; color: var(--text-muted); cursor: pointer;
+    transition: color 0.2s;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li .check-box {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 2px solid var(--border); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; transition: all 0.2s; margin-top: 1px;
+  }
+  .checklist li.checked { color: var(--text); }
+  .checklist li.checked .check-box { background: var(--green); border-color: var(--green); }
+  .checklist li.checked .check-box::after { content: '✓'; color: white; font-weight: bold; }
+
+  /* ===== DISCIPLINE TABS ===== */
+  .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
+  .tab-btn {
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text-muted); padding: 0.45rem 1rem;
+    border-radius: 20px; cursor: pointer; font-size: 0.82rem;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover, .tab-btn.active {
+    background: var(--primary); border-color: var(--primary); color: white;
+  }
+  .tab-panel { display: none; animation: fadeSlide 0.25s; }
+  .tab-panel.active { display: block; }
+  .example-list { list-style: none; padding: 0; }
+  .example-list li {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1rem; margin-bottom: 0.6rem;
+    font-size: 0.85rem; color: var(--text-muted);
+    display: flex; gap: 0.6rem; align-items: flex-start;
+  }
+  .example-list li::before { content: '→'; color: var(--primary); flex-shrink: 0; font-weight: bold; }
+
+  /* ===== QUIZ ===== */
+  .quiz-wrap { max-width: 680px; margin: 0 auto; padding: 1.5rem 0; }
+  .quiz-progress {
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
+  }
+  .quiz-progress .q-bar { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .quiz-progress .q-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); transition: width 0.4s; }
+  .quiz-progress .q-label { font-size: 0.78rem; color: var(--text-dim); white-space: nowrap; }
+  .question-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.5rem;
+  }
+  .question-text { color: var(--text); font-size: 1rem; font-weight: bold; margin-bottom: 1.2rem; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 0.6rem; }
+  .option-btn {
+    background: var(--bg2); border: 1px solid var(--border);
+    color: var(--text-muted); padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm); cursor: pointer; text-align: left;
+    font-size: 0.88rem; transition: all 0.2s; display: flex; align-items: center; gap: 0.7rem;
+  }
+  .option-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--text); background: rgba(249,115,22,0.07); }
+  .option-btn.correct { background: rgba(52,211,153,0.1); border-color: var(--green); color: var(--text); }
+  .option-btn.wrong { background: rgba(248,113,113,0.1); border-color: var(--red); color: var(--text); }
+  .option-btn:disabled { cursor: default; }
+  .option-letter {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: bold; flex-shrink: 0; color: var(--text-dim);
+  }
+  .option-btn.correct .option-letter { background: var(--green); color: white; }
+  .option-btn.wrong .option-letter { background: var(--red); color: white; }
+  .feedback-msg {
+    display: none; margin-top: 0.9rem;
+    padding: 0.7rem 1rem; border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+  }
+  .feedback-msg.show { display: block; animation: fadeSlide 0.3s; }
+  .feedback-msg.ok { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); color: var(--green); }
+  .feedback-msg.ko { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: var(--red); }
+  .next-btn {
+    display: none; margin-top: 1.2rem;
+    background: var(--primary); color: white; border: none;
+    padding: 0.65rem 1.8rem; border-radius: 20px;
+    cursor: pointer; font-size: 0.9rem; font-weight: bold;
+    transition: all 0.2s;
+  }
+  .next-btn.show { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .next-btn:hover { background: var(--primary-light); transform: scale(1.04); }
+
+  /* ===== RESULT ===== */
+  .result-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 2.5rem;
+    text-align: center; max-width: 500px; margin: 2rem auto;
+  }
+  .result-emoji { font-size: 4rem; margin-bottom: 1rem; }
+  .result-score {
+    font-size: 3rem; font-weight: bold; font-family: Georgia, serif;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .result-label { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.5rem; }
+  .result-msg { color: var(--text-muted); font-size: 0.92rem; margin: 1rem 0 1.5rem; }
+  .result-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem; }
+  .badge-item {
+    background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.25);
+    color: var(--primary-light); padding: 0.3rem 0.8rem;
+    border-radius: 12px; font-size: 0.78rem;
+  }
+  .retry-btn {
+    background: transparent; border: 1px solid var(--primary); color: var(--primary);
+    padding: 0.6rem 1.4rem; border-radius: 20px; cursor: pointer; font-size: 0.88rem;
+    margin-right: 0.6rem; transition: all 0.2s;
+  }
+  .retry-btn:hover { background: rgba(249,115,22,0.1); }
+  .home-btn {
+    background: var(--primary); border: none; color: white;
+    padding: 0.6rem 1.4rem; border-radius: 20px; cursor: pointer; font-size: 0.88rem;
+    transition: all 0.2s;
+  }
+  .home-btn:hover { background: var(--primary-light); }
+
+  /* ===== STEP LIST ===== */
+  .step-list { list-style: none; padding: 0; counter-reset: steps; }
+  .step-list li {
+    counter-increment: steps;
+    display: flex; gap: 1rem; align-items: flex-start;
+    padding: 1rem 0; border-bottom: 1px solid var(--border);
+  }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before {
+    content: counter(steps);
+    min-width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; font-weight: bold; flex-shrink: 0; margin-top: 2px;
+  }
+  .step-list li .step-content strong { color: var(--text); display: block; font-size: 0.9rem; margin-bottom: 0.2rem; }
+  .step-list li .step-content span { font-size: 0.82rem; color: var(--text-muted); }
+
+  /* ===== ACCORDION ===== */
+  .accordion { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem; }
+  .acc-header {
+    background: var(--card); padding: 1rem 1.2rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+    transition: background 0.2s;
+  }
+  .acc-header:hover { background: var(--card2); }
+  .acc-header span { font-size: 0.92rem; color: var(--text); font-weight: bold; }
+  .acc-arrow { color: var(--text-dim); transition: transform 0.3s; font-size: 0.8rem; }
+  .acc-header.open .acc-arrow { transform: rotate(180deg); }
+  .acc-body {
+    display: none; padding: 1rem 1.2rem;
+    background: var(--bg2); border-top: 1px solid var(--border);
+    font-size: 0.88rem; color: var(--text-muted); line-height: 1.7;
+  }
+  .acc-body.open { display: block; animation: fadeSlide 0.2s; }
+
+  /* ===== MODULE NAV ===== */
+  .mod-nav { display: flex; justify-content: space-between; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+  .mod-nav-btn {
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text-muted); padding: 0.6rem 1.2rem;
+    border-radius: 20px; cursor: pointer; font-size: 0.85rem;
+    transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem;
+  }
+  .mod-nav-btn:hover { background: var(--card2); color: var(--text); border-color: var(--primary); }
+  .mod-nav-btn.primary-nav {
+    background: var(--primary); border-color: var(--primary); color: white;
+  }
+  .mod-nav-btn.primary-nav:hover { background: var(--primary-light); }
+
+  /* ===== FOOTER ===== */
+  .site-footer {
+    text-align: center; padding: 2rem 1rem;
+    border-top: 1px solid var(--border); margin-top: 3rem;
+    font-size: 0.78rem; color: var(--text-dim);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    .modules-grid { grid-template-columns: 1fr; }
+    .hero-stats { gap: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo" onclick="goHome()">
+      <div class="logo-icon">🤖</div>
+      <div>
+        <span class="logo-text">IA para Aprender</span>
+        <span class="logo-sub">Guia para Estudantes</span>
+      </div>
+    </div>
+    <button class="back-btn" id="backBtn" onclick="goHome()">← Início</button>
+  </div>
+</header>
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<!-- ===== HOME VIEW ===== -->
+<div class="view active" id="view-home">
+<div class="app">
+
+  <div class="hero">
+    <div class="hero-badge">✨ Para o Básico e Secundário</div>
+    <h1>Usa a <span>Inteligência Artificial</span><br>para aprender mais e melhor</h1>
+    <p>A IA pode ser a tua melhor aliada nos estudos — se souberes usá-la bem. Aqui aprenderás como.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">7</span><span class="stat-label">Módulos</span></div>
+      <div class="stat"><span class="stat-num">~45</span><span class="stat-label">Minutos</span></div>
+      <div class="stat"><span class="stat-num">10</span><span class="stat-label">Perguntas quiz</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Módulos de Aprendizagem</div>
+  <div class="modules-grid">
+    <div class="module-card" style="--color:#f97316" onclick="showModule('m1')">
+      <span class="card-icon">🤖</span>
+      <div class="card-title">O que é a IA?</div>
+      <div class="card-desc">Entende o que é a inteligência artificial, como funciona e o que sabe (ou não sabe).</div>
+      <span class="card-tag">Módulo 1 · 5 min</span>
+    </div>
+    <div class="module-card" style="--color:#22d3ee" onclick="showModule('m2')">
+      <span class="card-icon">💬</span>
+      <div class="card-title">A Arte de Fazer Perguntas</div>
+      <div class="card-desc">Aprende a escrever prompts eficazes para obteres respostas úteis e precisas.</div>
+      <span class="card-tag">Módulo 2 · 8 min</span>
+    </div>
+    <div class="module-card" style="--color:#a78bfa" onclick="showModule('m3')">
+      <span class="card-icon">🎓</span>
+      <div class="card-title">IA como Tutor</div>
+      <div class="card-desc">Usa a IA para compreender, não para copiar. Técnicas para aprender com ela.</div>
+      <span class="card-tag">Módulo 3 · 7 min</span>
+    </div>
+    <div class="module-card" style="--color:#34d399" onclick="showModule('m4')">
+      <span class="card-icon">🔍</span>
+      <div class="card-title">Verifica Sempre!</div>
+      <div class="card-desc">A IA erra. Aprende a identificar erros e a confirmar informação em fontes fiáveis.</div>
+      <span class="card-tag">Módulo 4 · 6 min</span>
+    </div>
+    <div class="module-card" style="--color:#fbbf24" onclick="showModule('m5')">
+      <span class="card-icon">⚖️</span>
+      <div class="card-title">Ética e Honestidade</div>
+      <div class="card-desc">Onde está a fronteira entre ajuda e batota? Usa a IA com integridade.</div>
+      <span class="card-tag">Módulo 5 · 6 min</span>
+    </div>
+    <div class="module-card" style="--color:#f472b6" onclick="showModule('m6')">
+      <span class="card-icon">📚</span>
+      <div class="card-title">Por Disciplina</div>
+      <div class="card-desc">Exemplos práticos de prompts para Matemática, Português, Ciências, História e mais.</div>
+      <span class="card-tag">Módulo 6 · 7 min</span>
+    </div>
+    <div class="module-card" style="--color:#f97316" onclick="showModule('quiz')" id="quizCard">
+      <span class="card-icon">🧠</span>
+      <div class="card-title">Quiz Final</div>
+      <div class="card-desc">Testa os teus conhecimentos com 10 perguntas e obtém o teu resultado.</div>
+      <span class="card-tag">Quiz · 10 perguntas</span>
+    </div>
+  </div>
+
+  <div class="section-label">Antes de Começares</div>
+  <div class="info-card warning">
+    <h4>A IA não é uma máquina de copiar</h4>
+    <p>Usar a IA para fazer trabalhos inteiros ou copiar respostas sem pensar não te faz aprender — faz exatamente o contrário. Este guia ensina-te a usá-la para <strong>aprender de verdade</strong>.</p>
+  </div>
+
+</div>
+</div>
+
+<!-- ===== MÓDULO 1: O que é a IA? ===== -->
+<div class="view" id="view-m1">
+<div class="app">
+  <div class="module-header">
+    <span class="mod-icon">🤖</span>
+    <h2>O que é a Inteligência Artificial?</h2>
+    <p>Antes de usar uma ferramenta, é importante perceber como ela funciona — e o que ela não consegue fazer.</p>
+    <span class="time-badge">⏱ ~5 minutos</span>
+  </div>
+
+  <div class="content-block">
+    <h3>Em poucas palavras</h3>
+    <div class="info-card">
+      <h4>O que é a IA?</h4>
+      <p>A Inteligência Artificial (IA) é um programa de computador treinado com enormes quantidades de texto. Ao "ler" este texto, aprendeu padrões de linguagem e de conhecimento. Quando lhe fazes uma pergunta, o programa gera a resposta mais provável com base no que aprendeu — não está a pensar como tu.</p>
+    </div>
+    <div class="info-card tip">
+      <h4>Analogia útil</h4>
+      <p>Pensa na IA como um estudante que leu <strong>milhões de livros</strong>, mas nunca saiu de casa, não tem experiências próprias, e às vezes confunde detalhes. Sabe muito, mas não sabe tudo — e pode estar errado.</p>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>O que a IA consegue fazer bem</h3>
+    <div class="flip-grid">
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front"><span class="fi">📝</span><p>Explicar conceitos</p><span class="flip-hint">clica para saber mais</span></div>
+          <div class="flip-back"><p>Pode explicar a mesma coisa de muitas maneiras diferentes — ideal quando o livro não é claro!</p></div>
+        </div>
+      </div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front"><span class="fi">🔄</span><p>Resumir texto</p><span class="flip-hint">clica para saber mais</span></div>
+          <div class="flip-back"><p>Condensa informação longa, mas verifica sempre se o resumo está correto antes de o usar.</p></div>
+        </div>
+      </div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front"><span class="fi">🌍</span><p>Traduzir idiomas</p><span class="flip-hint">clica para saber mais</span></div>
+          <div class="flip-back"><p>Traduz de forma bastante competente, embora expressões idiomáticas possam sair menos naturais.</p></div>
+        </div>
+      </div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front"><span class="fi">💡</span><p>Dar ideias</p><span class="flip-hint">clica para saber mais</span></div>
+          <div class="flip-back"><p>Ótima para brainstorming, sugerir ângulos diferentes, ou ajudar quando estás em branco.</p></div>
+        </div>
+      </div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front"><span class="fi">❓</span><p>Responder a dúvidas</p><span class="flip-hint">clica para saber mais</span></div>
+          <div class="flip-back"><p>Pode responder a perguntas sobre quase qualquer tema — mas verifica sempre a informação!</p></div>
+        </div>
+      </div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front"><span class="fi">✏️</span><p>Rever textos</p><span class="flip-hint">clica para saber mais</span></div>
+          <div class="flip-back"><p>Ajuda a corrigir gramática, melhorar estilo e tornar um texto mais claro e coerente.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>O que a IA NÃO consegue</h3>
+    <div class="info-card warning">
+      <h4>Limitações importantes</h4>
+      <ul>
+        <li><strong>Não sabe o que aconteceu recentemente</strong> — o seu conhecimento tem uma data de corte.</li>
+        <li><strong>Pode inventar factos</strong> — este fenómeno chama-se "alucinação" e é comum.</li>
+        <li><strong>Não acede à internet</strong> (na maioria das versões) — não pode verificar notícias em tempo real.</li>
+        <li><strong>Não te conhece</strong> — não sabe o que já estudaste ou o que o teu professor explicou.</li>
+        <li><strong>Não tem opiniões próprias</strong> — gera texto que parece uma opinião mas é apenas o padrão mais provável.</li>
+        <li><strong>Não substitui especialistas</strong> — não é médico, advogado, nem professor.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>Como saber que IA estás a usar?</h3>
+    <div class="compare-grid">
+      <div class="compare-box good">
+        <div class="compare-label">Ferramentas comuns para estudantes</div>
+        <ul style="padding-left:1.2rem; margin-top:0.4rem;">
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.3rem">ChatGPT (OpenAI)</li>
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.3rem">Claude (Anthropic)</li>
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.3rem">Gemini (Google)</li>
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.3rem">Copilot (Microsoft)</li>
+        </ul>
+      </div>
+      <div class="compare-box bad">
+        <div class="compare-label">Regra de ouro</div>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-top:0.4rem">Não importa qual usas — <strong style="color:var(--text)">as regras deste guia aplicam-se a todas</strong>. Nenhuma é infalível.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mod-nav">
+    <button class="mod-nav-btn" onclick="goHome()">← Início</button>
+    <button class="mod-nav-btn primary-nav" onclick="showModule('m2')">Próximo Módulo →</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== MÓDULO 2: Fazer boas perguntas ===== -->
+<div class="view" id="view-m2">
+<div class="app">
+  <div class="module-header">
+    <span class="mod-icon">💬</span>
+    <h2>A Arte de Fazer Boas Perguntas</h2>
+    <p>A qualidade da tua pergunta determina a qualidade da resposta. Aprender a escrever bons <em>prompts</em> é uma competência fundamental.</p>
+    <span class="time-badge">⏱ ~8 minutos</span>
+  </div>
+
+  <div class="content-block">
+    <h3>O que é um prompt?</h3>
+    <div class="info-card">
+      <h4>Definição simples</h4>
+      <p>Um <strong>prompt</strong> é tudo o que escreves para a IA — uma pergunta, instrução ou descrição. O modelo de linguagem usa exatamente o que escreves para gerar a resposta. Quanto mais claro e detalhado for o teu prompt, melhor será a resposta.</p>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>Comparação: prompts fracos vs. fortes</h3>
+    <div class="compare-grid">
+      <div class="compare-box bad">
+        <div class="compare-label">❌ Prompt Fraco</div>
+        <div class="compare-prompt">"fala me da revolução francesa"</div>
+        <div class="compare-why">Vago, sem contexto, sem objetivo. Podes receber um texto genérico de enciclopédia.</div>
+      </div>
+      <div class="compare-box good">
+        <div class="compare-label">✅ Prompt Forte</div>
+        <div class="compare-prompt">"Explica as causas da Revolução Francesa de forma simples, como se eu tivesse 14 anos e estivesse a estudar para um teste. Usa 3 pontos principais e um exemplo concreto para cada um."</div>
+        <div class="compare-why">Tem contexto, público-alvo, formato e objetivo claros.</div>
+      </div>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-box bad">
+        <div class="compare-label">❌ Prompt Fraco</div>
+        <div class="compare-prompt">"ajuda com matematica"</div>
+        <div class="compare-why">A IA não sabe que disciplina, que tópico, nem qual a tua dificuldade.</div>
+      </div>
+      <div class="compare-box good">
+        <div class="compare-label">✅ Prompt Forte</div>
+        <div class="compare-prompt">"Tenho dificuldade em perceber o teorema de Pitágoras. Podes explicar o conceito passo a passo e depois dar-me 2 exercícios de dificuldade crescente para praticar? Sou do 8.º ano."</div>
+        <div class="compare-why">Diz o tema, o problema, o que quer e o nível escolar.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>A fórmula CREIAS</h3>
+    <div class="info-card tip">
+      <h4>Usa este guia para construir prompts poderosos</h4>
+      <ul>
+        <li><strong>C — Contexto:</strong> Quem és? Em que disciplina/nível estás?</li>
+        <li><strong>R — Papel:</strong> Pede à IA para agir como tutor, professor, etc.</li>
+        <li><strong>E — Exemplos:</strong> Dá um exemplo do que queres (ou não queres).</li>
+        <li><strong>I — Instrução:</strong> O que queres exatamente? Explicar, resumir, criar exercícios?</li>
+        <li><strong>A — Audiência:</strong> Para quem é? Que nível de simplicidade?</li>
+        <li><strong>S — Saída:</strong> Que formato? Listas, passos, tabela, parágrafos?</li>
+      </ul>
+      <p style="margin-top:0.6rem">Não tens de usar todos — usa os que fazem sentido para a tua pergunta.</p>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>🛠️ Construtor de Prompts Interativo</h3>
+    <div class="prompt-builder">
+      <h4>Constrói o teu próprio prompt</h4>
+      <div class="builder-fields">
+        <div class="field-row">
+          <label>Disciplina</label>
+          <select id="pb-subject">
+            <option value="">-- escolhe --</option>
+            <option value="Matemática">Matemática</option>
+            <option value="Português">Português</option>
+            <option value="História">História</option>
+            <option value="Ciências Naturais">Ciências Naturais</option>
+            <option value="Físico-Química">Físico-Química</option>
+            <option value="Inglês">Inglês</option>
+            <option value="Geografia">Geografia</option>
+            <option value="Filosofia">Filosofia</option>
+            <option value="Biologia">Biologia</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <label>O que precisas?</label>
+          <select id="pb-need">
+            <option value="">-- escolhe --</option>
+            <option value="explicar o conceito de">Explicar um conceito</option>
+            <option value="criar exercícios de prática sobre">Criar exercícios de prática</option>
+            <option value="fazer um resumo do tema">Resumir um tema</option>
+            <option value="corrigir e melhorar o meu texto sobre">Corrigir um texto meu</option>
+            <option value="dar exemplos concretos de">Dar exemplos concretos</option>
+            <option value="fazer uma comparação entre">Comparar dois conceitos</option>
+            <option value="criar um plano de estudo para">Criar plano de estudo</option>
+            <option value="ajudar-me a perceber o erro no seguinte exercício sobre">Perceber um erro meu</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <label>Tópico específico</label>
+          <input type="text" id="pb-topic" placeholder="ex: frações, Segunda Guerra Mundial, fotossíntese...">
+        </div>
+        <div class="field-row">
+          <label>Ano escolar</label>
+          <select id="pb-year">
+            <option value="">-- escolhe --</option>
+            <option value="5.º ano">5.º ano</option>
+            <option value="6.º ano">6.º ano</option>
+            <option value="7.º ano">7.º ano</option>
+            <option value="8.º ano">8.º ano</option>
+            <option value="9.º ano">9.º ano</option>
+            <option value="10.º ano">10.º ano</option>
+            <option value="11.º ano">11.º ano</option>
+            <option value="12.º ano">12.º ano</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <label>Formato da resposta (opcional)</label>
+          <select id="pb-format">
+            <option value="">-- nenhum --</option>
+            <option value="em forma de lista com pontos">Lista de pontos</option>
+            <option value="em passos numerados">Passos numerados</option>
+            <option value="numa tabela comparativa">Tabela</option>
+            <option value="num texto curto de 1 parágrafo">Texto curto</option>
+            <option value="com exemplos do dia a dia">Com exemplos do dia a dia</option>
+          </select>
+        </div>
+      </div>
+      <button class="build-btn" onclick="buildPrompt()">⚡ Gerar Prompt</button>
+      <div class="prompt-result" id="promptResult">
+        <label>O teu prompt:</label>
+        <p id="promptText"></p>
+        <button class="copy-btn" onclick="copyPrompt()">📋 Copiar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>Técnicas avançadas</h3>
+    <div class="accordion">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span>💬 Pede à IA para fazer perguntas primeiro</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">Podes escrever: <em>"Antes de responderes, faz-me 3 perguntas para perceber melhor o que preciso."</em> Isto garante que a IA entende bem o teu contexto antes de responder.</div>
+    </div>
+    <div class="accordion">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span>🔄 Itera a resposta</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">Se a resposta não foi boa, não desistas — afina o prompt. Podes escrever: <em>"Não percebi a parte sobre X. Podes explicar de outra forma, com um exemplo diferente?"</em> A IA recorda o que foi dito antes.</div>
+    </div>
+    <div class="accordion">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span>🎭 Dá um papel à IA</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">Podes pedir: <em>"Age como um professor de Matemática paciente e explica-me como se fosse a primeira vez que ouvia este conceito."</em> Isto muda o tom e o estilo da resposta.</div>
+    </div>
+    <div class="accordion">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span>📏 Controla o tamanho da resposta</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">Adiciona frases como <em>"em não mais de 5 frases"</em>, <em>"numa única frase simples"</em>, ou <em>"num texto de 200 palavras"</em>. A IA respeitará o limite.</div>
+    </div>
+    <div class="accordion">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span>🔍 Pede fontes ou referências</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">Escreve <em>"indica-me onde posso verificar esta informação"</em> ou <em>"quais são as fontes principais sobre este tema?"</em>. Atenção: a IA pode inventar fontes — verifica sempre!</div>
+    </div>
+  </div>
+
+  <div class="mod-nav">
+    <button class="mod-nav-btn" onclick="showModule('m1')">← Módulo Anterior</button>
+    <button class="mod-nav-btn primary-nav" onclick="showModule('m3')">Próximo Módulo →</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== MÓDULO 3: IA como Tutor ===== -->
+<div class="view" id="view-m3">
+<div class="app">
+  <div class="module-header">
+    <span class="mod-icon">🎓</span>
+    <h2>IA como o Teu Tutor</h2>
+    <p>A maior diferença entre usar bem e usar mal a IA está aqui: usá-la para <strong>compreender</strong>, não para copiar.</p>
+    <span class="time-badge">⏱ ~7 minutos</span>
+  </div>
+
+  <div class="content-block">
+    <h3>O princípio fundamental</h3>
+    <div class="info-card highlight">
+      <h4>🧠 O teu cérebro precisa de trabalhar</h4>
+      <p>Quando alguém te dá a resposta pronta, o teu cérebro não aprende — apenas recebe. Para aprender de verdade, tens de <strong>pensar, errar, perceber o porquê do erro e tentar de novo</strong>. A IA pode ser o teu parceiro nesse processo.</p>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>Técnicas para aprender com a IA</h3>
+
+    <div class="info-card">
+      <h4>1. Pede explicação, não resposta</h4>
+      <p>Em vez de: <em>"Qual é o resultado de 24 ÷ 6?"</em><br>
+      Pergunta: <em>"Explica-me como se resolve uma divisão de dois números. Depois dá-me um exercício para eu tentar sozinho."</em></p>
+    </div>
+
+    <div class="info-card">
+      <h4>2. Técnica "Explica-me como se tivesse X anos"</h4>
+      <p>Esta técnica força a IA a simplificar ao máximo. Depois que percebes a versão simples, pedes uma mais detalhada. Exemplo: <em>"Explica-me a mitose como se eu tivesse 10 anos. Depois explica para o 9.º ano."</em></p>
+    </div>
+
+    <div class="info-card">
+      <h4>3. Aprendizagem Socrática</h4>
+      <p>Pede à IA que te faça perguntas em vez de te dar respostas. Exemplo: <em>"Não me digas a resposta. Faz-me perguntas que me ajudem a descobrir porque é que a água ferve a 100°C."</em></p>
+    </div>
+
+    <div class="info-card">
+      <h4>4. Testa a tua compreensão</h4>
+      <p>Depois de estudares um tema, pede: <em>"Faz-me 5 perguntas de escolha múltipla sobre a Revolução Industrial para eu testar se percebi bem. Depois corrige as minhas respostas e explica onde errei."</em></p>
+    </div>
+
+    <div class="info-card">
+      <h4>5. "Onde estou a errar?"</h4>
+      <p>Mostra o teu trabalho à IA e pede análise: <em>"Aqui está a minha resolução deste exercício de equações. Não me digas a resposta certa — diz-me apenas se há um erro e em que passo estou a errar."</em></p>
+    </div>
+
+    <div class="info-card">
+      <h4>6. Analogias do dia a dia</h4>
+      <p>Se um conceito é muito abstrato: <em>"Explica-me o que é a corrente elétrica usando uma analogia com água a correr numa canalização."</em></p>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>Método Feynman com IA</h3>
+    <div class="step-list">
+      <li><div class="step-content"><strong>Estuda o conceito</strong><span>Lê o manual, os apontamentos ou pede à IA uma explicação inicial.</span></div></li>
+      <li><div class="step-content"><strong>Explica com as tuas palavras</strong><span>Escreve para a IA: "Vou explicar-te o que aprendi sobre X. Diz-me o que está correto e o que está errado ou incompleto."</span></div></li>
+      <li><div class="step-content"><strong>Identifica o que não sabes</strong><span>Onde hesitaste? Onde foste vago? Estuda só essa parte.</span></div></li>
+      <li><div class="step-content"><strong>Simplifica ainda mais</strong><span>Pede à IA: "Como explicaria isto a um aluno mais novo?" Se consegues simplificar, percebeste mesmo.</span></div></li>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>Criar um plano de estudo</h3>
+    <div class="info-card tip">
+      <h4>Prompt modelo para plano de estudo</h4>
+      <p>Copia e adapta este prompt:<br><br>
+      <em>"Tenho um teste de [disciplina] em [data]. Os tópicos são: [lista]. Tenho [X horas] disponíveis por dia. Cria-me um plano de estudo detalhado, com tempos para cada tópico, pausas e sugestões de como rever cada um. Sou [nível escolar]."</em></p>
+    </div>
+  </div>
+
+  <div class="mod-nav">
+    <button class="mod-nav-btn" onclick="showModule('m2')">← Módulo Anterior</button>
+    <button class="mod-nav-btn primary-nav" onclick="showModule('m4')">Próximo Módulo →</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== MÓDULO 4: Verifica Sempre ===== -->
+<div class="view" id="view-m4">
+<div class="app">
+  <div class="module-header">
+    <span class="mod-icon">🔍</span>
+    <h2>Verifica Sempre!</h2>
+    <p>A IA é confiante mesmo quando está errada. Aprender a verificar informação é uma das competências mais importantes do século XXI.</p>
+    <span class="time-badge">⏱ ~6 minutos</span>
+  </div>
+
+  <div class="content-block">
+    <h3>O problema das "alucinações"</h3>
+    <div class="info-card warning">
+      <h4>O que são alucinações da IA?</h4>
+      <p>As ferramentas de IA podem <strong>inventar factos</strong> com total confiança. Podem citar livros que não existem, atribuir citações falsas a pessoas reais, dar datas erradas ou inventar estatísticas. Este fenómeno chama-se "alucinação" e acontece porque a IA gera o texto mais provável — não o mais verdadeiro.</p>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-box bad">
+        <div class="compare-label">❌ Nunca confies cegamente</div>
+        <div class="compare-prompt">"O Camões escreveu Os Lusíadas em 1572 durante a sua estadia em Macau onde viveu 17 anos." ← A IA pode dizer algo assim e estar errada nos detalhes.</div>
+        <div class="compare-why">Mesmo factos com aparência correta podem ter erros nos detalhes.</div>
+      </div>
+      <div class="compare-box good">
+        <div class="compare-label">✅ Verifica sempre dados específicos</div>
+        <div class="compare-prompt">Datas, nomes, estatísticas, citações, referências bibliográficas — qualquer dado concreto deve ser confirmado numa fonte fiável.</div>
+        <div class="compare-why">Usa a IA para entender e explorar, não como fonte de factos definitivos.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>Checklist de Verificação</h3>
+    <p style="margin-bottom:1rem">Antes de usar informação da IA num trabalho, passa por esta lista:</p>
+    <ul class="checklist" id="verify-checklist">
+      <li onclick="toggleCheck(this)"><div class="check-box"></div><div>O facto apresentado é específico (data, número, nome)? Se sim, confirma numa fonte primária.</div></li>
+      <li onclick="toggleCheck(this)"><div class="check-box"></div><div>Há citações ou referências bibliográficas? Pesquisa se essas obras existem realmente.</div></li>
+      <li onclick="toggleCheck(this)"><div class="check-box"></div><div>A informação é recente e pode ter mudado? Verifica numa fonte atual.</div></li>
+      <li onclick="toggleCheck(this)"><div class="check-box"></div><div>Faz sentido com o que já sabes sobre o tema? Se parece estranho, questiona.</div></li>
+      <li onclick="toggleCheck(this)"><div class="check-box"></div><div>Já pesquisaste o mesmo em pelo menos uma fonte independente (manual, enciclopédia, site oficial)?</div></li>
+      <li onclick="toggleCheck(this)"><div class="check-box"></div><div>Se é para um trabalho avaliado, vais indicar que usaste IA e verificaste a informação?</div></li>
+    </ul>
+  </div>
+
+  <div class="content-block">
+    <h3>Fontes fiáveis para verificar</h3>
+    <div class="info-card">
+      <h4>Para trabalhos escolares em Portugal</h4>
+      <ul>
+        <li><strong>Infopédia (Porto Editora):</strong> enciclopédia e dicionário português</li>
+        <li><strong>Portal da História:</strong> história de Portugal e do mundo</li>
+        <li><strong>Biblioteca Nacional Digital:</strong> documentos históricos portugueses</li>
+        <li><strong>Encyclopædia Britannica:</strong> enciclopédia científica em inglês</li>
+        <li><strong>Khan Academy (em português):</strong> matemática, ciências, história</li>
+        <li><strong>Manual escolar:</strong> sempre uma fonte de referência válida</li>
+        <li><strong>Sites .gov.pt e .edu.pt:</strong> fontes governamentais e académicas</li>
+      </ul>
+    </div>
+    <div class="info-card tip">
+      <h4>Truque: pede à IA para te dizer onde verificar</h4>
+      <p>Escreve: <em>"Onde posso verificar esta informação? Indica-me fontes ou tipos de fontes fiáveis sobre este tema."</em> A IA pode sugerir bons pontos de partida — mas verifica as sugestões também!</p>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>Exercício de pensamento crítico</h3>
+    <div class="info-card">
+      <h4>Testa a IA de forma intencional</h4>
+      <p>Uma excelente forma de aprender a desconfiar é fazer de propósito perguntas sobre as quais já sabes a resposta. Compara o que a IA diz com o que sabes. Isto vai-te ajudar a calibrar o teu nível de confiança nela.</p>
+    </div>
+  </div>
+
+  <div class="mod-nav">
+    <button class="mod-nav-btn" onclick="showModule('m3')">← Módulo Anterior</button>
+    <button class="mod-nav-btn primary-nav" onclick="showModule('m5')">Próximo Módulo →</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== MÓDULO 5: Ética ===== -->
+<div class="view" id="view-m5">
+<div class="app">
+  <div class="module-header">
+    <span class="mod-icon">⚖️</span>
+    <h2>Ética e Honestidade Académica</h2>
+    <p>Onde está a fronteira entre usar a IA como ferramenta de aprendizagem e usar a IA para fazer batota?</p>
+    <span class="time-badge">⏱ ~6 minutos</span>
+  </div>
+
+  <div class="content-block">
+    <h3>A questão essencial</h3>
+    <div class="info-card highlight">
+      <h4>Pergunta-te sempre isto:</h4>
+      <p><em>"Estou a usar a IA para <strong>aprender</strong> ou para <strong>evitar aprender</strong>?"</em><br><br>
+      Usar a IA para perceber um conceito que não entendeste → ✅ Correto<br>
+      Copiar uma resposta da IA e entregar como tua → ❌ Desonesto</p>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>O que é (e não é) honesto</h3>
+    <div class="compare-grid">
+      <div class="compare-box good">
+        <div class="compare-label">✅ Uso ético da IA</div>
+        <ul style="padding-left:1rem; margin-top:0.4rem">
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.4rem">Pedir explicação de um conceito que não percebeste</li>
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.4rem">Pedir exercícios de prática adicionais</li>
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.4rem">Pedir revisão da gramática de um texto que escreveste</li>
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.4rem">Pedir feedback sobre as tuas ideias</li>
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.4rem">Usar para brainstorming e depois desenvolveres tu</li>
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.4rem">Traduzir texto que depois analisas</li>
+        </ul>
+      </div>
+      <div class="compare-box bad">
+        <div class="compare-label">❌ Uso desonesto da IA</div>
+        <ul style="padding-left:1rem; margin-top:0.4rem">
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.4rem">Entregar um trabalho escrito pela IA como sendo teu</li>
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.4rem">Copiar respostas de testes com IA</li>
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.4rem">Pedir à IA que resolva exercícios que te são para fazer</li>
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.4rem">Não indicar o uso de IA quando o professor pede</li>
+          <li style="color:var(--text-muted);font-size:0.82rem;margin-bottom:0.4rem">Usar IA durante uma avaliação quando não é permitido</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>Porquê a honestidade importa (para ti)</h3>
+    <div class="info-card">
+      <h4>O problema do atalho</h4>
+      <p>Se usas a IA para evitar pensar agora, cada vez será mais difícil pensar de forma independente no futuro. Os testes, os exames e a vida profissional vão exigir que <strong>tu</strong> consigas raciocinar. A IA será sempre uma ferramenta — mas precisas de ter o teu próprio cérebro a funcionar.</p>
+    </div>
+    <div class="info-card warning">
+      <h4>Consequências reais</h4>
+      <ul>
+        <li>Muitas escolas têm ferramentas para detetar textos gerados por IA</li>
+        <li>Reprovação numa avaliação ou disciplina</li>
+        <li>Registo académico comprometido</li>
+        <li>A maior perda: não aprenderes o que precisavas de aprender</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>Como citar o uso de IA</h3>
+    <div class="info-card tip">
+      <h4>Quando e como revelar</h4>
+      <p>Cada escola tem as suas regras — segue-as. Como orientação geral, quando usas IA num trabalho, podes indicar da seguinte forma no final do documento:</p>
+      <p style="background:rgba(0,0,0,0.2);padding:0.7rem;border-radius:6px;margin-top:0.6rem;font-style:italic;color:var(--text)">"Este trabalho foi elaborado com o apoio da ferramenta de IA [nome]. Usei-a para [o quê]. Toda a informação foi verificada e o texto final é da minha autoria."</p>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>Reflexão: Seria capaz de explicar isto oralmente?</h3>
+    <div class="info-card success">
+      <h4>O teste da explicação</h4>
+      <p>Antes de entregares qualquer trabalho onde usaste IA, faz este teste a ti próprio: <strong>consegues explicar o conteúdo oralmente, com as tuas próprias palavras, sem olhar para o papel?</strong> Se sim, aprendeste. Se não, a IA fez o trabalho por ti.</p>
+    </div>
+  </div>
+
+  <div class="mod-nav">
+    <button class="mod-nav-btn" onclick="showModule('m4')">← Módulo Anterior</button>
+    <button class="mod-nav-btn primary-nav" onclick="showModule('m6')">Próximo Módulo →</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== MÓDULO 6: Por Disciplina ===== -->
+<div class="view" id="view-m6">
+<div class="app">
+  <div class="module-header">
+    <span class="mod-icon">📚</span>
+    <h2>Exemplos Práticos por Disciplina</h2>
+    <p>Prompts concretos que podes usar (e adaptar) em cada disciplina.</p>
+    <span class="time-badge">⏱ ~7 minutos</span>
+  </div>
+
+  <div class="tabs" id="disciplineTabs">
+    <button class="tab-btn active" onclick="switchTab('mat')">📐 Matemática</button>
+    <button class="tab-btn" onclick="switchTab('por')">📖 Português</button>
+    <button class="tab-btn" onclick="switchTab('cien')">🔬 Ciências</button>
+    <button class="tab-btn" onclick="switchTab('hist')">🏛️ História</button>
+    <button class="tab-btn" onclick="switchTab('ing')">🌍 Inglês</button>
+    <button class="tab-btn" onclick="switchTab('fil')">🤔 Filosofia</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-mat">
+    <div class="info-card tip"><h4>Dica para Matemática</h4><p>Pede sempre o processo passo a passo, não apenas o resultado. E pede exercícios similares para praticares tu mesmo.</p></div>
+    <ul class="example-list">
+      <li>"Explica-me o conceito de fração equivalente com exemplos visuais (como se fossem fatias de pizza). Sou do 5.º ano."</li>
+      <li>"Não me digas a resposta, mas diz-me qual o passo onde estou a errar na resolução desta equação: [cola a tua resolução]"</li>
+      <li>"Cria-me 5 exercícios de dificuldade crescente sobre o teorema de Pitágoras. Começa do mais básico."</li>
+      <li>"Explica-me para que serve o cálculo de percentagens na vida real. Dá 3 exemplos do quotidiano."</li>
+      <li>"Tenho dificuldade com funções. Começa do zero e explica o que é uma função, como se eu nunca tivesse ouvido falar."</li>
+      <li>"Faz-me um mini teste de 4 perguntas sobre trigonometria (10.º ano) e depois corrige as minhas respostas explicando cada erro."</li>
+    </ul>
+  </div>
+  <div class="tab-panel" id="tab-por">
+    <div class="info-card tip"><h4>Dica para Português</h4><p>Usa a IA para rever e melhorar textos teus — nunca para os escrever de raiz. Pede análises literárias como exercício de compreensão, não para copiar.</p></div>
+    <ul class="example-list">
+      <li>"Li o poema X de Fernando Pessoa. Explica-me as principais figuras de estilo presentes e o que significa cada uma."</li>
+      <li>"Aqui está um texto que escrevi [cola o texto]. Identifica 3 pontos a melhorar em termos de coesão e clareza. Não o reescreves — apenas diz o que melhorar."</li>
+      <li>"Explica-me a diferença entre narrador autodiegético, homodiegético e heterodiegético com exemplos de obras que conheço."</li>
+      <li>"Vou escrever um texto de opinião sobre [tema]. Sugere-me 3 argumentos e 3 contraargumentos para eu depois desenvolver a minha posição."</li>
+      <li>"Que aspetos devo analisar quando faço a análise de um poema? Dá-me um guia passo a passo."</li>
+      <li>"Corrigi a ortografia do meu texto mas não tenho a certeza se a pontuação está bem. Verifica a pontuação e explica cada correção: [texto]"</li>
+    </ul>
+  </div>
+  <div class="tab-panel" id="tab-cien">
+    <div class="info-card tip"><h4>Dica para Ciências</h4><p>Pede analogias e modelos simples para conceitos complexos. A IA é muito boa a explicar processos biológicos, químicos e físicos de forma visual e intuitiva.</p></div>
+    <ul class="example-list">
+      <li>"Explica-me a fotossíntese como um processo de fábrica: o que entra, o que sai, onde acontece cada etapa."</li>
+      <li>"Qual a diferença entre mitose e meiose? Faz uma tabela comparativa com as principais diferenças."</li>
+      <li>"Explica-me a lei de Ohm com uma analogia da vida real. Sou do 8.º ano."</li>
+      <li>"Estou a estudar reações químicas. Cria-me 3 exercícios de balanceamento de equações de dificuldade progressiva."</li>
+      <li>"O que é a seleção natural de Darwin? Explica com um exemplo concreto de um animal real."</li>
+      <li>"Tenho dúvidas sobre o sistema periódico. Explica-me como ler um elemento e o que significa cada informação da tabela."</li>
+    </ul>
+  </div>
+  <div class="tab-panel" id="tab-hist">
+    <div class="info-card tip"><h4>Dica para História</h4><p>Usa a IA para perceber contextos e ligações causais. Mas verifica sempre datas e factos específicos num manual ou enciclopédia.</p></div>
+    <ul class="example-list">
+      <li>"Explica-me as causas da Primeira Guerra Mundial de forma simples, organizadas em causas a longo prazo e a curto prazo."</li>
+      <li>"Como é que os Descobrimentos Portugueses mudaram o mundo? Dá-me 3 consequências a nível global."</li>
+      <li>"Cria uma linha do tempo das principais fases do Estado Novo em Portugal. Sou do 9.º ano."</li>
+      <li>"Qual era a vida quotidiana de um camponês na Idade Média em Portugal? Descreve o dia a dia."</li>
+      <li>"Para um teste, como posso comparar a Revolução Americana e a Revolução Francesa? Quais são as semelhanças e diferenças principais?"</li>
+      <li>"Explica-me o Plano Marshall como se eu nunca tivesse ouvido falar da Guerra Fria."</li>
+    </ul>
+  </div>
+  <div class="tab-panel" id="tab-ing">
+    <div class="info-card tip"><h4>Dica para Inglês</h4><p>A IA é um excelente parceiro de conversação e revisão em inglês. Usa-a para praticar — mas escreve os textos tu mesmo.</p></div>
+    <ul class="example-list">
+      <li>"Correct my English text and explain each mistake so I can learn from it: [cola o texto]"</li>
+      <li>"I want to practice writing a formal email in English. Give me a scenario and then check my answer."</li>
+      <li>"Explain the difference between 'since' and 'for' in English with 5 examples of each. I'm a B1 level student."</li>
+      <li>"I need to write an opinion essay about social media. Give me 3 arguments in favor and 3 against. I'll write the essay myself."</li>
+      <li>"What are the most common mistakes Portuguese students make when writing in English? Give me 5 examples with corrections."</li>
+      <li>"Let's practice for my oral exam. Ask me questions about [topic] and correct my answers."</li>
+    </ul>
+  </div>
+  <div class="tab-panel" id="tab-fil">
+    <div class="info-card tip"><h4>Dica para Filosofia</h4><p>A Filosofia exige que tu penses. Usa a IA para explorar argumentos, mas a posição final tem de ser tua — desenvolvida, justificada, com as tuas próprias palavras.</p></div>
+    <ul class="example-list">
+      <li>"Explica-me a Alegoria da Caverna de Platão com uma situação do mundo atual que seja equivalente."</li>
+      <li>"Qual é a diferença entre ética deontológica e ética consequencialista? Dá-me um dilema moral e explica como cada teoria o resolveria."</li>
+      <li>"Estou a escrever um texto sobre o livre-arbítrio. Apresenta-me os principais argumentos a favor e contra, sem me dizer o que pensar."</li>
+      <li>"Faz o papel de um filósofo socrático e questiona o meu argumento: [escreve o teu argumento]"</li>
+      <li>"Explica-me o imperativo categórico de Kant como se eu nunca tivesse estudado filosofia. Depois dá um exemplo contemporâneo."</li>
+      <li>"Identifica as falácias lógicas no seguinte argumento: [cola o texto]. Explica por que é cada uma é uma falácia."</li>
+    </ul>
+  </div>
+
+  <div class="content-block" style="margin-top:2rem">
+    <h3>Prompt universal para qualquer disciplina</h3>
+    <div class="info-card tip">
+      <h4>Adapta este modelo a qualquer situação</h4>
+      <p style="background:rgba(0,0,0,0.2);padding:0.8rem;border-radius:6px;margin-top:0.5rem;font-style:italic;color:var(--text)">"Sou estudante do [ano escolar] e estou a preparar-me para [teste/trabalho/oral] de [disciplina]. O tema é [tópico]. Tenho dificuldade em perceber [parte específica]. Podes explicar de forma clara, com exemplos, e depois dar-me uma forma de testar se percebi?"</em></p>
+    </div>
+  </div>
+
+  <div class="mod-nav">
+    <button class="mod-nav-btn" onclick="showModule('m5')">← Módulo Anterior</button>
+    <button class="mod-nav-btn primary-nav" onclick="showModule('quiz')">Fazer o Quiz →</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div class="view" id="view-quiz">
+<div class="app">
+  <div class="module-header">
+    <span class="mod-icon">🧠</span>
+    <h2>Quiz Final</h2>
+    <p>Testa o que aprendeste! São 10 perguntas. Pensa bem antes de responder.</p>
+    <span class="time-badge">⏱ ~10 minutos</span>
+  </div>
+
+  <div id="quiz-area">
+    <div class="quiz-wrap">
+      <div class="quiz-progress">
+        <div class="q-bar"><div class="q-fill" id="qFill" style="width:10%"></div></div>
+        <span class="q-label" id="qLabel">Pergunta 1 de 10</span>
+      </div>
+      <div class="question-card" id="questionCard">
+        <div class="question-text" id="questionText"></div>
+        <div class="options" id="optionsDiv"></div>
+        <div class="feedback-msg" id="feedbackMsg"></div>
+        <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Próxima →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="result-area" style="display:none">
+    <div class="result-card">
+      <div class="result-emoji" id="resultEmoji"></div>
+      <div class="result-label">Resultado</div>
+      <div class="result-score" id="resultScore"></div>
+      <div class="result-msg" id="resultMsg"></div>
+      <div class="result-badges" id="resultBadges"></div>
+      <button class="retry-btn" onclick="restartQuiz()">↺ Repetir</button>
+      <button class="home-btn" onclick="goHome()">🏠 Início</button>
+    </div>
+  </div>
+
+  <div class="mod-nav" id="quizModNav">
+    <button class="mod-nav-btn" onclick="showModule('m6')">← Módulo Anterior</button>
+    <button class="mod-nav-btn" onclick="goHome()">🏠 Início</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <p>IA para Aprender — Guia para Estudantes do Básico e Secundário &nbsp;·&nbsp; Use com curiosidade e honestidade.</p>
+</footer>
+
+<script>
+// ===== STATE =====
+const moduleOrder = ['m1','m2','m3','m4','m5','m6','quiz'];
+const visitedModules = new Set();
+let currentView = 'home';
+
+// ===== NAVIGATION =====
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  currentView = id;
+  const backBtn = document.getElementById('backBtn');
+  if (id === 'home') {
+    backBtn.classList.remove('visible');
+    document.getElementById('progressBar').style.width = '0%';
+  } else {
+    backBtn.classList.add('visible');
+    updateProgress(id);
+  }
+  window.scrollTo(0, 0);
+}
+
+function goHome() { showView('home'); }
+
+function showModule(id) {
+  visitedModules.add(id);
+  if (id === 'quiz') {
+    initQuiz();
+    document.getElementById('quiz-area').style.display = 'block';
+    document.getElementById('result-area').style.display = 'none';
+    document.getElementById('quizModNav').style.display = 'flex';
+  }
+  showView(id);
+}
+
+function updateProgress(id) {
+  const idx = moduleOrder.indexOf(id);
+  if (idx >= 0) {
+    const pct = Math.round(((idx + 1) / moduleOrder.length) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+}
+
+// ===== ACCORDIONS =====
+function toggleAcc(header) {
+  const body = header.nextElementSibling;
+  const isOpen = header.classList.contains('open');
+  header.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+
+// ===== CHECKLISTS =====
+function toggleCheck(item) {
+  item.classList.toggle('checked');
+}
+
+// ===== TABS =====
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===== PROMPT BUILDER =====
+function buildPrompt() {
+  const subject = document.getElementById('pb-subject').value;
+  const need = document.getElementById('pb-need').value;
+  const topic = document.getElementById('pb-topic').value.trim();
+  const year = document.getElementById('pb-year').value;
+  const format = document.getElementById('pb-format').value;
+
+  if (!subject || !need || !topic) {
+    alert('Por favor preenche pelo menos a disciplina, o que precisas e o tópico.');
+    return;
+  }
+
+  let prompt = '';
+  if (year) prompt += `Sou estudante do ${year}. `;
+  prompt += `Age como um professor experiente de ${subject}. `;
+  prompt += `Preciso que me ajudes a ${need} ${topic}`;
+  if (year) prompt += `, adequado ao nível do ${year}`;
+  prompt += '.';
+  if (format) prompt += ` Por favor apresenta a resposta ${format}.`;
+  prompt += ' Usa exemplos concretos e uma linguagem clara.';
+
+  const el = document.getElementById('promptText');
+  el.textContent = prompt;
+  const result = document.getElementById('promptResult');
+  result.classList.add('visible');
+}
+
+function copyPrompt() {
+  const text = document.getElementById('promptText').textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = event.target;
+      btn.textContent = '✓ Copiado!';
+      setTimeout(() => { btn.textContent = '📋 Copiar'; }, 2000);
+    });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn = event.target;
+    btn.textContent = '✓ Copiado!';
+    setTimeout(() => { btn.textContent = '📋 Copiar'; }, 2000);
+  }
+}
+
+// ===== QUIZ =====
+const questions = [
+  {
+    q: "O que é uma 'alucinação' de uma IA?",
+    opts: [
+      "A IA a ficar lenta por excesso de uso",
+      "A IA a inventar factos com aparência de serem verdadeiros",
+      "Um erro de ligação à internet",
+      "A IA a recusar responder a uma pergunta"
+    ],
+    correct: 1,
+    feedback: "As 'alucinações' são quando a IA gera informação falsa com total confiança. Por isso é essencial verificar sempre dados específicos em fontes fiáveis!"
+  },
+  {
+    q: "Qual destes é um exemplo de uso ÉTICO da IA nos estudos?",
+    opts: [
+      "Pedir à IA que escreva o teu trabalho de casa de Português",
+      "Copiar as respostas da IA para um teste",
+      "Pedir à IA que te faça perguntas de revisão antes de um teste",
+      "Entregar um texto da IA como sendo teu"
+    ],
+    correct: 2,
+    feedback: "Pedir perguntas de revisão é um excelente uso da IA — estás a usar a ferramenta para aprender, não para evitar aprender!"
+  },
+  {
+    q: "Qual a principal diferença entre um prompt fraco e um prompt forte?",
+    opts: [
+      "O tamanho — prompts mais longos são sempre melhores",
+      "A língua usada — prompts em inglês funcionam melhor",
+      "O contexto, o objetivo e o formato desejado",
+      "A velocidade com que é escrito"
+    ],
+    correct: 2,
+    feedback: "Prompts eficazes incluem contexto (quem és, para quê), objetivo claro (o que precisas) e formato desejado. O tamanho não é o fator mais importante!"
+  },
+  {
+    q: "Estás com dificuldade em perceber a mitose. Qual destes prompts é MAIS útil?",
+    opts: [
+      '"mitose"',
+      '"o que é a mitose"',
+      '"Explica-me a mitose passo a passo, usando uma analogia com algo do dia a dia, para um aluno do 9.º ano"',
+      '"resume a mitose em 3 palavras"'
+    ],
+    correct: 2,
+    feedback: "O terceiro prompt é o mais completo: pede explicação passo a passo, pede uma analogia (para facilitar a compreensão) e diz o nível escolar para adaptar a linguagem."
+  },
+  {
+    q: "A IA diz-te que Luís de Camões nasceu em 1524. O que deves fazer?",
+    opts: [
+      "Aceitar e usar essa data no trabalho — a IA sabe muito",
+      "Verificar a data numa fonte fiável antes de a usar",
+      "Perguntar à IA duas vezes para confirmar",
+      "Ignorar a informação porque a IA erra sempre"
+    ],
+    correct: 1,
+    feedback: "Correto! Datas específicas são exatamente o tipo de dado que as IAs podem errar. Verifica sempre em fontes fiáveis como o manual, a Infopédia ou a Biblioteca Nacional."
+  },
+  {
+    q: "O que é o Método Feynman e como se aplica com a IA?",
+    opts: [
+      "Um método de pesquisa rápida usando a IA como motor de busca",
+      "Aprender explicando — pedes à IA para avaliar a tua explicação do tema",
+      "Copiar resumos da IA e memorizá-los",
+      "Um método de criação de fichas usando IA"
+    ],
+    correct: 1,
+    feedback: "O Método Feynman baseia-se no princípio de que só percebes mesmo quando consegues explicar. Usar a IA para avaliar a tua explicação é uma aplicação brilhante deste método!"
+  },
+  {
+    q: "Qual destas frases descreve melhor a forma correta de usar a IA?",
+    opts: [
+      "A IA substitui o estudo — basta perguntar e copiar",
+      "A IA é uma fonte definitiva de factos científicos",
+      "A IA é uma ferramenta de suporte que amplifica a tua própria aprendizagem",
+      "A IA só serve para tarefas muito simples"
+    ],
+    correct: 2,
+    feedback: "A IA é uma ferramenta — amplifica o que tu já estás a fazer. Se estiveres a tentar aprender, ela acelera a aprendizagem. Se tentares evitar aprender, vai trabalhar contra ti a longo prazo."
+  },
+  {
+    q: "Qual destas frases pode dizer-te se realmente aprendeste o que a IA te explicou?",
+    opts: [
+      "Se a explicação da IA ficou guardada no histórico",
+      "Se consegues explicar o tema oralmente com as tuas próprias palavras",
+      "Se o teu trabalho foi bem avaliado",
+      "Se a IA disse que ficou satisfeita com a tua pergunta"
+    ],
+    correct: 1,
+    feedback: "O 'teste da explicação' é simples e poderoso: se consegues explicar sem ler, percebeste. Se não consegues, a aprendizagem ainda não aconteceu — volta a estudar!"
+  },
+  {
+    q: "Qual destas é a melhor técnica quando a IA dá uma resposta que não percebeste?",
+    opts: [
+      "Aceitar a resposta e seguir em frente",
+      "Desistir — se não percebeste, o tema é difícil demais",
+      "Pedir à IA que explique de outra forma, com um exemplo diferente ou mais simples",
+      "Apagar a conversa e começar de novo"
+    ],
+    correct: 2,
+    feedback: "Iterar é fundamental! A IA pode explicar o mesmo conceito de dezenas de formas diferentes. Se não percebeste, pede uma analogia, uma versão mais simples ou um exemplo concreto."
+  },
+  {
+    q: "Quando usas IA num trabalho escolar, o que é mais importante?",
+    opts: [
+      "Usar o maior número possível de ferramentas de IA",
+      "Garantir que ninguém sabe que usaste IA",
+      "Usar a IA de forma honesta, verificar a informação e garantir que o pensamento final é teu",
+      "Copiar o texto da IA e reescrever ligeiramente para não ser detetado"
+    ],
+    correct: 2,
+    feedback: "A honestidade académica e a verificação crítica são essenciais. Usar a IA bem significa: contribuição tua + verificação + transparência quando necessário."
+  }
+];
+
+let currentQ = 0;
+let score = 0;
+let answered = false;
+
+function initQuiz() {
+  currentQ = 0;
+  score = 0;
+  answered = false;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = questions[currentQ];
+  document.getElementById('questionText').textContent = q.q;
+  const opts = document.getElementById('optionsDiv');
+  opts.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span>${opt}`;
+    btn.onclick = () => selectAnswer(i, btn);
+    opts.appendChild(btn);
+  });
+  document.getElementById('feedbackMsg').className = 'feedback-msg';
+  document.getElementById('feedbackMsg').textContent = '';
+  document.getElementById('nextBtn').className = 'next-btn';
+  document.getElementById('qFill').style.width = ((currentQ + 1) / questions.length * 100) + '%';
+  document.getElementById('qLabel').textContent = `Pergunta ${currentQ + 1} de ${questions.length}`;
+}
+
+function selectAnswer(idx, btn) {
+  if (answered) return;
+  answered = true;
+  const q = questions[currentQ];
+  const allBtns = document.querySelectorAll('.option-btn');
+  allBtns.forEach(b => b.disabled = true);
+
+  if (idx === q.correct) {
+    btn.classList.add('correct');
+    score++;
+    showFeedback(true, '✅ Correto! ' + q.feedback);
+  } else {
+    btn.classList.add('wrong');
+    allBtns[q.correct].classList.add('correct');
+    showFeedback(false, '❌ Não era essa. ' + q.feedback);
+  }
+  document.getElementById('nextBtn').className = 'next-btn show';
+  if (currentQ === questions.length - 1) {
+    document.getElementById('nextBtn').textContent = 'Ver Resultado 🏆';
+  } else {
+    document.getElementById('nextBtn').innerHTML = 'Próxima →';
+  }
+}
+
+function showFeedback(ok, msg) {
+  const el = document.getElementById('feedbackMsg');
+  el.textContent = msg;
+  el.className = 'feedback-msg show ' + (ok ? 'ok' : 'ko');
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= questions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz-area').style.display = 'none';
+  document.getElementById('quizModNav').style.display = 'none';
+  const pct = Math.round((score / questions.length) * 100);
+  let emoji, msg, badges;
+  if (pct >= 90) {
+    emoji = '🏆'; msg = 'Excelente! Dominas muito bem os princípios do uso ético e eficaz da IA. Estás pronto para a usar a teu favor!';
+    badges = ['🌟 Mestre da IA', '🎓 Pensamento Crítico', '⚖️ Ética Digital'];
+  } else if (pct >= 70) {
+    emoji = '🎉'; msg = 'Muito bem! Tens uma boa base. Revê os módulos onde hesitaste e estarás em ótima forma.';
+    badges = ['✅ Utilizador Responsável', '💡 Aprendiz Curioso'];
+  } else if (pct >= 50) {
+    emoji = '📚'; msg = 'Boa tentativa! Ainda há conceitos a consolidar. Volta a ler os módulos e tenta o quiz novamente.';
+    badges = ['🔄 Em Progresso'];
+  } else {
+    emoji = '💪'; msg = 'Não desanimes! Os módulos estão aqui para ti. Recomeça do início e vais ver a diferença.';
+    badges = ['🚀 A Começar a Jornada'];
+  }
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultScore').textContent = score + '/' + questions.length;
+  document.getElementById('resultMsg').textContent = msg;
+  const badgeDiv = document.getElementById('resultBadges');
+  badgeDiv.innerHTML = badges.map(b => `<span class="badge-item">${b}</span>`).join('');
+  document.getElementById('result-area').style.display = 'block';
+}
+
+function restartQuiz() {
+  document.getElementById('result-area').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  document.getElementById('quizModNav').style.display = 'flex';
+  initQuiz();
+}
+
+// Init
+showView('home');
+</script>
+</body>
+</html>
