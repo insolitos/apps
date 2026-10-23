@@ -1,0 +1,2214 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinançaJovem — Literacia financeira para jovens</title>
+    <style>
+        :root {
+            --cor-primaria: #2e86de;
+            --cor-secundaria: #f5f6fa;
+            --cor-acento: #ff9f43;
+            --cor-sucesso: #4cd137;
+            --cor-erro: #e84118;
+            --cor-texto: #2f3640;
+            --cor-texto-claro: #f5f6fa;
+            --sombra-suave: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --borda-arredondada: 12px;
+            --espacamento: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: var(--cor-texto);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--cor-primaria);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--sombra-suave);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr 3.5fr;
+            }
+        }
+
+        .menu {
+            background-color: white;
+            border-radius: var(--borda-arredondada);
+            padding: 1.25rem;
+            box-shadow: var(--sombra-suave);
+            font-size: 0.95rem;
+        }
+
+        .menu h2 {
+            margin-bottom: 1rem;
+            color: var(--cor-primaria);
+            border-bottom: 2px solid var(--cor-primaria);
+            padding-bottom: 0.5rem;
+        }
+
+        .menu-item {
+            display: block;
+            padding: 0.8rem 1rem;
+            margin: 0.5rem 0;
+            background-color: var(--cor-secundaria);
+            color: var(--cor-texto);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: var(--cor-primaria);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .submenu {
+            padding-left: 1.5rem;
+            display: none;
+        }
+
+        .submenu.active {
+            display: block;
+        }
+
+        .content {
+            background-color: white;
+            border-radius: var(--borda-arredondada);
+            padding: 1.5rem;
+            box-shadow: var(--sombra-suave);
+            min-height: 500px;
+            overflow-x: hidden;
+            word-wrap: break-word;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        #bemvindo-section { display: block; }
+
+        .content-section.active {
+            display: block;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--cor-primaria);
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--cor-primaria);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn:hover {
+            background-color: #1c6bc8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secundario {
+            background-color: var(--cor-secundaria);
+            color: var(--cor-texto);
+        }
+
+        .btn-acento {
+            background-color: var(--cor-acento);
+        }
+
+        .card {
+            background-color: var(--cor-secundaria);
+            border-radius: var(--borda-arredondada);
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            box-shadow: var(--sombra-suave);
+            transition: transform 0.3s ease;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            hyphens: auto;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--cor-primaria);
+            margin-bottom: 0.8rem;
+        }
+
+        .carteira {
+            background-color: var(--cor-acento);
+            color: white;
+            padding: 1rem;
+            border-radius: var(--borda-arredondada);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .carteira h3 {
+            color: white;
+        }
+
+        .saldo {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .quiz-container {
+            margin-top: 2rem;
+        }
+
+        .quiz-question {
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
+        }
+
+        @media (min-width: 768px) {
+            .quiz-options {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .quiz-option {
+            background-color: var(--cor-secundaria);
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background-color: #e3e3e3;
+        }
+
+        .quiz-option.correct {
+            background-color: var(--cor-sucesso);
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            background-color: var(--cor-erro);
+            color: white;
+        }
+
+        .simulador {
+            margin-top: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .resultado {
+            margin-top: 1.5rem;
+            background-color: var(--cor-secundaria);
+            padding: 1.5rem;
+            border-radius: var(--borda-arredondada);
+            display: none;
+        }
+
+        .resultado.active {
+            display: block;
+        }
+
+        .tabela {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .tabela th, .tabela td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tabela th {
+            background-color: var(--cor-primaria);
+            color: white;
+        }
+
+        .tabela tr:nth-child(even) {
+            background-color: var(--cor-secundaria);
+        }
+
+        .progresso-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .progresso-barra {
+            height: 20px;
+            background-color: var(--cor-primaria);
+            border-radius: 8px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .medalhas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .medalha {
+            width: 80px;
+            height: 80px;
+            background-color: #ddd;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: var(--cor-texto);
+            position: relative;
+        }
+
+        .medalha.conquistada {
+            background-color: var(--cor-acento);
+            color: white;
+        }
+
+        .medalha-tooltip {
+            position: absolute;
+            background-color: var(--cor-texto);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            width: 150px;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        .medalha:hover .medalha-tooltip {
+            opacity: 1;
+        }
+
+        /* Animações */
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animacao {
+            animation: aparecer 0.5s ease forwards;
+        }
+
+        /* Calculadora */
+        .calculadora {
+            background-color: var(--cor-secundaria);
+            border-radius: var(--borda-arredondada);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .calculadora-campos {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .calculadora-campos {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .grafico-container {
+            width: 100%;
+            height: 300px;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+        
+        .barra {
+            position: absolute;
+            bottom: 0;
+            width: 40px;
+            background-color: var(--cor-primaria);
+            transition: height 1s ease;
+        }
+        
+        .barra-label {
+            position: absolute;
+            bottom: -25px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        
+        .barra-valor {
+            position: absolute;
+            top: -25px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .cronograma {
+            display: flex;
+            overflow-x: auto;
+            margin-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .cronograma-etapa {
+            min-width: 130px;
+            padding: 0.8rem;
+            background-color: var(--cor-secundaria);
+            margin-right: 1rem;
+            border-radius: 8px;
+            position: relative;
+            font-size: 0.95rem;
+        }
+
+        .cronograma-etapa::after {
+            content: "→";
+            position: absolute;
+            right: -14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--cor-primaria);
+        }
+
+        .cronograma-etapa:last-child::after {
+            display: none;
+        }
+
+        /* Perfil de investidor */
+        .perfil-resultado {
+            padding: 1.5rem;
+            background-color: var(--cor-secundaria);
+            border-radius: var(--borda-arredondada);
+            margin-top: 1.5rem;
+            text-align: center;
+            display: none;
+        }
+
+        .perfil-resultado.active {
+            display: block;
+        }
+        
+        .perfil-titulo {
+            font-size: 1.5rem;
+            color: var(--cor-primaria);
+            margin-bottom: 1rem;
+        }
+        
+        .perfil-descricao {
+            margin-bottom: 1rem;
+        }
+        
+        .dicas-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
+            margin-top: 1.25rem;
+        }
+        
+        @media (min-width: 768px) {
+            .dicas-container {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .dicas-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .dica {
+            background-color: white;
+            padding: 0.9rem;
+            border-radius: 8px;
+            box-shadow: var(--sombra-suave);
+            font-size: 0.95rem;
+        }
+        
+        .dica-titulo {
+            color: var(--cor-primaria);
+            margin-bottom: 0.5rem;
+        }
+
+        :root {
+            --cor-primaria: #155b93; --cor-secundaria: #f2f6fa; --cor-acento: #8f4200;
+            --cor-sucesso: #176b45; --cor-erro: #a52a20; --cor-texto: #172b3a;
+            --sombra-suave: 0 8px 24px rgba(20, 48, 69, .09); --borda-arredondada: 16px;
+        }
+        html { scroll-behavior: smooth; }
+        body { background: #edf3f8; }
+        .skip-link { position: absolute; left: 1rem; top: -5rem; z-index: 10; padding: .75rem 1rem; background: #fff; color: #123; border-radius: 8px; }
+        .skip-link:focus { top: 1rem; }
+        header { background: linear-gradient(120deg, #123a5a, #176ca2); text-align: left; padding: 1.8rem max(1.25rem, calc((100vw - 1360px)/2)); }
+        header h1 { color: white; font-size: clamp(2rem, 4vw, 3.1rem); letter-spacing: -.04em; margin-bottom: .15rem; }
+        header p { color: #e6f3fb; margin: 0; font-size: 1.05rem; }
+        .container { max-width: 1400px; padding: 1.5rem; }
+        .dashboard { grid-template-columns: minmax(235px, 275px) minmax(0, 1fr); align-items: start; gap: 1.4rem; }
+        .menu { position: sticky; top: 1rem; max-height: calc(100vh - 2rem); overflow-y: auto; border: 1px solid #dbe5ec; }
+        .menu h2 { font-size: 1rem; }
+        .menu-item { width: 100%; border: 0; text-align: left; font: inherit; line-height: 1.35; }
+        .menu-item:hover, .menu-item.active { transform: none; }
+        .menu a[aria-current="page"] { background: #155b93; color: white; font-weight: 700; }
+        .menu [data-submenu][aria-expanded="true"] { background: #dcecf8; color: #123a5a; }
+        .submenu { padding-left: .75rem; }
+        .submenu.active { display: block; }
+        .content { min-width: 0; border: 1px solid #dbe5ec; padding: clamp(1rem, 3vw, 2.25rem); }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        #bemvindo-section { display: block; }
+        [hidden] { display: none !important; }
+        h1, h2, h3, h4 { color: #174e77; line-height: 1.25; }
+        h2 { font-size: clamp(1.65rem, 3vw, 2.2rem); }
+        h3 { margin-top: 1.7rem; }
+        p, li { max-width: 78ch; }
+        ul, ol { padding-left: 1.4rem; margin: .25rem 0 1rem; }
+        .btn { background: #155b93; color: #fff; border-radius: 10px; padding: .7rem 1rem; }
+        .btn:hover { background: #10436d; transform: translateY(-1px); }
+        .btn-acento { background: #8f4200; }
+        .btn-acento:hover { background: #743500; }
+        .btn-secundario { background: #e8eff5; color: #172b3a; border: 1px solid #cbd9e4; }
+        .card, .dica, .calculadora, .resultado { border: 1px solid #dce6ed; box-shadow: none; }
+        .card:hover { transform: none; }
+        .dicas-container { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+        .dica { background: #fff; }
+        .quiz-option { width: 100%; color: var(--cor-texto); border: 1px solid #d1dee8; text-align: left; font: inherit; }
+        button.quiz-option { cursor: pointer; }
+        .quiz-option:hover { background: #e8f1f8; }
+        .quiz-option.correct { color: #fff; background: #176b45; border-color: #176b45; }
+        .quiz-option.incorrect { color: #fff; background: #a52a20; border-color: #a52a20; }
+        .quiz-option.selected { outline: 3px solid #155b93; }
+        input, select { max-width: 100%; color: #172b3a; background: #fff; border-color: #bdcbd6; }
+        input[type="range"] { width: 100%; padding: 0; accent-color: #155b93; }
+        input[type="checkbox"] { width: auto; padding: 0; accent-color: #155b93; margin-right: .45rem; }
+        .form-group input[type="checkbox"] + label { display: inline; }
+        input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible, .quiz-option:focus-visible { outline: 3px solid #ffb020; outline-offset: 2px; }
+        [aria-invalid="true"] { border-color: #a52a20; }
+        .form-error, .mensagem { padding: .75rem 1rem; border-radius: 10px; background: #edf4fa; border-left: 4px solid #155b93; margin: .75rem 0; }
+        .form-error, .mensagem.erro { background: #fff1ef; border-left-color: #a52a20; color: #71231c; }
+        .mensagem.sucesso { background: #edf8f1; border-left-color: #176b45; }
+        .nota, .nota-privacidade { padding: .85rem 1rem; border-radius: 10px; background: #f5f8fa; color: #455d6d; font-size: .93rem; }
+        .grafico-container { display: flex; align-items: flex-end; justify-content: space-around; gap: .75rem; height: 290px; padding: 2rem .5rem 2.5rem; overflow-x: auto; border-bottom: 1px solid #cbd9e4; }
+        .grafico-container .barra { position: relative; flex: 1 0 38px; max-width: 70px; min-width: 30px; width: auto !important; left: auto !important; border-radius: 8px 8px 0 0; }
+        .barra-label { bottom: -2.2rem; left: 0; font-size: .72rem; white-space: nowrap; color: #243f52; }
+        .barra-valor { top: -1.65rem; left: 0; font-size: .68rem; white-space: nowrap; color: #243f52; }
+        .tabela { display: block; overflow-x: auto; }
+        table.tabela--inner { display: table; overflow: visible; width: 100%; border-collapse: collapse; }
+        .tabela table { min-width: 420px; }
+        .tabela th { background: #174e77; }
+        .tabela td, .tabela th { padding: .65rem; }
+        .carteira { background: linear-gradient(120deg, #174e77, #2476a8); }
+        .progresso-container { overflow: hidden; background: #d9e4ec; }
+        .progresso-barra { background: #176b45; }
+        .medalha { border: 2px solid #d2dde5; background: #edf2f5; color: #627482; }
+        .medalha.conquistada { background: #f0b44d; color: #243f52; border-color: #d58d19; }
+        .medalha-tooltip { z-index: 2; }
+        .historico-atividades { list-style: none; padding: 0; }
+        .historico-atividades li { display: flex; justify-content: space-between; gap: 1rem; padding: .75rem 0; border-bottom: 1px solid #e1e8ed; }
+        .historico-atividades small { color: #536b7a; white-space: nowrap; }
+        .app-footer { max-width: 1400px; margin: 0 auto; padding: 0 1.5rem 2rem; color: #536b7a; font-size: .9rem; }
+        .app-footer a { color: #155b93; }
+        .noscript { margin: 1rem; padding: 1rem; background: #fff5d9; color: #4e3b00; }
+        @media (max-width: 767px) {
+            .container { padding: .75rem; }
+            .dashboard { grid-template-columns: 1fr; gap: .75rem; }
+            .menu { position: static; max-height: none; }
+            .content { min-height: 55vh; padding: 1.1rem; }
+            .cronograma { display: grid; grid-template-columns: 1fr 1fr; overflow: visible; gap: .5rem; }
+            .cronograma-etapa { min-width: 0; margin: 0; }
+            .cronograma-etapa::after { display: none; }
+            .historico-atividades li { flex-direction: column; gap: .2rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+        }
+
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>
+    <header>
+        <h1>FinançaJovem</h1>
+        <p>Explorando o mundo financeiro de forma divertida e educativa</p>
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <!-- Menu principal -->
+            <nav class="menu" aria-label="Menu principal">
+                <h2>Explorar conteúdos</h2>
+                <a href="#bemvindo-section" class="menu-item" data-section="bemvindo" onclick="mostrarSecao('bemvindo'); return false;">Início</a>
+                <a href="#basico-submenu" class="menu-item" data-submenu="basico" aria-expanded="false" aria-controls="basico-submenu" onclick="toggleSubmenu('basico'); return false;">Ensino Básico (1º-6º Ano)</a>
+                <div class="submenu" id="basico-submenu">
+                    <a href="#mesada-section" class="menu-item" data-section="mesada" onclick="mostrarSecao('mesada'); return false;">Mesada e Poupança</a>
+                    <a href="#consumo-consciente-section" class="menu-item" data-section="consumo-consciente" onclick="mostrarSecao('consumo-consciente'); return false;">Consumo Consciente</a>
+                    <a href="#pequeno-negocio-section" class="menu-item" data-section="pequeno-negocio" onclick="mostrarSecao('pequeno-negocio'); return false;">O Meu Pequeno Negócio</a>
+                </div>
+                <a href="#medio-submenu" class="menu-item" data-submenu="medio" aria-expanded="false" aria-controls="medio-submenu" onclick="toggleSubmenu('medio'); return false;">Ensino Básico (7º-9º Ano)</a>
+                <div class="submenu" id="medio-submenu">
+                    <a href="#orcamento-section" class="menu-item" data-section="orcamento" onclick="mostrarSecao('orcamento'); return false;">Orçamento Pessoal</a>
+                    <a href="#bancos-section" class="menu-item" data-section="bancos" onclick="mostrarSecao('bancos'); return false;">Bancos e Cartões</a>
+                    <a href="#empreendedorismo-section" class="menu-item" data-section="empreendedorismo" onclick="mostrarSecao('empreendedorismo'); return false;">Empreendedorismo Jovem</a>
+                </div>
+                <a href="#secundario-submenu" class="menu-item" data-submenu="secundario" aria-expanded="false" aria-controls="secundario-submenu" onclick="toggleSubmenu('secundario'); return false;">Ensino Secundário</a>
+                <div class="submenu" id="secundario-submenu">
+                    <a href="#investimentos-section" class="menu-item" data-section="investimentos" onclick="mostrarSecao('investimentos'); return false;">Investimentos</a>
+                    <a href="#credito-section" class="menu-item" data-section="credito" onclick="mostrarSecao('credito'); return false;">Crédito e Endividamento</a>
+                    <a href="#impostos-section" class="menu-item" data-section="impostos" onclick="mostrarSecao('impostos'); return false;">Impostos e Cidadania</a>
+                    <a href="#futuro-section" class="menu-item" data-section="futuro" onclick="mostrarSecao('futuro'); return false;">Planear o Futuro</a>
+                </div>
+                <a href="#jogos-section" class="menu-item" data-section="jogos" onclick="mostrarSecao('jogos'); return false;">Jogos e Desafios</a>
+                <a href="#perfil-section" class="menu-item" data-section="perfil" onclick="mostrarSecao('perfil'); return false;">O Meu Perfil</a>
+            </nav>
+
+            <!-- Conteúdo principal -->
+            <main class="content" id="conteudo" tabindex="-1">
+                <!-- Secção Bem-vindo -->
+                <div class="content-section" id="bemvindo-section" aria-labelledby="bemvindo-titulo">
+                    <h2 id="bemvindo-titulo" tabindex="-1">Bem-vindo à FinançaJovem!</h2>
+                    <div class="card">
+                        <p>A FinançaJovem é uma aplicação interativa para te ajudar a aprender sobre dinheiro, poupança, investimentos e muito mais! Escolhe um tema e aprende a tomar decisões financeiras mais informadas.</p>
+                    </div>
+
+                    <h3>Como funciona?</h3>
+                    <div class="cronograma">
+                        <div class="cronograma-etapa">
+                            <h4>1. Explora</h4>
+                            <p>Descobre conteúdos adaptados à tua idade</p>
+                        </div>
+                        <div class="cronograma-etapa">
+                            <h4>2. Aprende</h4>
+                            <p>Lê sobre conceitos financeiros importantes</p>
+                        </div>
+                        <div class="cronograma-etapa">
+                            <h4>3. Pratica</h4>
+                            <p>Experimenta as ferramentas e simuladores</p>
+                        </div>
+                        <div class="cronograma-etapa">
+                            <h4>4. Testa</h4>
+                            <p>Responde a quizzes e desafios</p>
+                        </div>
+                        <div class="cronograma-etapa">
+                            <h4>5. Acompanha</h4>
+                            <p>Vê as atividades e conquistas que guardaste neste dispositivo</p>
+                        </div>
+                    </div>
+
+                    <h3>Destaque da Semana</h3>
+                    <div class="card">
+                        <div class="card-title">Quiz Especial: "O Pequeno Investidor"</div>
+                        <p>Testa os teus conhecimentos sobre poupança e investimento no nosso novo quiz e conquista pontos de aprendizagem!</p>
+                        <button type="button" class="btn btn-acento" onclick="mostrarSecao('jogos')">Jogar Agora</button>
+                    </div>
+
+                    <h3>Conteúdo por Nível</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">Ensino Básico (1º-6º Ano)</h4>
+                            <p>Aprende sobre mesadas, poupança, consumo consciente e pequenos negócios.</p>
+                            <button type="button" class="btn" onclick="toggleSubmenu('basico')">Explorar</button>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Ensino Básico (7º-9º Ano)</h4>
+                            <p>Descobre como fazer um orçamento, como funcionam os bancos e como empreender.</p>
+                            <button type="button" class="btn" onclick="toggleSubmenu('medio')">Explorar</button>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Ensino Secundário</h4>
+                            <p>Aprofunda os teus conhecimentos sobre investimentos, crédito, impostos e planeamento.</p>
+                            <button type="button" class="btn" onclick="toggleSubmenu('secundario')">Explorar</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Link direto para Empreendedorismo -->
+                    <div class="card" style="background-color: #ffecb3; border: 2px solid #ff9f43;">
+                        <div class="card-title">Descobre a tua veia empreendedora!</div>
+                        <p>O empreendedorismo é uma habilidade cada vez mais importante no mundo atual. Clica abaixo para explorar o tópico de Empreendedorismo Jovem!</p>
+                        <button type="button" class="btn btn-acento" onclick="mostrarSecao('empreendedorismo'); return false;">Explorar Empreendedorismo Jovem</button>
+                    </div>
+                </div>
+
+                <!-- Secção Mesada e Poupança -->
+                <div class="content-section" id="mesada-section">
+                    <h2>Mesada e Poupança</h2>
+                    <p>Aprender a gerir o dinheiro é importante mesmo para os mais novos. Vamos começar por perceber o que é uma mesada e como podes poupar.</p>
+
+                    <div class="card">
+                        <div class="card-title">O que é uma mesada?</div>
+                        <p>Uma mesada é um valor fixo de dinheiro que podes receber dos teus pais ou encarregados de educação regularmente (por semana ou por mês). Serve para aprenderes a gerir o teu próprio dinheiro.</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Porquê poupar?</div>
+                        <p>Poupar significa guardar uma parte do teu dinheiro em vez de o gastares todo de uma vez. É importante poupar para:</p>
+                        <ul>
+                            <li>Comprares algo mais caro no futuro</li>
+                            <li>Estares preparado para emergências</li>
+                            <li>Aprenderes a controlar os teus impulsos de compra</li>
+                        </ul>
+                    </div>
+
+                    <h3>Simulador de Poupança</h3>
+                    <div class="simulador">
+                        <div class="form-group">
+                            <label for="mesada-valor">Valor da tua mesada (€):</label>
+                            <input type="number" id="mesada-valor" min="1" max="100" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label for="poupanca-percentagem">Percentagem que queres poupar (%):</label>
+                            <input type="range" id="poupanca-percentagem" min="0" max="100" value="30" oninput="atualizarPoupanca()">
+                            <span id="percentagem-valor">30%</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="tempo-poupanca">Número de meses a poupar:</label>
+                            <input type="number" id="tempo-poupanca" min="1" max="36" value="12">
+                        </div>
+                        <button type="button" class="btn" onclick="calcularPoupanca()">Calcular</button>
+                    </div>
+
+                    <div class="resultado" id="resultado-poupanca" role="status" aria-live="polite">
+                        <h3>Resultado da tua poupança</h3>
+                        <p>Se poupares <span id="valor-poupado-mes">X</span>€ por mês, ao final de <span id="meses-poupanca">Y</span> meses terás poupado <span id="total-poupado">Z</span>€!</p>
+                        <p>Com este dinheiro poderias comprar:</p>
+                        <div id="opcoes-compra"></div>
+                        <div class="grafico-container" id="grafico-poupanca">
+                            <!-- Barras serão geradas via JavaScript -->
+                        </div>
+                    </div>
+
+                    <h3>Dicas para poupar a tua mesada</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">Usa o método dos 3 mealheiros</h4>
+                            <p>Divide o teu dinheiro em 3 mealheiros: um para gastar, um para poupar e um para doar ou ajudar alguém.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Define objetivos</h4>
+                            <p>Pensa no que queres comprar e quanto tempo vais demorar a juntar o dinheiro necessário.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Regista os teus gastos</h4>
+                            <p>Anota tudo o que recebes e gastas num caderno ou aplicação para saberes para onde vai o teu dinheiro.</p>
+                        </div>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h3>Quiz: Mesada e Poupança</h3>
+                        <div class="quiz-question">
+                            <p><strong>1.</strong> Qual é a melhor forma de guardar as tuas poupanças?</p>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="verificarResposta(this, true)">
+                                    <p>Num mealheiro ou conta bancária</p>
+                                </div>
+                                <div class="quiz-option" onclick="verificarResposta(this, false)">
+                                    <p>No bolso ou carteira</p>
+                                </div>
+                                <div class="quiz-option" onclick="verificarResposta(this, false)">
+                                    <p>Gastar tudo de uma vez</p>
+                                </div>
+                                <div class="quiz-option" onclick="verificarResposta(this, false)">
+                                    <p>Emprestar a um amigo</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secção Consumo Consciente -->
+                <div class="content-section" id="consumo-consciente-section">
+                    <h2>Consumo Consciente</h2>
+                    <p>Aprender a fazer boas escolhas sobre o que comprar é uma habilidade muito importante. Vamos explorar como podes ser um consumidor consciente!</p>
+
+                    <div class="card">
+                        <div class="card-title">O que é consumo consciente?</div>
+                        <p>Consumo consciente significa pensar bem antes de comprar algo, considerando se realmente precisas daquilo, se é uma compra de qualidade e se tem um bom preço.</p>
+                    </div>
+
+                    <h3>Quiz: Necessidade vs. Desejo</h3>
+                    <p>Consegues distinguir entre o que precisas e o que apenas queres? Arrasta cada item para a categoria correta:</p>
+
+                    <div class="quiz-container">
+                        <div class="quiz-question">
+                            <p><strong>1.</strong> Uma bicicleta nova quando a tua atual ainda funciona bem, mas não é o modelo mais recente, é:</p>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="verificarResposta(this, false)">
+                                    <p>Uma necessidade</p>
+                                </div>
+                                <div class="quiz-option" onclick="verificarResposta(this, true)">
+                                    <p>Um desejo</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quiz-question">
+                            <p><strong>2.</strong> Material escolar para o novo ano letivo é:</p>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="verificarResposta(this, true)">
+                                    <p>Uma necessidade</p>
+                                </div>
+                                <div class="quiz-option" onclick="verificarResposta(this, false)">
+                                    <p>Um desejo</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Simulador de Compras</h3>
+                    <p>Tens 20€ para gastar. Escolhe o que comprarias e vê se fizeste boas escolhas:</p>
+
+                    <div class="simulador">
+                        <div class="form-group">
+                            <label>Seleciona os itens que queres comprar:</label>
+                            <div>
+                                <input type="checkbox" id="item1" value="5" onclick="atualizarCompras()"> <label for="item1">Lanche saudável (5€)</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="item2" value="10" onclick="atualizarCompras()"> <label for="item2">Videojogo (10€)</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="item3" value="8" onclick="atualizarCompras()"> <label for="item3">Livro (8€)</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="item4" value="6" onclick="atualizarCompras()"> <label for="item4">Brinquedo (6€)</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="item5" value="4" onclick="atualizarCompras()"> <label for="item5">Caderno (4€)</label>
+                            </div>
+                        </div>
+                        <p>Total gasto: <span id="total-gasto">0</span>€ / 20€</p>
+                        <p>Dinheiro restante: <span id="dinheiro-restante">20</span>€</p>
+                        <div id="alerta-compras"></div>
+                    </div>
+
+                    <h3>Dicas para um consumo consciente</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">Faz uma lista</h4>
+                            <p>Antes de ir às compras, faz uma lista do que realmente precisas para evitar compras por impulso.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Compara preços</h4>
+                            <p>Verifica o preço do mesmo produto em diferentes lojas para encontrar a melhor opção.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Espera antes de comprar</h4>
+                            <p>Se vires algo que queres muito, espera um dia ou dois antes de comprar para ter certeza que realmente precisas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secção O Meu Pequeno Negócio -->
+                <div class="content-section" id="pequeno-negocio-section">
+                    <h2>O Meu Pequeno Negócio</h2>
+                    <p>Descobre como podes criar o teu primeiro negócio, mesmo sendo ainda muito jovem!</p>
+                    
+                    <div class="card">
+                        <div class="card-title">O que é um pequeno negócio?</div>
+                        <p>Um pequeno negócio é quando vendes algum produto ou serviço para ganhar dinheiro. Pode ser tão simples como vender limonada ou oferecer-te para passear os cães da vizinhança.</p>
+                    </div>
+                    
+                    <h3>Ideias de pequenos negócios para crianças</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">Venda de limonada</h4>
+                            <p>Montar uma banca e vender sumos ou limonada nos dias quentes.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Artesanato</h4>
+                            <p>Criar e vender pulseiras, desenhos ou outros trabalhos manuais.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Ajudante de jardim</h4>
+                            <p>Oferecer ajuda para regar plantas ou cuidar do jardim dos vizinhos.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Como começar o teu pequeno negócio</div>
+                        <ol>
+                            <li><strong>Escolhe algo que gostes de fazer</strong> - O teu primeiro negócio deve ser algo divertido para ti.</li>
+                            <li><strong>Pede ajuda aos teus pais</strong> - Eles podem dar-te conselhos e ajudar-te a começar.</li>
+                            <li><strong>Começa pequeno</strong> - Não precisas de muito dinheiro para começar, usa materiais que já tens em casa.</li>
+                            <li><strong>Faz um plano simples</strong> - Decide o que vais vender, quanto vais cobrar e onde vais vender.</li>
+                            <li><strong>Sê persistente</strong> - Nem sempre vai correr bem logo à primeira, mas não desistas!</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <!-- Secção Orçamento Pessoal -->
+                <div class="content-section" id="orcamento-section">
+                    <h2>Orçamento Pessoal</h2>
+                    <p>Aprende a gerir o teu dinheiro através de um orçamento pessoal simples e eficaz.</p>
+                    
+                    <div class="card">
+                        <div class="card-title">O que é um orçamento?</div>
+                        <p>Um orçamento é um plano para o teu dinheiro. É como um mapa que te ajuda a saber quanto dinheiro tens, quanto gastas e quanto podes poupar. Ter um orçamento ajuda-te a tomar melhores decisões sobre o teu dinheiro.</p>
+                    </div>
+                    
+                    <h3>Como fazer um orçamento simples</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">1. Regista os teus rendimentos</h4>
+                            <p>Anota todo o dinheiro que recebes: mesadas, presentes, trabalhos ocasionais, etc.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">2. Faz uma lista de despesas</h4>
+                            <p>Anota tudo em que gastas dinheiro: lanches, jogos, prendas, etc.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">3. Define objetivos</h4>
+                            <p>Decide quanto queres poupar e para quê. Isto ajuda-te a controlar os gastos.</p>
+                        </div>
+                    </div>
+                    
+                    <h3>Simulador de Orçamento</h3>
+                    <div class="simulador">
+                        <div class="form-group">
+                            <label for="rendimento-mensal">Rendimento Mensal (€):</label>
+                            <input type="number" id="rendimento-mensal" min="0" max="500" value="30">
+                        </div>
+                        <h4>Despesas:</h4>
+                        <div class="form-group">
+                            <label for="despesa-essencial">Essenciais (material escolar, transportes...):</label>
+                            <input type="number" id="despesa-essencial" min="0" max="500" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label for="despesa-diversao">Diversão (jogos, cinema...):</label>
+                            <input type="number" id="despesa-diversao" min="0" max="500" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label for="despesa-poupanca">Poupança:</label>
+                            <input type="number" id="despesa-poupanca" min="0" max="500" value="10">
+                        </div>
+                        <button type="button" class="btn" onclick="calcularOrcamento()">Calcular</button>
+                    </div>
+                    
+                    <div class="resultado" id="resultado-orcamento" role="status" aria-live="polite">
+                        <h3>O teu orçamento mensal</h3>
+                        <p>Rendimento: <span id="valor-rendimento">0</span>€</p>
+                        <p>Total de despesas: <span id="valor-despesas">0</span>€</p>
+                        <p>Saldo: <span id="valor-saldo">0</span>€</p>
+                        <div id="alerta-orcamento"></div>
+                        <h4>Distribuição do teu dinheiro:</h4>
+                        <div class="grafico-container" id="grafico-orcamento" style="height: 150px;">
+                            <!-- Barras serão geradas via JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Secção Bancos e Cartões -->
+                <div class="content-section" id="bancos-section">
+                    <h2>Bancos e Cartões</h2>
+                    <p>Descobre como funcionam os bancos e os diferentes tipos de cartões bancários que existem.</p>
+                    
+                    <div class="card">
+                        <div class="card-title">O que é um banco?</div>
+                        <p>Um banco é uma instituição que guarda o dinheiro das pessoas em segurança. Além disso, os bancos oferecem serviços como empréstimos, contas poupança e cartões para facilitar as compras.</p>
+                    </div>
+                    
+                    <h3>Tipos de contas bancárias para jovens</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">Conta Jovem</h4>
+                            <p>Alguns bancos têm contas para jovens com condições próprias. Idades, custos e autorizações variam; consulta o preçário e as regras do banco.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Conta Poupança</h4>
+                            <p>É uma conta específica para guardar dinheiro, onde geralmente recebes juros sobre o valor poupado.</p>
+                        </div>
+                    </div>
+                    
+                    <h3>Cartões bancários</h3>
+                    <div class="card">
+                        <div class="card-title">Cartão de Débito</div>
+                        <p>Com este cartão só podes gastar o dinheiro que tens na tua conta. É como ter o teu dinheiro num cartão em vez de na carteira.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Cartão Pré-pago</div>
+                        <p>É um cartão onde carregas dinheiro antecipadamente e só podes gastar o valor que lá colocaste. É uma boa opção para aprender a gerir gastos.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Cartão de Crédito</div>
+                        <p>Este cartão permite pagar com crédito, que terás de reembolsar. A contratação depende da lei e das condições do banco; os menores precisam do apoio do seu representante legal.</p>
+                    </div>
+                    
+                    <h3>Dicas de segurança</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">Nunca partilhes o PIN</h4>
+                            <p>O PIN é o código secreto do teu cartão. Nunca o digas a ninguém, nem mesmo aos teus amigos.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Cuidado com compras online</h4>
+                            <p>Compra apenas em páginas de confiança, confirma o endereço e pede ajuda a um adulto antes de introduzir dados do cartão.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Verifica regularmente</h4>
+                            <p>Pede aos teus pais para verificarem contigo os movimentos da tua conta para garantir que está tudo correto.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Secção Empreendedorismo Jovem -->
+                <div class="content-section" id="empreendedorismo-section">
+                    <h2>Empreendedorismo Jovem</h2>
+                    <p>Descobrir o empreendedor que há em ti pode ser uma experiência transformadora! Vamos explorar como podes desenvolver as tuas ideias e criar o teu próprio projeto.</p>
+                    
+                    <div class="card">
+                        <div class="card-title">O que é empreendedorismo?</div>
+                        <p>Empreendedorismo é a capacidade de identificar problemas e oportunidades e criar soluções inovadoras, transformando ideias em negócios reais. Um empreendedor é alguém que assume riscos calculados para realizar um sonho ou projeto.</p>
+                    </div>
+                    
+                    <h3>Qualidades de um jovem empreendedor</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">Criatividade</h4>
+                            <p>Capacidade de pensar "fora da caixa" e encontrar soluções originais.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Persistência</h4>
+                            <p>Não desistir ao primeiro obstáculo e aprender com os erros.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Curiosidade</h4>
+                            <p>Estar sempre a aprender e a questionar como as coisas funcionam.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Organização</h4>
+                            <p>Planear e gerir bem o tempo e os recursos disponíveis.</p>
+                        </div>
+                    </div>
+                    
+                    <h3>Como desenvolver uma ideia de negócio</h3>
+                    <div class="card">
+                        <div class="card-title">Passos para criar o teu projeto</div>
+                        <ol>
+                            <li><strong>Identifica um problema:</strong> Observa à tua volta e pensa em algo que poderia ser melhorado.</li>
+                            <li><strong>Cria uma solução:</strong> Usa a tua criatividade para resolver esse problema.</li>
+                            <li><strong>Testa a tua ideia:</strong> Pergunta a amigos e familiares se usariam a tua solução.</li>
+                            <li><strong>Faz um plano simples:</strong> Pensa em como vais realizar o projeto, quanto vai custar e como vais divulgá-lo.</li>
+                            <li><strong>Passa à ação:</strong> Começa pequeno e vai melhorando com o tempo.</li>
+                        </ol>
+                    </div>
+                    
+                    <h3>Exemplos de projetos criados por jovens</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">Jornal escolar online</h4>
+                            <p>Criar um site ou blogue com notícias da escola, artigos sobre assuntos que interessam aos jovens.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Reciclagem criativa</h4>
+                            <p>Transformar materiais reciclados em objetos úteis ou decorativos e vendê-los em feiras locais.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Tutoria entre pares</h4>
+                            <p>Organizar um grupo de estudantes para dar explicações a colegas mais novos em troca de uma pequena contribuição.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Secção Investimentos -->
+                <div class="content-section" id="investimentos-section">
+                    <h2>Investimentos</h2>
+                    <p>Investir envolve aplicar dinheiro com a possibilidade de obter um rendimento, mas também de sofrer perdas. Não há uma opção que seja adequada para todas as pessoas.</p>
+
+                    <div class="card">
+                        <div class="card-title">O que é investir?</div>
+                        <p>Investir significa colocar o teu dinheiro em algo que tem potencial para aumentar de valor com o tempo. Diferente de poupar (apenas guardar), investir envolve algum risco, mas também a possibilidade de ganhar mais dinheiro.</p>
+                    </div>
+
+                    <h3>Tipos de Investimentos para Jovens</h3>
+                    <div class="card">
+                        <div class="card-title">Depósitos a Prazo</div>
+                        <p>É como "emprestar" o teu dinheiro ao banco por um período fixo. Em troca, recebes juros (uma percentagem do valor que depositaste). As condições, a remuneração e a proteção do capital dependem do contrato e da instituição. Compara sempre a informação do produto.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Certificados de Aforro</div>
+                        <p>São produtos de dívida pública com regras próprias de remuneração e resgate. As taxas e as condições variam ao longo do tempo; consulta a informação oficial antes de qualquer decisão.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Ações</div>
+                        <p>Quando compras ações, estás a comprar uma pequena parte de uma empresa. O preço das ações pode subir ou descer por muitas razões. Podes perder parte ou a totalidade do dinheiro investido; os lucros e dividendos não são garantidos.</p>
+                    </div>
+
+                    <h3>Simulador de Investimento</h3>
+                    <div class="simulador">
+                        <div class="form-group">
+                            <label for="investimento-inicial">Valor inicial a investir (€):</label>
+                            <input type="number" id="investimento-inicial" min="50" max="10000" value="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="tipo-investimento">Tipo de investimento:</label>
+                            <select id="tipo-investimento">
+                                <option value="baixo">Cenário de baixo crescimento (1% ao ano)</option>
+                                <option value="moderado">Cenário moderado (2% ao ano)</option>
+                                <option value="variavel">Ações: comparar cenários (pode haver perdas)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="anos-investimento">Número de anos:</label>
+                            <input type="range" id="anos-investimento" min="1" max="10" value="5" oninput="atualizarAnos()">
+                            <span id="anos-valor">5 anos</span>
+                        </div>
+                        <button type="button" class="btn" onclick="calcularInvestimento()">Calcular</button>
+                    </div>
+
+                    <div class="resultado" id="resultado-investimento" role="status" aria-live="polite">
+                        <h3>Resultado do teu investimento</h3>
+                        <p>Investimento inicial: <span id="valor-inicial">0</span>€</p>
+                        <p>Valor final ilustrativo (cenário central): <span id="valor-final">0</span>€</p>
+                        <p>Variação face ao valor inicial: <span id="ganho-total">0</span>€</p>
+                        <div id="cenarios-investimento"></div>
+                        <p class="nota">Valores hipotéticos, antes de impostos, comissões e inflação. A rendibilidade passada não garante resultados futuros. Este simulador não é aconselhamento financeiro.</p>
+                        <div class="grafico-container" id="grafico-investimento">
+                            <!-- Barras serão geradas via JavaScript -->
+                        </div>
+                    </div>
+
+                    <h3>Descobre o Teu Perfil de Investidor</h3>
+                    <p>Responde às perguntas abaixo para descobrires qual é o teu perfil de investidor:</p>
+
+                    <div class="quiz-container">
+                        <div class="quiz-question">
+                            <p><strong>1.</strong> Se recebesses 100€ de presente, o que farias?</p>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="adicionarPontosPerfil(1, this)">
+                                    <p>Gastaria tudo o mais rápido possível</p>
+                                </div>
+                                <div class="quiz-option" onclick="adicionarPontosPerfil(2, this)">
+                                    <p>Gastaria metade e guardaria metade</p>
+                                </div>
+                                <div class="quiz-option" onclick="adicionarPontosPerfil(3, this)">
+                                    <p>Guardaria a maior parte e gastaria um pouco</p>
+                                </div>
+                                <div class="quiz-option" onclick="adicionarPontosPerfil(4, this)">
+                                    <p>Guardaria tudo para o futuro</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quiz-question">
+                            <p><strong>2.</strong> Se tivesses que escolher entre um jogo onde podes ganhar 20€ com certeza ou um jogo onde podes ganhar 100€ com chance de 30%, o que escolherias?</p>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="adicionarPontosPerfil(1, this)">
+                                    <p>Tentaria ganhar os 100€ mesmo sabendo que posso não ganhar nada</p>
+                                </div>
+                                <div class="quiz-option" onclick="adicionarPontosPerfil(4, this)">
+                                    <p>Prefiro garantir os 20€</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quiz-question">
+                            <p><strong>3.</strong> Quanto tempo estarias disposto a deixar o teu dinheiro investido?</p>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="adicionarPontosPerfil(1, this)">
+                                    <p>Menos de 6 meses</p>
+                                </div>
+                                <div class="quiz-option" onclick="adicionarPontosPerfil(2, this)">
+                                    <p>Entre 6 meses e 1 ano</p>
+                                </div>
+                                <div class="quiz-option" onclick="adicionarPontosPerfil(3, this)">
+                                    <p>Entre 1 e 3 anos</p>
+                                </div>
+                                <div class="quiz-option" onclick="adicionarPontosPerfil(4, this)">
+                                    <p>Mais de 3 anos</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn" id="btn-perfil" hidden onclick="calcularPerfil()">Ver o meu perfil</button>
+                    </div>
+
+                    <div class="perfil-resultado" id="perfil-conservador">
+                        <div class="perfil-titulo">Perfil Conservador</div>
+                        <p class="perfil-descricao">Tu preferes segurança acima de tudo. Evitas riscos e valorizas a proteção do teu dinheiro. Podes valorizar opções com menor oscilação, mas deves conhecer as condições, a liquidez, os custos e os riscos de cada produto.</p>
+                    </div>
+
+                    <div class="perfil-resultado" id="perfil-moderado">
+                        <div class="perfil-titulo">Perfil Moderado</div>
+                        <p class="perfil-descricao">Procuras equilibrar estabilidade e potencial de crescimento. Compara riscos, custos e prazo antes de decidir.</p>
+                    </div>
+
+                    <div class="perfil-resultado" id="perfil-arrojado">
+                        <div class="perfil-titulo">Perfil Arrojado</div>
+                        <p class="perfil-descricao">Aceitas oscilações maiores em busca de crescimento potencial. Isso não garante retornos e podes perder dinheiro; o prazo e a diversificação são importantes.</p>
+                    </div>
+                </div>
+                
+                <!-- Secção Crédito e Endividamento -->
+                <div class="content-section" id="credito-section">
+                    <h2>Crédito e Endividamento</h2>
+                    <p>Compreender como funciona o crédito e os riscos do endividamento excessivo é essencial para a tua saúde financeira futura.</p>
+                    
+                    <div class="card">
+                        <div class="card-title">O que é o crédito?</div>
+                        <p>Crédito é quando uma instituição ou pessoa te empresta dinheiro que tens de devolver mais tarde, geralmente com juros (um valor adicional que pagas pelo empréstimo). Os contratos de crédito envolvem regras legais e podem exigir que sejas maior de idade. Se és menor, conversa com o teu encarregado de educação; nunca assines sem compreender as condições.</p>
+                    </div>
+                    
+                    <h3>Tipos de crédito mais comuns</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">Crédito Pessoal</h4>
+                            <p>Empréstimo para uso geral, como comprar um computador ou fazer uma viagem.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Crédito Habitação</h4>
+                            <p>Empréstimo para comprar uma casa, geralmente com um prazo longo. A prestação e o custo total dependem das condições do contrato.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Crédito Automóvel</h4>
+                            <p>Empréstimo para comprar um carro ou outro veículo.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Cartão de Crédito</h4>
+                            <p>Permite fazer compras que só pagas mais tarde, numa data fixa do mês.</p>
+                        </div>
+                    </div>
+                    
+                    <h3>Conceitos importantes sobre crédito</h3>
+                    <div class="card">
+                        <div class="card-title">Taxa de juro</div>
+                        <p>É a percentagem extra que pagas por usar o dinheiro emprestado. Por exemplo, num ano, um empréstimo de 1000€ com uma taxa anual de juro simples de 5% gera 50€ de juros, antes de outros custos.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">TAEG (Taxa Anual de Encargos Efetiva Global)</div>
+                        <p>É o custo total do crédito, incluindo juros e outras despesas. É obrigatório que os bancos te informem sobre a TAEG antes de assinares um contrato.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Prestação</div>
+                        <p>É o valor que pagas mensalmente para devolver o empréstimo. Inclui uma parte do valor que pediste mais os juros.</p>
+                    </div>
+                    
+                    <h3>Simulador de Crédito</h3>
+                    <div class="simulador">
+                        <div class="form-group">
+                            <label for="credito-valor">Valor do empréstimo (€):</label>
+                            <input type="number" id="credito-valor" min="100" max="50000" value="1000">
+                        </div>
+                        <div class="form-group">
+                            <label for="credito-juros">Taxa de juro anual (%):</label>
+                            <input type="number" id="credito-juros" min="0" max="20" step="0.1" value="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="credito-prazo">Prazo (anos):</label>
+                            <input type="number" id="credito-prazo" min="1" max="10" value="2">
+                        </div>
+                        <button type="button" class="btn" onclick="calcularCredito()">Calcular</button>
+                    </div>
+                    
+                    <div class="resultado" id="resultado-credito" role="status" aria-live="polite">
+                        <h3>Resultado da simulação</h3>
+                        <p>Valor do empréstimo: <span id="valor-emprestimo">0</span>€</p>
+                        <p>Prestação mensal: <span id="valor-prestacao">0</span>€</p>
+                        <p>Total de juros a pagar: <span id="total-juros">0</span>€</p>
+                        <p>Custo total do crédito: <span id="custo-total">0</span>€</p>
+                        <p>Percentagem paga em juros: <span id="percentagem-juros">0</span>%</p>
+                        <p class="nota">Cálculo simplificado, com prestações mensais constantes e sem comissões, impostos ou outros encargos. O custo real do crédito pode ser superior.</p>
+                    </div>
+                    
+                    <h3>Riscos do endividamento excessivo</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">Stress financeiro</h4>
+                            <p>Ter muitas dívidas pode causar ansiedade e preocupação constante com o dinheiro.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Dificuldade em poupar</h4>
+                            <p>Quando grande parte do rendimento vai para pagar dívidas, sobra pouco para poupar.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Efeito bola de neve</h4>
+                            <p>Pedir empréstimos para pagar outros empréstimos pode criar um ciclo de dívida difícil de quebrar.</p>
+                        </div>
+                    </div>
+                    
+                    <h3>Dicas para evitar o sobre-endividamento</h3>
+                    <div class="card">
+                        <div class="card-title">Como usar o crédito de forma responsável</div>
+                        <ul>
+                            <li>Só pedir crédito para coisas verdadeiramente necessárias</li>
+                            <li>Nunca pedir emprestado mais do que consegues pagar</li>
+                            <li>Comparar sempre ofertas de diferentes bancos</li>
+                            <li>Ler atentamente todos os contratos antes de assinar</li>
+                            <li>Ter um fundo de emergência para evitar recorrer a crédito em casos inesperados</li>
+                            <li>Evitar que as prestações deixem pouco dinheiro para despesas essenciais e imprevistos</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Secção Impostos e Cidadania -->
+                <div class="content-section" id="impostos-section">
+                    <h2>Impostos e Cidadania</h2>
+                    <p>Compreender os impostos é fundamental para seres um cidadão consciente. Vamos descobrir para que servem os impostos e como funcionam em Portugal.</p>
+                    
+                    <div class="card">
+                        <div class="card-title">O que são impostos?</div>
+                        <p>Impostos são contribuições obrigatórias que pagamos ao Estado. Este dinheiro é usado para financiar serviços públicos como escolas, hospitais, estradas, segurança, etc. Sem impostos, não seria possível ter estes serviços disponíveis para todos.</p>
+                    </div>
+                    
+                    <h3>Principais impostos em Portugal</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">IRS (Imposto sobre o Rendimento de Pessoas Singulares)</h4>
+                            <p>É o imposto que incide sobre os rendimentos das pessoas, como salários, pensões e outros ganhos.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">IVA (Imposto sobre o Valor Acrescentado)</h4>
+                            <p>É um imposto sobre o consumo, aplicado na compra de produtos e serviços. Em Portugal, a taxa normal é de 23%.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">IMI (Imposto Municipal sobre Imóveis)</h4>
+                            <p>É um imposto que os proprietários de casas ou terrenos pagam anualmente à Câmara Municipal.</p>
+                        </div>
+                    </div>
+                    
+                    <h3>Para onde vai o dinheiro dos impostos?</h3>
+                    <div class="card">
+                        <div class="card-title">Serviços financiados pelos impostos</div>
+                        <ul>
+                            <li><strong>Educação:</strong> Escolas públicas, universidades, bolsas de estudo</li>
+                            <li><strong>Saúde:</strong> Hospitais públicos, centros de saúde, INEM</li>
+                            <li><strong>Segurança:</strong> Polícia, bombeiros, proteção civil</li>
+                            <li><strong>Infraestruturas:</strong> Estradas, pontes, transportes públicos</li>
+                            <li><strong>Proteção social:</strong> Apoios a idosos, desempregados e pessoas com dificuldades</li>
+                            <li><strong>Cultura:</strong> Bibliotecas, museus, património cultural</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Simulador de IVA</h3>
+                    <div class="simulador">
+                        <div class="form-group">
+                            <label for="produto-preco">Preço de um produto (sem IVA, em euros):</label>
+                            <small>Simulação para Portugal continental. A taxa efetiva depende do bem ou serviço e pode variar nas regiões autónomas.</small>
+                            <input type="number" id="produto-preco" min="1" max="10000" value="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="produto-iva">Taxa de IVA:</label>
+                            <select id="produto-iva">
+                                <option value="0.23">Taxa normal — 23% (Portugal continental)</option>
+                                <option value="0.13">Taxa intermédia — 13% (Portugal continental)</option>
+                                <option value="0.06">Taxa reduzida — 6% (Portugal continental)</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn" onclick="calcularIVA()">Calcular</button>
+                    </div>
+                    
+                    <div class="resultado" id="resultado-iva" role="status" aria-live="polite">
+                        <h3>Cálculo do IVA</h3>
+                        <p>Preço sem IVA: <span id="preco-sem-iva">0</span>€</p>
+                        <p>Valor do IVA: <span id="valor-iva">0</span>€</p>
+                        <p>Preço final (com IVA): <span id="preco-com-iva">0</span>€</p>
+                    </div>
+                    
+                    <h3>Responsabilidade fiscal</h3>
+                    <div class="card">
+                        <div class="card-title">A importância de pagar impostos</div>
+                        <p>Pagar impostos não é apenas uma obrigação legal, mas também um ato de cidadania. Quando todos contribuem de forma justa:</p>
+                        <ul>
+                            <li>Os serviços públicos funcionam melhor</li>
+                            <li>Há mais recursos para ajudar quem mais precisa</li>
+                            <li>A sociedade como um todo beneficia</li>
+                        </ul>
+                        <p>Quando as pessoas ou empresas fogem aos impostos (evasão fiscal), estão a prejudicar todos os outros cidadãos que pagam a sua parte.</p>
+                    </div>
+                    
+                    <h3>Curiosidades sobre impostos</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">Sabias que...?</h4>
+                            <p>O IRS em Portugal foi criado em 1989, substituindo vários impostos que existiam antes.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Sabias que...?</h4>
+                            <p>Em compras internacionais podem aplicar-se IVA, direitos aduaneiros ou outras regras, dependendo da origem, do produto e do valor. Confirma as condições antes de comprar.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Sabias que...?</h4>
+                            <p>Todos os anos, o Estado português apresenta o Orçamento do Estado, um documento que planeia como vai gastar o dinheiro dos impostos.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Secção Planear o Futuro -->
+                <div class="content-section" id="futuro-section">
+                    <h2>Planear o Futuro</h2>
+                    <p>O planeamento financeiro a longo prazo é essencial para garantir um futuro tranquilo. Vamos explorar como podes começar a planear desde já.</p>
+                    
+                    <div class="card">
+                        <div class="card-title">Porquê planear o futuro financeiro?</div>
+                        <p>Planear o teu futuro financeiro permite-te atingir objetivos importantes como:</p>
+                        <ul>
+                            <li>Estudar na universidade sem acumular muitas dívidas</li>
+                            <li>Comprar casa própria</li>
+                            <li>Viajar e conhecer o mundo</li>
+                            <li>Ter uma reforma confortável</li>
+                            <li>Estar preparado para imprevistos</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Objetivos de vida e custos</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">Curto prazo (1-2 anos)</h4>
+                            <p>Comprar um computador, fazer uma viagem, tirar a carta de condução.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Médio prazo (2-5 anos)</h4>
+                            <p>Pagar os estudos universitários, comprar um carro, começar um pequeno negócio.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Longo prazo (mais de 5 anos)</h4>
+                            <p>Comprar casa própria, constituir família, garantir uma reforma confortável.</p>
+                        </div>
+                    </div>
+                    
+                    <h3>Simulador de poupança para objetivos futuros</h3>
+                    <div class="simulador">
+                        <div class="form-group">
+                            <label for="objetivo-nome-futuro">Objetivo:</label>
+                            <select id="objetivo-nome-futuro">
+                                <option value="5000">Estudos universitários (5.000€)</option>
+                                <option value="15000">Carro (15.000€)</option>
+                                <option value="100000">Entrada para uma casa (100.000€)</option>
+                                <option value="20000">Viagem à volta do mundo (20.000€)</option>
+                                <option value="outro">Outro valor</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="outro-valor-container" hidden>
+                            <label for="outro-valor">Insere o valor do teu objetivo (€):</label>
+                            <input type="number" id="outro-valor" min="100" max="1000000" value="10000">
+                        </div>
+                        <div class="form-group">
+                            <label for="anos-objetivo">Em quantos anos queres atingir este objetivo?</label>
+                            <input type="number" id="anos-objetivo" min="1" max="30" value="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="rendimento-anual">Taxa de rendimento anual estimada (%):</label>
+                            <input type="number" id="rendimento-anual" min="0" max="10" step="0.1" value="2">
+                            <small>Escolhe uma hipótese para aprenderes o cálculo. As taxas reais, os custos, os impostos e a inflação dependem do produto e do momento.</small>
+                        </div>
+                        <button type="button" class="btn" onclick="calcularObjetivoFuturo()">Calcular</button>
+                    </div>
+                    
+                    <div class="resultado" id="resultado-futuro" role="status" aria-live="polite">
+                        <h3>Plano para atingir o teu objetivo</h3>
+                        <p>Objetivo: <span id="nome-objetivo-resultado">-</span></p>
+                        <p>Valor necessário: <span id="valor-objetivo-resultado">0</span>€</p>
+                        <p>Tempo para atingir: <span id="tempo-objetivo">0</span> anos</p>
+                        <p>Precisarás poupar: <span id="poupanca-mensal">0</span>€ por mês</p>
+                        <p>Total poupado: <span id="total-poupado-futuro">0</span>€</p>
+                        <p>Ganhos com juros: <span id="ganhos-juros">0</span>€</p>
+                    </div>
+                    
+                    <h3>Reforma e poupança a longo prazo</h3>
+                    <div class="card">
+                        <div class="card-title">Começar cedo faz toda a diferença</div>
+                        <p>Sabes que quanto mais cedo começares a poupar, menos precisas de guardar mensalmente? Isto acontece por causa do <strong>efeito de juros compostos</strong>, onde os juros geram mais juros ao longo do tempo.</p>
+                        <p>Exemplo ilustrativo: para acumular 100.000€ aos 65 anos, admitindo uma taxa anual efetiva constante de 4% e depósitos mensais no fim de cada mês:</p>
+                        <p class="nota">É uma simulação matemática: não inclui inflação, impostos nem comissões e não representa uma promessa de rendimento.</p>
+                        <ul>
+                            <li>Aos 20 anos: cerca de 68€ por mês</li>
+                            <li>Aos 30 anos: cerca de 111€ por mês</li>
+                            <li>Aos 40 anos: cerca de 197€ por mês</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Sistema de pensões em Portugal</h3>
+                    <div class="card">
+                        <div class="card-title">Como funciona a reforma em Portugal?</div>
+                        <p>Em Portugal existem regimes públicos de pensão, incluindo a Segurança Social e, em algumas situações, a Caixa Geral de Aposentações:</p>
+                        <ul>
+                            <li>Em muitos empregos, uma parte do salário é descontada para o sistema de proteção social aplicável</li>
+                            <li>Os descontos contam para a proteção na velhice; o direito e o valor da pensão dependem do regime e das regras aplicáveis</li>
+                            <li>O valor da pensão depende do tempo de descontos e dos valores descontados</li>
+                            <li>A idade normal de acesso à pensão é definida para cada ano e pode mudar. Consulta a informação atualizada da Segurança Social</li>
+                        </ul>
+                        <p>As necessidades e as opções de poupança variam de pessoa para pessoa; procura informação adequada antes de tomar decisões.</p>
+                    </div>
+                    
+                    <h3>Dicas para planear o futuro financeiro</h3>
+                    <div class="dicas-container">
+                        <div class="dica">
+                            <h4 class="dica-titulo">Define objetivos claros</h4>
+                            <p>Escreve uma lista com os teus objetivos financeiros e os prazos para os atingir.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Cria o hábito da poupança</h4>
+                            <p>Poupa uma percentagem fixa do teu rendimento todos os meses, por pequena que seja.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Investe na tua educação</h4>
+                            <p>Quanto mais qualificado fores, maiores serão as tuas oportunidades de rendimento no futuro.</p>
+                        </div>
+                        <div class="dica">
+                            <h4 class="dica-titulo">Evita dívidas desnecessárias</h4>
+                            <p>O dinheiro gasto em juros é dinheiro que não estás a poupar para o teu futuro.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secção Jogos e Desafios -->
+                <div class="content-section" id="jogos-section">
+                    <h2>Jogos e Desafios</h2>
+                    <p>Aprende sobre finanças enquanto te divertes com estes jogos e desafios!</p>
+
+                    <div class="card" id="card-jogos">
+                        <div class="card-title">Quiz: "O Pequeno Investidor"</div>
+                        <p>Testa os teus conhecimentos sobre poupança e investimento neste quiz especial.</p>
+                        <button type="button" class="btn" onclick="iniciarQuiz()">Iniciar Quiz</button>
+                    </div>
+
+                    <div id="quiz-especial" hidden>
+                        <h3>Quiz: "O Pequeno Investidor"</h3>
+                        <div id="quiz-pergunta"></div>
+                        <div id="quiz-opcoes"></div>
+                        <p id="quiz-feedback" aria-live="polite" role="status"></p>
+                        <div id="quiz-progresso">
+                            <div class="progresso-container">
+                                <div class="progresso-barra" id="barra-quiz"></div>
+                            </div>
+                            <p>Pergunta <span id="pergunta-atual">1</span> de <span id="total-perguntas">5</span></p>
+                        </div>
+                    </div>
+
+                    <div id="quiz-resultado" hidden>
+                        <h3>Resultado do Quiz</h3>
+                        <p>Acertaste <span id="pontuacao-quiz">0</span> de <span id="total-quiz">5</span> perguntas!</p>
+                        <div id="medalha-quiz"></div>
+                        <button type="button" class="btn" onclick="voltarJogos()">Voltar aos Jogos</button>
+                    </div>
+
+                    <div class="card" id="card-desafio">
+                        <div class="card-title">Desafio: "Poupa Para o Objetivo"</div>
+                        <p>Define um objetivo de poupança e acompanha o teu progresso durante 30 dias.</p>
+                        <button type="button" class="btn" onclick="iniciarDesafio()">Iniciar Desafio</button>
+                    </div>
+
+                    <div id="desafio-poupanca" hidden>
+                        <h3>Desafio: "Poupa Para o Objetivo"</h3>
+                        <div class="form-group">
+                            <label for="objetivo-nome">O que queres comprar?</label>
+                            <input type="text" id="objetivo-nome" placeholder="Ex: Um livro, uma bicicleta...">
+                        </div>
+                        <div class="form-group">
+                            <label for="objetivo-valor">Quanto custa (€)?</label>
+                            <input type="number" id="objetivo-valor" min="1" max="1000" value="50">
+                        </div>
+                        <div class="form-group">
+                            <label for="objetivo-dias">Em quantos dias queres poupar?</label>
+                            <input type="number" id="objetivo-dias" min="1" max="365" value="30">
+                        </div>
+                        <button type="button" class="btn" onclick="calcularDesafio()">Calcular</button>
+                    </div>
+
+                    <div id="desafio-resultado" hidden>
+                        <h3>Teu Plano de Poupança</h3>
+                        <p>Para comprares <span id="nome-objetivo">item</span> que custa <span id="valor-objetivo">X</span>€ em <span id="dias-objetivo">Y</span> dias:</p>
+                        <p>Precisas poupar <span id="poupanca-diaria">Z</span>€ por dia!</p>
+                        <div class="progresso-container" role="progressbar" id="progresso-desafio" aria-label="Progresso do objetivo" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                            <div class="progresso-barra" id="barra-desafio" style="width: 0%;"></div>
+                        </div>
+                        <p>Progresso: <span id="valor-poupado">0</span>€ / <span id="valor-meta">X</span>€</p>
+                        <div class="form-group">
+                            <label for="poupanca-valor">Quanto poupaste hoje? (€)</label>
+                            <input type="number" id="poupanca-valor" min="0.5" max="100" value="0.5" step="0.5">
+                        </div>
+                        <button type="button" class="btn" onclick="adicionarPoupanca()">Adicionar poupança de hoje</button>
+                        <button type="button" class="btn btn-secundario" onclick="voltarJogos()">Voltar aos Jogos</button>
+                        <button type="button" class="btn btn-secundario" onclick="novaMeta()">Criar nova meta</button>
+                    </div>
+                </div>
+
+                <!-- Secção Perfil do Utilizador -->
+                <div class="content-section" id="perfil-section" aria-labelledby="perfil-titulo">
+                    <h2 id="perfil-titulo" tabindex="-1">O Meu Perfil</h2>
+                    <div class="carteira">
+                        <h3>Progresso de aprendizagem</h3>
+                        <div class="saldo"><span id="pontos-total">0</span> pontos</div>
+                        <p>Os pontos são apenas simbólicos e não têm valor monetário.</p>
+                    </div>
+                    <h3>Meu progresso</h3>
+                    <div class="progresso-container" role="progressbar" id="progresso-perfil" aria-label="Progresso para o próximo nível" aria-valuemin="0" aria-valuemax="50" aria-valuenow="0">
+                        <div class="progresso-barra" id="barra-perfil" style="width: 0%"></div>
+                    </div>
+                    <p id="nivel-perfil">Nível 1 · 0 de 50 pontos para o próximo nível</p>
+                    <h3>Conquistas</h3>
+                    <div class="medalhas">
+                        <div class="medalha" data-conquista="primeira" title="Primeira atividade concluída" aria-label="Primeira atividade concluída"><span aria-hidden="true">🌱</span><span class="medalha-tooltip">Primeira atividade</span></div>
+                        <div class="medalha" data-conquista="poupanca" title="Quiz de poupança concluído" aria-label="Quiz de poupança concluído"><span aria-hidden="true">💰</span><span class="medalha-tooltip">Poupador atento</span></div>
+                        <div class="medalha" data-conquista="investidor" title="Quiz de investimento concluído" aria-label="Quiz de investimento concluído"><span aria-hidden="true">📈</span><span class="medalha-tooltip">Pequeno investidor</span></div>
+                        <div class="medalha" data-conquista="desafio" title="Objetivo de poupança atingido" aria-label="Objetivo de poupança atingido"><span aria-hidden="true">🏁</span><span class="medalha-tooltip">Objetivo alcançado</span></div>
+                    </div>
+                    <h3>Atividades recentes</h3>
+                    <ul id="historico-atividades" class="historico-atividades" aria-live="polite"></ul>
+                    <p id="sem-atividades">Ainda não há atividades registadas. Experimenta um quiz ou desafio.</p>
+                    <p class="nota-privacidade">O progresso e o desafio de poupança ficam guardados apenas neste navegador. Não são enviados para um servidor. Se partilhares o dispositivo, apaga o progresso no fim.</p>
+                    <button class="btn btn-secundario" type="button" onclick="resetarProgresso()">Apagar progresso guardado</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <noscript><p class="noscript">Para usar os simuladores e acompanhar o progresso, ativa o JavaScript neste navegador.</p></noscript>
+
+    <script>
+        "use strict";
+        const STORAGE_KEY = "financajovem.v2";
+        let appState = readState();
+        let pontosPerfil = 0;
+        let perguntasRespondidas = 0;
+        let perguntaAtual = 0;
+        let pontuacaoQuiz = 0;
+        let quizSession = 0;
+
+        function validChallenge(value) {
+            return Boolean(value && typeof value === "object" && typeof value.name === "string" && value.name.trim() && Number.isFinite(Number(value.target)) && Number(value.target) > 0 && Number.isFinite(Number(value.days)) && Number(value.days) > 0 && Number.isFinite(Number(value.saved)) && Number(value.saved) >= 0);
+        }
+
+        function readState() {
+            const empty = { points: 0, completed: [], activities: [], challenge: null };
+            try {
+                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+                if (!saved || typeof saved !== "object") return empty;
+                return {
+                    points: Number.isFinite(saved.points) ? Math.max(0, saved.points) : 0,
+                    completed: Array.isArray(saved.completed) ? saved.completed.filter(x => typeof x === "string") : [],
+                    activities: Array.isArray(saved.activities) ? saved.activities.slice(0, 20) : [],
+                    challenge: validChallenge(saved.challenge) ? { name: saved.challenge.name.slice(0, 80), target: Number(saved.challenge.target), days: Number(saved.challenge.days), saved: Math.max(0, Number(saved.challenge.saved)) } : null
+                };
+            } catch (error) { return empty; }
+        }
+
+        function saveState() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appState)); return true; }
+            catch (error) { return false; }
+        }
+
+        function formatNumber(value, digits) {
+            return new Intl.NumberFormat("pt-PT", { minimumFractionDigits: digits === undefined ? 2 : digits, maximumFractionDigits: digits === undefined ? 2 : digits }).format(value);
+        }
+
+        function numberFrom(id) {
+            const field = document.getElementById(id);
+            if (!field) return NaN;
+            if (!String(field.value).trim()) return NaN;
+            if (field.valueAsNumber !== undefined && Number.isFinite(field.valueAsNumber)) return field.valueAsNumber;
+            return Number(String(field.value).trim().replace(",", "."));
+        }
+
+        function formRoot(field) {
+            return field.closest(".simulador") || field.closest("#desafio-poupanca") || field.closest("#desafio-resultado") || field.parentElement;
+        }
+
+        function clearError(field) {
+            const message = document.getElementById(field.id + "-error");
+            if (message) message.remove();
+            field.removeAttribute("aria-invalid");
+            field.removeAttribute("aria-describedby");
+        }
+
+        function readNumber(id, label) {
+            const field = document.getElementById(id);
+            if (!field) return NaN;
+            clearError(field);
+            const value = numberFrom(id);
+            const minimum = field.min === "" ? -Infinity : Number(field.min);
+            const maximum = field.max === "" ? Infinity : Number(field.max);
+            if (!Number.isFinite(value) || value < minimum || value > maximum) {
+                field.setAttribute("aria-invalid", "true");
+                let message = document.getElementById(field.id + "-error");
+                if (!message) {
+                    message = document.createElement("p");
+                    message.id = field.id + "-error";
+                    message.className = "form-error";
+                    message.setAttribute("role", "alert");
+                    const group = field.closest(".form-group") || formRoot(field);
+                    group.appendChild(message);
+                }
+                field.setAttribute("aria-describedby", message.id);
+                message.textContent = "Introduz " + label.toLowerCase() + " entre " + (Number.isFinite(minimum) ? formatNumber(minimum) : "o valor mínimo") + " e " + (Number.isFinite(maximum) ? formatNumber(maximum) : "o valor máximo") + ".";
+                field.focus();
+                return NaN;
+            }
+            return value;
+        }
+
+        function showSection(id, moveFocus) {
+            const target = document.getElementById(id + "-section");
+            if (!target) return;
+            document.querySelectorAll(".content-section").forEach(section => {
+                const active = section === target;
+                section.hidden = !active;
+                section.classList.toggle("active", active);
+            });
+            document.querySelectorAll(".menu [data-section]").forEach(link => {
+                if (link.dataset.section === id) link.setAttribute("aria-current", "page");
+                else link.removeAttribute("aria-current");
+            });
+            document.querySelectorAll(".menu [data-submenu]").forEach(toggle => {
+                const sub = document.getElementById(toggle.dataset.submenu + "-submenu");
+                const containsCurrent = Boolean(sub && sub.querySelector('[data-section="' + id + '"]'));
+                const expanded = containsCurrent || toggle.dataset.submenu === id;
+                toggle.setAttribute("aria-expanded", String(expanded));
+                if (sub) sub.classList.toggle("active", containsCurrent || (toggle.dataset.submenu === id && expanded));
+            });
+            if (moveFocus) {
+                const heading = target.querySelector("h2");
+                if (heading) {
+                    if (!heading.id) heading.id = id + "-heading";
+                    heading.setAttribute("tabindex", "-1");
+                    heading.focus({ preventScroll: true });
+                }
+                target.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+            }
+            try { history.replaceState(null, "", "#" + id + "-section"); } catch (error) {}
+        }
+
+        function mostrarSecao(id) { showSection(id, true); }
+
+        function toggleSubmenu(id) {
+            const submenu = document.getElementById(id + "-submenu");
+            const toggle = document.querySelector('.menu [data-submenu="' + id + '"]');
+            if (!submenu || !toggle) return;
+            const open = !submenu.classList.contains("active");
+            document.querySelectorAll(".submenu").forEach(item => item.classList.remove("active"));
+            document.querySelectorAll(".menu [data-submenu]").forEach(item => item.setAttribute("aria-expanded", "false"));
+            if (open) { submenu.classList.add("active"); toggle.setAttribute("aria-expanded", "true"); }
+        }
+
+        function setText(id, value) {
+            const element = document.getElementById(id);
+            if (element) element.textContent = value;
+        }
+
+        function registerActivity(id, title, points) {
+            if (appState.completed.includes(id)) return;
+            appState.completed.push(id);
+            appState.points += points;
+            const today = new Intl.DateTimeFormat("pt-PT", { dateStyle: "medium" }).format(new Date());
+            appState.activities.unshift({ title: title, points: points, date: today });
+            appState.activities = appState.activities.slice(0, 12);
+            saveState();
+            renderProfile();
+        }
+
+        function renderProfile() {
+            setText("pontos-total", String(appState.points));
+            const level = Math.floor(appState.points / 50) + 1;
+            const withinLevel = appState.points % 50;
+            setText("nivel-perfil", "Nível " + level + " · " + withinLevel + " de 50 pontos para o próximo nível");
+            const bar = document.getElementById("barra-perfil");
+            const progress = document.getElementById("progresso-perfil");
+            if (bar) bar.style.width = (withinLevel * 2) + "%";
+            if (progress) progress.setAttribute("aria-valuenow", String(withinLevel));
+            const completed = new Set(appState.completed);
+            const badgeState = {
+                primeira: completed.size > 0,
+                poupanca: completed.has("quiz-mesada") || completed.has("desafio-poupanca"),
+                investidor: completed.has("quiz-investidor") || completed.has("simulador-investimento"),
+                desafio: completed.has("desafio-poupanca")
+            };
+            document.querySelectorAll("[data-conquista]").forEach(badge => {
+                const earned = Boolean(badgeState[badge.dataset.conquista]);
+                badge.classList.toggle("conquistada", earned);
+                badge.setAttribute("aria-label", (earned ? "Conquista alcançada: " : "Conquista por alcançar: ") + (badge.title || ""));
+            });
+            const history = document.getElementById("historico-atividades");
+            const empty = document.getElementById("sem-atividades");
+            if (history) {
+                history.replaceChildren();
+                appState.activities.forEach(activity => {
+                    const item = document.createElement("li");
+                    const title = document.createElement("span");
+                    title.textContent = activity.title;
+                    const meta = document.createElement("small");
+                    meta.textContent = (activity.date || "") + " · +" + Number(activity.points || 0) + " pontos";
+                    item.append(title, meta);
+                    history.appendChild(item);
+                });
+            }
+            if (empty) empty.hidden = appState.activities.length > 0;
+        }
+
+        function resetarProgresso() {
+            if (!window.confirm("Apagar os pontos, atividades e o desafio guardados neste navegador?")) return;
+            appState = { points: 0, completed: [], activities: [], challenge: null };
+            try { localStorage.removeItem(STORAGE_KEY); } catch (error) {}
+            renderProfile();
+            voltarJogos();
+        }
+
+        function initialize() {
+            document.querySelectorAll(".content-section").forEach(section => { section.hidden = true; });
+            const fromHash = location.hash.replace(/^#/, "").replace(/-section$/, "");
+            showSection(document.getElementById(fromHash + "-section") ? fromHash : "bemvindo", false);
+            document.querySelectorAll(".content-section .quiz-option").forEach(option => {
+                if (option.tagName !== "BUTTON") { option.setAttribute("role", "button"); option.setAttribute("tabindex", "0"); }
+                const handler = option.getAttribute("onclick") || "";
+                if (handler.indexOf("verificarResposta") >= 0) option.dataset.correct = /true\s*\)/.test(handler);
+            });
+            document.addEventListener("keydown", event => {
+                const option = event.target.closest('.quiz-option[role="button"]');
+                if (option && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); option.click(); }
+            });
+            const selector = document.getElementById("objetivo-nome-futuro");
+            if (selector) selector.addEventListener("change", () => {
+                const other = document.getElementById("outro-valor-container");
+                if (other) other.hidden = selector.value !== "outro";
+            });
+            const years = document.getElementById("anos-investimento");
+            if (years) years.addEventListener("input", atualizarAnos);
+            const savingsRate = document.getElementById("poupanca-percentagem");
+            if (savingsRate) savingsRate.addEventListener("input", atualizarPoupanca);
+            renderProfile();
+            updateBudgetChecks();
+            if (selector) selector.dispatchEvent(new Event("change"));
+            atualizarPoupanca();
+            atualizarAnos();
+            const privacyNote = document.querySelector(".nota-privacidade");
+            if (privacyNote && !saveState()) privacyNote.textContent = "Este navegador não permitiu guardar o progresso. As atividades continuam disponíveis, mas os dados podem desaparecer quando fechares a página.";
+        }
+
+        function atualizarPoupanca() {
+            const percentagem = numberFrom("poupanca-percentagem");
+            setText("percentagem-valor", formatNumber(percentagem, 0) + "%");
+        }
+
+        function calcularPoupanca() {
+            const mesada = readNumber("mesada-valor", "o valor da mesada");
+            const percentagem = numberFrom("poupanca-percentagem");
+            const meses = readNumber("tempo-poupanca", "o número de meses");
+            if (!Number.isFinite(mesada) || !Number.isFinite(meses)) return;
+            const poupadoMes = Math.round(mesada * percentagem) / 100;
+            const total = poupadoMes * meses;
+            setText("valor-poupado-mes", formatNumber(poupadoMes));
+            setText("meses-poupanca", String(meses));
+            setText("total-poupado", formatNumber(total));
+            const options = document.getElementById("opcoes-compra");
+            if (options) {
+                options.replaceChildren();
+                [[10,"Um livro"],[25,"Um jogo de tabuleiro"],[50,"Uma mochila"],[100,"Um artigo de valor superior"]].forEach(item => {
+                    const row = document.createElement("p");
+                    row.textContent = (total >= item[0] ? "✓ " : "○ ") + item[1] + " (" + formatNumber(item[0],0) + " €)";
+                    options.appendChild(row);
+                });
+            }
+            const values = [];
+            const count = Math.min(meses, 12);
+            for (let i = 1; i <= count; i++) values.push(poupadoMes * i);
+            renderBars("grafico-poupanca", values, "Mês ", "poupança acumulada");
+            document.getElementById("resultado-poupanca").classList.add("active");
+        }
+
+        function atualizarCompras() {
+            let total = 0;
+            document.querySelectorAll("#consumo-consciente-section input[type=checkbox]").forEach(box => { if (box.checked) total += numberFrom(box.id); });
+            setText("total-gasto", formatNumber(total));
+            setText("dinheiro-restante", formatNumber(20 - total));
+            const alert = document.getElementById("alerta-compras");
+            if (alert) {
+                alert.textContent = total > 20 ? "Ultrapassaste o orçamento de 20 €. Revê as escolhas." : total === 20 ? "Usaste todo o orçamento. Também podes escolher poupar uma parte." : "Ainda tens " + formatNumber(20 - total) + " € para gastar ou poupar.";
+                alert.className = total > 20 ? "mensagem erro" : "mensagem";
+            }
+        }
+
+        function updateBudgetChecks() { atualizarCompras(); }
+
+        function atualizarAnos() {
+            const anos = numberFrom("anos-investimento");
+            setText("anos-valor", formatNumber(anos, 0) + (anos === 1 ? " ano" : " anos"));
+        }
+
+        function compound(principal, annualRate, years) { return principal * Math.pow(1 + annualRate, years); }
+
+        function renderBars(id, values, labelPrefix, description) {
+            const chart = document.getElementById(id);
+            if (!chart) return;
+            chart.replaceChildren();
+            const maximum = Math.max(1, ...values.map(value => Math.abs(value)));
+            values.forEach((value, index) => {
+                const bar = document.createElement("div");
+                bar.className = "barra";
+                bar.style.height = Math.max(3, Math.abs(value) / maximum * 190) + "px";
+                const label = document.createElement("span"); label.className = "barra-label";
+                label.textContent = labelPrefix + (labelPrefix === "Ano " ? index : index + 1);
+                const amount = document.createElement("span"); amount.className = "barra-valor";
+                amount.textContent = formatNumber(value, 0) + " €";
+                bar.append(amount, label); chart.appendChild(bar);
+            });
+            chart.setAttribute("role", "img");
+            chart.setAttribute("aria-label", description + ": " + values.map((value,index) => labelPrefix + (labelPrefix === "Ano " ? index : index + 1) + " " + formatNumber(value) + " euros").join("; "));
+        }
+
+        function calcularInvestimento() {
+            const principal = readNumber("investimento-inicial", "o valor inicial");
+            const years = numberFrom("anos-investimento");
+            if (!Number.isFinite(principal)) return;
+            const kind = document.getElementById("tipo-investimento").value;
+            const scenarios = kind === "variavel" ? [
+                { name: "Negativo", rate: -0.05 }, { name: "Central", rate: 0.04 }, { name: "Positivo", rate: 0.08 }
+            ] : [{ name: kind === "baixo" ? "Baixo crescimento" : "Moderado", rate: kind === "baixo" ? 0.01 : 0.02 }];
+            const results = scenarios.map(scenario => ({ name: scenario.name, rate: scenario.rate, final: compound(principal, scenario.rate, years) }));
+            const central = results.find(result => result.name === "Central") || results[0];
+            setText("valor-inicial", formatNumber(principal));
+            setText("valor-final", formatNumber(central.final));
+            setText("ganho-total", formatNumber(central.final - principal));
+            const table = document.getElementById("cenarios-investimento");
+            if (table) {
+                const heading = document.createElement("h4"); heading.textContent = kind === "variavel" ? "Três cenários possíveis" : "Hipótese usada";
+                const tableElement = document.createElement("table"); tableElement.className = "tabela tabela--inner";
+                tableElement.innerHTML = "<thead><tr><th scope=\"col\">Cenário</th><th scope=\"col\">Taxa anual hipotética</th><th scope=\"col\">Valor final</th></tr></thead>";
+                const body = document.createElement("tbody");
+                results.forEach(result => {
+                    const row = document.createElement("tr");
+                    [result.name, formatNumber(result.rate * 100, 1) + "%", formatNumber(result.final) + " €"].forEach(value => { const cell = document.createElement("td"); cell.textContent = value; row.appendChild(cell); });
+                    body.appendChild(row);
+                });
+                tableElement.appendChild(body); table.replaceChildren(heading, tableElement);
+            }
+            const path = [];
+            for (let year = 0; year <= years; year++) path.push(compound(principal, central.rate, year));
+            renderBars("grafico-investimento", path, "Ano ", "projeção do cenário central");
+            document.getElementById("resultado-investimento").classList.add("active");
+            registerActivity("simulador-investimento", "Experimentou o simulador de investimento", 5);
+        }
+
+        function verificarResposta(element, correct) {
+            if (!element) return;
+            const question = element.closest(".quiz-question");
+            const group = element.parentElement;
+            if (!question || question.dataset.respondida === "true") return;
+            question.dataset.respondida = "true";
+            Array.from(group.querySelectorAll(".quiz-option")).forEach(option => {
+                if (option.dataset.correct === "true") option.classList.add("correct");
+                else if (option === element && !correct) option.classList.add("incorrect");
+                option.setAttribute("aria-disabled", "true"); option.setAttribute("tabindex", "-1");
+            });
+            question.dataset.correta = correct ? "1" : "0";
+            let feedback = question.querySelector(".feedback-resposta");
+            if (!feedback) { feedback = document.createElement("p"); feedback.className = "feedback-resposta"; feedback.setAttribute("role", "status"); feedback.setAttribute("aria-live", "polite"); question.appendChild(feedback); }
+            feedback.textContent = correct ? "Resposta certa." : "Ainda não. A resposta correta está assinalada.";
+            const section = question.closest(".content-section");
+            if (!section) return;
+            const questions = Array.from(section.querySelectorAll(".quiz-question"));
+            if (questions.length && questions.every(item => item.dataset.respondida === "true")) {
+                const correctCount = questions.filter(item => item.dataset.correta === "1").length;
+                const activityKey = "quiz-" + section.id.replace("-section", "");
+                registerActivity(activityKey, "Concluiu o quiz: " + section.querySelector("h2").textContent, correctCount === questions.length ? 10 : 5);
+                let summary = section.querySelector(".quiz-summary");
+                if (!summary) { summary = document.createElement("p"); summary.className = "quiz-summary mensagem"; summary.setAttribute("role", "status"); section.querySelector(".quiz-container").appendChild(summary); }
+                summary.textContent = "Quiz concluído: " + correctCount + " de " + questions.length + " respostas certas. Consulta o teu progresso no perfil.";
+            }
+        }
+
+        function adicionarPontosPerfil(points, element) {
+            if (!element) return;
+            const question = element.closest(".quiz-question");
+            if (!question || question.dataset.respondida === "true") return;
+            question.dataset.respondida = "true"; pontosPerfil += points; perguntasRespondidas += 1;
+            question.querySelectorAll(".quiz-option").forEach(option => { option.setAttribute("aria-disabled", "true"); option.setAttribute("tabindex", "-1"); });
+            element.classList.add("selected");
+            const button = document.getElementById("btn-perfil");
+            if (button && perguntasRespondidas >= 3) button.hidden = false;
+        }
+
+        function calcularPerfil() {
+            if (!perguntasRespondidas) return;
+            document.querySelectorAll(".perfil-resultado").forEach(profile => { profile.hidden = true; profile.classList.remove("active"); });
+            const average = pontosPerfil / perguntasRespondidas;
+            const id = average <= 2 ? "perfil-arrojado" : average <= 3 ? "perfil-moderado" : "perfil-conservador";
+            const result = document.getElementById(id);
+            if (result) { result.hidden = false; result.classList.add("active"); result.tabIndex = -1; result.focus(); }
+        }
+
+        const perguntasQuiz = [
+            { pergunta: "Qual é uma forma de procurar crescimento do dinheiro ao longo do tempo?", opcoes: ["Guardar debaixo do colchão", "Gastar tudo agora", "Investir, conhecendo os riscos", "Emprestar a amigos"], correta: 2 },
+            { pergunta: "O que significa juro composto?", opcoes: ["Pagar juros sobre empréstimos", "Ganhar juros sobre juros já acumulados", "Emprestar dinheiro a juros altos", "Um tipo de investimento sem risco"], correta: 1 },
+            { pergunta: "Qual destas afirmações sobre investimento é correta?", opcoes: ["As ações nunca perdem valor", "Criptomoedas são sempre seguras", "O risco e as condições variam por produto", "Emprestar a amigos garante retorno"], correta: 2 },
+            { pergunta: "Para que pode servir um fundo de emergência?", opcoes: ["Para compras por impulso", "Para despesas inesperadas", "Para investir quando o mercado cai", "Para pagar todas as férias"], correta: 1 },
+            { pergunta: "O que deves ponderar antes de investir?", opcoes: ["O que os amigos fazem", "Prazo, risco, custos e objetivos", "Apenas o retorno potencial", "A opinião das redes sociais"], correta: 1 }
+        ];
+
+        function iniciarQuiz() {
+            quizSession += 1; perguntaAtual = 0; pontuacaoQuiz = 0;
+            document.getElementById("card-jogos").hidden = true;
+            document.getElementById("card-desafio").hidden = true;
+            document.getElementById("quiz-especial").hidden = false;
+            document.getElementById("quiz-resultado").hidden = true;
+            mostrarPergunta();
+        }
+
+        function mostrarPergunta() {
+            const quiz = perguntasQuiz[perguntaAtual];
+            if (!quiz) return;
+            const question = document.getElementById("quiz-pergunta"); question.replaceChildren();
+            const label = document.createElement("p");
+            const strong = document.createElement("strong"); strong.textContent = String(perguntaAtual + 1) + ". ";
+            label.append(strong, document.createTextNode(quiz.pergunta)); question.appendChild(label);
+            const choices = document.getElementById("quiz-opcoes"); choices.replaceChildren();
+            const grid = document.createElement("div"); grid.className = "quiz-options";
+            quiz.opcoes.forEach((text, index) => {
+                const button = document.createElement("button"); button.type = "button"; button.className = "quiz-option"; button.textContent = text;
+                button.addEventListener("click", () => verificarQuiz(index)); grid.appendChild(button);
+            });
+            choices.appendChild(grid);
+            setText("pergunta-atual", String(perguntaAtual + 1)); setText("total-perguntas", String(perguntasQuiz.length));
+            const bar = document.getElementById("barra-quiz"); bar.style.width = (perguntaAtual / perguntasQuiz.length * 100) + "%";
+            bar.parentElement.setAttribute("role", "progressbar"); bar.parentElement.setAttribute("aria-valuemin", "0"); bar.parentElement.setAttribute("aria-valuemax", String(perguntasQuiz.length)); bar.parentElement.setAttribute("aria-valuenow", String(perguntaAtual));
+            setText("quiz-feedback", "");
+        }
+
+        function verificarQuiz(answer) {
+            const quiz = perguntasQuiz[perguntaAtual];
+            if (!quiz) return;
+            document.querySelectorAll("#quiz-opcoes .quiz-option").forEach((option, index) => {
+                if (index === quiz.correta) option.classList.add("correct");
+                else if (index === answer) option.classList.add("incorrect");
+                option.disabled = true;
+            });
+            if (answer === quiz.correta) pontuacaoQuiz += 1;
+            setText("quiz-feedback", answer === quiz.correta ? "Certo!" : "Não é essa. A resposta correta está assinalada.");
+            const session = quizSession;
+            window.setTimeout(() => {
+                if (session !== quizSession) return;
+                perguntaAtual += 1;
+                if (perguntaAtual < perguntasQuiz.length) mostrarPergunta();
+                else mostrarResultadoQuiz();
+            }, 900);
+        }
+
+        function mostrarResultadoQuiz() {
+            document.getElementById("quiz-especial").hidden = true;
+            document.getElementById("quiz-resultado").hidden = false;
+            setText("pontuacao-quiz", String(pontuacaoQuiz)); setText("total-quiz", String(perguntasQuiz.length));
+            const label = pontuacaoQuiz === perguntasQuiz.length ? "Excelente!" : pontuacaoQuiz >= 3 ? "Bom trabalho!" : "Continua a praticar!";
+            setText("medalha-quiz", label + " Este resultado é apenas um indicador de aprendizagem.");
+            document.getElementById("barra-quiz").style.width = "100%";
+            registerActivity("quiz-investidor", "Concluiu o quiz O Pequeno Investidor", pontuacaoQuiz === perguntasQuiz.length ? 10 : 5);
+        }
+
+        function voltarJogos() {
+            quizSession += 1;
+            ["card-jogos","card-desafio"].forEach(id => { const el = document.getElementById(id); if (el) el.hidden = false; });
+            ["quiz-especial","quiz-resultado","desafio-poupanca","desafio-resultado"].forEach(id => { const el = document.getElementById(id); if (el) el.hidden = true; });
+            const start = document.querySelector("#card-desafio button");
+            if (start) start.textContent = appState.challenge ? "Continuar desafio" : "Iniciar Desafio";
+        }
+
+        function iniciarDesafio() {
+            if (appState.challenge) {
+                document.getElementById("card-jogos").hidden = true; document.getElementById("card-desafio").hidden = true;
+                document.getElementById("desafio-poupanca").hidden = true; document.getElementById("desafio-resultado").hidden = false; renderChallenge();
+            } else {
+                document.getElementById("card-jogos").hidden = true; document.getElementById("card-desafio").hidden = true;
+                document.getElementById("desafio-poupanca").hidden = false;
+            }
+        }
+
+        function calcularDesafio() {
+            const nameInput = document.getElementById("objetivo-nome");
+            const name = nameInput.value.trim();
+            const target = readNumber("objetivo-valor", "o valor da meta");
+            const days = readNumber("objetivo-dias", "o número de dias");
+            if (!Number.isFinite(target) || !Number.isFinite(days)) return;
+            const previousNameError = document.getElementById("objetivo-nome-error");
+            if (previousNameError) previousNameError.remove();
+            nameInput.removeAttribute("aria-invalid");
+            nameInput.removeAttribute("aria-describedby");
+            if (!name) {
+                nameInput.setAttribute("aria-invalid", "true");
+                const message = document.createElement("p");
+                message.id = "objetivo-nome-error";
+                message.className = "form-error";
+                message.setAttribute("role", "alert");
+                message.textContent = "Escreve o nome do objetivo.";
+                nameInput.closest(".form-group").appendChild(message);
+                nameInput.setAttribute("aria-describedby", message.id);
+                nameInput.focus(); return;
+            }
+            appState.challenge = { name: name.slice(0, 80), target: target, days: days, saved: 0 };
+            saveState(); renderChallenge();
+            document.getElementById("desafio-poupanca").hidden = true; document.getElementById("desafio-resultado").hidden = false;
+        }
+
+        function renderChallenge() {
+            const challenge = appState.challenge;
+            if (!challenge) return;
+            setText("nome-objetivo", challenge.name); setText("valor-objetivo", formatNumber(challenge.target));
+            setText("dias-objetivo", String(challenge.days)); setText("poupanca-diaria", formatNumber(challenge.target / challenge.days));
+            setText("valor-meta", formatNumber(challenge.target)); setText("valor-poupado", formatNumber(challenge.saved));
+            const percentage = Math.min(100, challenge.saved / challenge.target * 100);
+            document.getElementById("barra-desafio").style.width = percentage + "%";
+            const progress = document.getElementById("progresso-desafio");
+            if (progress) progress.setAttribute("aria-valuenow", String(Math.round(percentage)));
+            const start = document.querySelector("#card-desafio button");
+            if (start) start.textContent = "Continuar desafio";
+        }
+
+        function adicionarPoupanca() {
+            const amount = readNumber("poupanca-valor", "o valor poupado hoje");
+            if (!Number.isFinite(amount) || amount <= 0 || !appState.challenge) return;
+            appState.challenge.saved = Math.round((appState.challenge.saved + amount) * 100) / 100;
+            saveState(); document.getElementById("poupanca-valor").value = ""; renderChallenge();
+            if (appState.challenge.saved >= appState.challenge.target) registerActivity("desafio-poupanca", "Atingiu o objetivo de poupança: " + appState.challenge.name, 15);
+        }
+
+        function novaMeta() {
+            if (!window.confirm("Criar uma meta nova vai apagar o progresso da meta atual. Queres continuar?")) return;
+            appState.challenge = null; saveState();
+            document.getElementById("desafio-resultado").hidden = true; document.getElementById("desafio-poupanca").hidden = false;
+            document.getElementById("card-jogos").hidden = true; document.getElementById("card-desafio").hidden = true;
+        }
+
+        function calcularOrcamento() {
+            const income = readNumber("rendimento-mensal", "o rendimento mensal");
+            const essential = readNumber("despesa-essencial", "as despesas essenciais");
+            const leisure = readNumber("despesa-diversao", "as despesas de lazer");
+            const savings = readNumber("despesa-poupanca", "a poupança mensal");
+            if (![income,essential,leisure,savings].every(Number.isFinite)) return;
+            const expenses = essential + leisure + savings, balance = income - expenses;
+            setText("valor-rendimento", formatNumber(income)); setText("valor-despesas", formatNumber(expenses)); setText("valor-saldo", formatNumber(balance));
+            const alert = document.getElementById("alerta-orcamento");
+            alert.textContent = balance < 0 ? "As despesas ultrapassam o rendimento em " + formatNumber(-balance) + " €. Revê os valores." : balance === 0 ? "O rendimento está totalmente distribuído." : "Ficam " + formatNumber(balance) + " € por distribuir.";
+            alert.className = balance < 0 ? "mensagem erro" : "mensagem sucesso";
+            const categories = [{name:"Essenciais",value:essential},{name:"Lazer",value:leisure},{name:"Poupança",value:savings}];
+            const chart = document.getElementById("grafico-orcamento");
+            if (chart) {
+                chart.replaceChildren(); const max = Math.max(1, ...categories.map(item => item.value));
+                categories.forEach(item => {
+                    if (item.value <= 0) return;
+                    const bar = document.createElement("div"); bar.className = "barra"; bar.style.height = Math.max(3, item.value / max * 190) + "px";
+                    const amount = document.createElement("span"); amount.className = "barra-valor"; amount.textContent = formatNumber(item.value) + " €";
+                    const label = document.createElement("span"); label.className = "barra-label"; label.textContent = item.name;
+                    bar.append(amount,label); chart.appendChild(bar);
+                });
+                chart.setAttribute("role", "img"); chart.setAttribute("aria-label", "Distribuição do orçamento: " + categories.map(item => item.name + " " + formatNumber(item.value) + " euros").join("; "));
+            }
+            document.getElementById("resultado-orcamento").classList.add("active");
+            registerActivity("simulador-orcamento", "Experimentou o simulador de orçamento", 5);
+        }
+
+        function calcularCredito() {
+            const principal = readNumber("credito-valor", "o valor do empréstimo");
+            const annualRate = readNumber("credito-juros", "a taxa anual");
+            const years = readNumber("credito-prazo", "o prazo");
+            if (![principal,annualRate,years].every(Number.isFinite)) return;
+            const months = years * 12, monthlyRate = annualRate / 100 / 12;
+            const payment = monthlyRate === 0 ? principal / months : principal * monthlyRate / (1 - Math.pow(1 + monthlyRate, -months));
+            const total = payment * months, interest = total - principal;
+            setText("valor-emprestimo", formatNumber(principal)); setText("valor-prestacao", formatNumber(payment));
+            setText("total-juros", formatNumber(interest)); setText("custo-total", formatNumber(total));
+            setText("percentagem-juros", formatNumber(interest / principal * 100, 1));
+            document.getElementById("resultado-credito").classList.add("active");
+        }
+
+        function calcularIVA() {
+            const price = readNumber("produto-preco", "o preço");
+            if (!Number.isFinite(price)) return;
+            const rate = numberFrom("produto-iva");
+            setText("preco-sem-iva", formatNumber(price)); setText("valor-iva", formatNumber(price * rate)); setText("preco-com-iva", formatNumber(price * (1 + rate)));
+            document.getElementById("resultado-iva").classList.add("active");
+        }
+
+        function calcularObjetivoFuturo() {
+            const selector = document.getElementById("objetivo-nome-futuro");
+            const custom = selector.value === "outro";
+            const target = custom ? readNumber("outro-valor", "o valor do objetivo") : Number(selector.value);
+            const years = readNumber("anos-objetivo", "o prazo em anos");
+            const annualReturn = readNumber("rendimento-anual", "a taxa de rendimento anual");
+            if (![target,years,annualReturn].every(Number.isFinite) || target <= 0) return;
+            const months = years * 12, monthlyRate = Math.pow(1 + annualReturn / 100, 1 / 12) - 1;
+            const monthlyDeposit = monthlyRate === 0 ? target / months : target * monthlyRate / (Math.pow(1 + monthlyRate, months) - 1);
+            const contributionTotal = monthlyDeposit * months, estimatedGain = target - contributionTotal;
+            setText("nome-objetivo-resultado", custom ? "Objetivo personalizado" : selector.options[selector.selectedIndex].text.split(" (")[0]);
+            setText("valor-objetivo-resultado", formatNumber(target)); setText("tempo-objetivo", formatNumber(years,0));
+            setText("poupanca-mensal", formatNumber(monthlyDeposit)); setText("total-poupado-futuro", formatNumber(contributionTotal)); setText("ganhos-juros", formatNumber(estimatedGain));
+            document.getElementById("resultado-futuro").classList.add("active");
+        }
+
+        if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initialize);
+        else initialize();
+    </script>
+    <footer class="app-footer">
+        <p>Conteúdo educativo. Simulações não são aconselhamento financeiro e usam hipóteses simplificadas.</p>
+        <p>Fontes oficiais para consulta: <a href="https://www.igcp.pt/pt/aforristas/produtos-de-aforro/certificados-de-aforro" target="_blank" rel="noopener noreferrer">IGCP — Certificados de Aforro</a> · <a href="https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/questoes_frequentes/pages/faqs-00930.aspx" target="_blank" rel="noopener noreferrer">Autoridade Tributária — IVA</a> · <a href="https://www.seg-social.pt/ptss/pssd/menu/trabalho/reforma-invalidez/pensao-velhice" target="_blank" rel="noopener noreferrer">Segurança Social — Pensão de velhice</a></p>
+    </footer>
+</body>
+</html>
