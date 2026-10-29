@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinançaJovem — Literacia financeira para jovens</title>
     <style>
+        .missao-aprendizagem { border-left: 5px solid #d58d19; background: #fff8e8; }
+        .missao-aprendizagem h3 { margin-top: 0; }
+        .jogo-indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .7rem; margin: 1rem 0; }
+        .jogo-indicador { padding: .8rem; border: 1px solid #dce6ed; border-radius: 10px; background: #fff; }
+        .jogo-indicador strong { display: block; color: #174e77; font-size: 1.15rem; }
+        .quiz-explicacao { padding: .75rem 1rem; margin-top: .65rem; background: #edf8f1; border-left: 4px solid #176b45; border-radius: 8px; }
+        .missao-passo { color: #455d6d; }
+        @media (max-width: 767px) { .jogo-indicadores { grid-template-columns: 1fr 1fr; } }
         :root {
             --cor-primaria: #2e86de;
             --cor-secundaria: #f5f6fa;
@@ -587,6 +595,7 @@
         .historico-atividades small { color: #536b7a; white-space: nowrap; }
         .app-footer { max-width: 1400px; margin: 0 auto; padding: 0 1.5rem 2rem; color: #536b7a; font-size: .9rem; }
         .app-footer a { color: #155b93; }
+        .assinatura { margin: .45rem 0 0; color: #174e77; font-weight: 700; letter-spacing: .02em; }
         .noscript { margin: 1rem; padding: 1rem; background: #fff5d9; color: #4e3b00; }
         @media (max-width: 767px) {
             .container { padding: .75rem; }
@@ -1529,6 +1538,13 @@
                     <h2>Jogos e Desafios</h2>
                     <p>Aprende sobre finanças enquanto te divertes com estes jogos e desafios!</p>
 
+                    <div class="card missao-aprendizagem">
+                        <h3>Aprender, experimentar, refletir</h3>
+                        <p>Começa pelo quiz para rever conceitos de poupança, risco e investimento. Depois, escolhe uma meta realista e regista o que poupas ao longo do desafio.</p>
+                        <p class="missao-passo"><strong>Objetivo:</strong> tomar decisões informadas, comparar alternativas e perceber que poupar depende de escolhas e tempo.</p>
+                        <p class="nota">Usa valores fictícios ou conversa com um adulto de confiança. Não introduzas dados pessoais nem informações sobre contas bancárias.</p>
+                    </div>
+
                     <div class="card" id="card-jogos">
                         <div class="card-title">Quiz: "O Pequeno Investidor"</div>
                         <p>Testa os teus conhecimentos sobre poupança e investimento neste quiz especial.</p>
@@ -1540,6 +1556,7 @@
                         <div id="quiz-pergunta"></div>
                         <div id="quiz-opcoes"></div>
                         <p id="quiz-feedback" aria-live="polite" role="status"></p>
+                        <p id="quiz-explicacao" class="quiz-explicacao" hidden></p>
                         <div id="quiz-progresso">
                             <div class="progresso-container">
                                 <div class="progresso-barra" id="barra-quiz"></div>
@@ -1552,7 +1569,8 @@
                         <h3>Resultado do Quiz</h3>
                         <p>Acertaste <span id="pontuacao-quiz">0</span> de <span id="total-quiz">5</span> perguntas!</p>
                         <div id="medalha-quiz"></div>
-                        <button type="button" class="btn" onclick="voltarJogos()">Voltar aos Jogos</button>
+                        <button type="button" class="btn" onclick="iniciarQuiz()">Tentar novamente</button>
+                        <button type="button" class="btn btn-secundario" onclick="voltarJogos()">Voltar aos Jogos</button>
                     </div>
 
                     <div class="card" id="card-desafio">
@@ -1573,6 +1591,7 @@
                         </div>
                         <div class="form-group">
                             <label for="objetivo-dias">Em quantos dias queres poupar?</label>
+                            <small>O desafio começa hoje. Regista uma entrada por dia; podes corrigi-la nesse mesmo dia.</small>
                             <input type="number" id="objetivo-dias" min="1" max="365" value="30">
                         </div>
                         <button type="button" class="btn" onclick="calcularDesafio()">Calcular</button>
@@ -1581,13 +1600,20 @@
                     <div id="desafio-resultado" hidden>
                         <h3>Teu Plano de Poupança</h3>
                         <p>Para comprares <span id="nome-objetivo">item</span> que custa <span id="valor-objetivo">X</span>€ em <span id="dias-objetivo">Y</span> dias:</p>
-                        <p>Precisas poupar <span id="poupanca-diaria">Z</span>€ por dia!</p>
+                        <p>Precisas poupar, em média, <span id="poupanca-diaria">Z</span>€ por dia.</p>
+                        <div class="jogo-indicadores" aria-label="Resumo do desafio">
+                            <div class="jogo-indicador"><strong id="dias-registados">0</strong>dias com registo</div>
+                            <div class="jogo-indicador"><strong id="dias-decorridos">0</strong>dias decorridos</div>
+                            <div class="jogo-indicador"><strong id="dias-restantes">0</strong>dias restantes</div>
+                            <div class="jogo-indicador"><strong id="valor-hoje">0,00 €</strong>poupado hoje</div>
+                        </div>
+                        <p id="estado-desafio" class="mensagem" role="status" aria-live="polite"></p>
                         <div class="progresso-container" role="progressbar" id="progresso-desafio" aria-label="Progresso do objetivo" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                             <div class="progresso-barra" id="barra-desafio" style="width: 0%;"></div>
                         </div>
                         <p>Progresso: <span id="valor-poupado">0</span>€ / <span id="valor-meta">X</span>€</p>
                         <div class="form-group">
-                            <label for="poupanca-valor">Quanto poupaste hoje? (€)</label>
+                            <label for="poupanca-valor">Quanto conseguiste poupar hoje? (€)</label>
                             <input type="number" id="poupanca-valor" min="0.5" max="100" value="0.5" step="0.5">
                         </div>
                         <button type="button" class="btn" onclick="adicionarPoupanca()">Adicionar poupança de hoje</button>
@@ -1639,7 +1665,17 @@
         let quizSession = 0;
 
         function validChallenge(value) {
-            return Boolean(value && typeof value === "object" && typeof value.name === "string" && value.name.trim() && Number.isFinite(Number(value.target)) && Number(value.target) > 0 && Number.isFinite(Number(value.days)) && Number(value.days) > 0 && Number.isFinite(Number(value.saved)) && Number(value.saved) >= 0);
+            return Boolean(value && typeof value === "object" && typeof value.name === "string" && value.name.trim() && Number.isFinite(Number(value.target)) && Number(value.target) > 0 && Number.isFinite(Number(value.days)) && Number(value.days) > 0 && Number(value.days) <= 365 && Number.isFinite(Number(value.saved)) && Number(value.saved) >= 0);
+        }
+
+        function localDateString(date) {
+            const current = date || new Date();
+            return current.getFullYear() + "-" + String(current.getMonth() + 1).padStart(2, "0") + "-" + String(current.getDate()).padStart(2, "0");
+        }
+
+        function dateDifference(from, to) {
+            const parse = value => { const parts = value.split("-").map(Number); return Date.UTC(parts[0], parts[1] - 1, parts[2]); };
+            return Math.floor((parse(to) - parse(from)) / 86400000);
         }
 
         function readState() {
@@ -1651,7 +1687,12 @@
                     points: Number.isFinite(saved.points) ? Math.max(0, saved.points) : 0,
                     completed: Array.isArray(saved.completed) ? saved.completed.filter(x => typeof x === "string") : [],
                     activities: Array.isArray(saved.activities) ? saved.activities.slice(0, 20) : [],
-                    challenge: validChallenge(saved.challenge) ? { name: saved.challenge.name.slice(0, 80), target: Number(saved.challenge.target), days: Number(saved.challenge.days), saved: Math.max(0, Number(saved.challenge.saved)) } : null
+                    challenge: validChallenge(saved.challenge) ? (() => {
+                        const dailyLog = Array.isArray(saved.challenge.dailyLog) ? saved.challenge.dailyLog.filter(entry => entry && /^\\d{4}-\\d{2}-\\d{2}$/.test(entry.date) && Number.isFinite(Number(entry.amount)) && Number(entry.amount) > 0).slice(-365).map(entry => ({ date: entry.date, amount: Number(entry.amount) })) : [];
+                        const baseSaved = Number.isFinite(saved.challenge.baseSaved) ? Math.max(0, saved.challenge.baseSaved) : Math.max(0, Number(saved.challenge.saved) - dailyLog.reduce((sum, entry) => sum + entry.amount, 0));
+                        const startedAt = /^\\d{4}-\\d{2}-\\d{2}$/.test(saved.challenge.startedAt || "") ? saved.challenge.startedAt : localDateString();
+                        return { name: saved.challenge.name.slice(0, 80), target: Number(saved.challenge.target), days: Number(saved.challenge.days), startedAt, baseSaved, dailyLog, saved: baseSaved + dailyLog.reduce((sum, entry) => sum + entry.amount, 0) };
+                    })() : null
                 };
             } catch (error) { return empty; }
         }
@@ -1999,11 +2040,11 @@
         }
 
         const perguntasQuiz = [
-            { pergunta: "Qual é uma forma de procurar crescimento do dinheiro ao longo do tempo?", opcoes: ["Guardar debaixo do colchão", "Gastar tudo agora", "Investir, conhecendo os riscos", "Emprestar a amigos"], correta: 2 },
-            { pergunta: "O que significa juro composto?", opcoes: ["Pagar juros sobre empréstimos", "Ganhar juros sobre juros já acumulados", "Emprestar dinheiro a juros altos", "Um tipo de investimento sem risco"], correta: 1 },
-            { pergunta: "Qual destas afirmações sobre investimento é correta?", opcoes: ["As ações nunca perdem valor", "Criptomoedas são sempre seguras", "O risco e as condições variam por produto", "Emprestar a amigos garante retorno"], correta: 2 },
-            { pergunta: "Para que pode servir um fundo de emergência?", opcoes: ["Para compras por impulso", "Para despesas inesperadas", "Para investir quando o mercado cai", "Para pagar todas as férias"], correta: 1 },
-            { pergunta: "O que deves ponderar antes de investir?", opcoes: ["O que os amigos fazem", "Prazo, risco, custos e objetivos", "Apenas o retorno potencial", "A opinião das redes sociais"], correta: 1 }
+            { pergunta: "Qual é uma forma de procurar crescimento do dinheiro ao longo do tempo?", opcoes: ["Guardar debaixo do colchão", "Gastar tudo agora", "Investir, conhecendo os riscos", "Emprestar a amigos"], correta: 2, explicacao: "Investir pode ajudar o dinheiro a crescer, mas o valor pode subir ou descer. O resultado não é garantido." },
+            { pergunta: "O que significa juro composto?", opcoes: ["Pagar juros sobre empréstimos", "Ganhar juros sobre juros já acumulados", "Emprestar dinheiro a juros altos", "Um tipo de investimento sem risco"], correta: 1, explicacao: "Com juros compostos, os juros acumulados também podem gerar juros. O efeito depende da taxa, do prazo, dos custos e das condições." },
+            { pergunta: "Qual destas afirmações sobre investimento é correta?", opcoes: ["As ações nunca perdem valor", "Criptomoedas são sempre seguras", "O risco e as condições variam por produto", "Emprestar a amigos garante retorno"], correta: 2, explicacao: "Cada produto tem riscos, custos e condições diferentes. Nenhum investimento deve ser tratado como retorno garantido." },
+            { pergunta: "Para que pode servir um fundo de emergência?", opcoes: ["Para compras por impulso", "Para despesas inesperadas", "Para investir quando o mercado cai", "Para pagar todas as férias"], correta: 1, explicacao: "Uma reserva de emergência ajuda a lidar com despesas inesperadas sem recorrer imediatamente a crédito." },
+            { pergunta: "O que deves ponderar antes de investir?", opcoes: ["O que os amigos fazem", "Prazo, risco, custos e objetivos", "Apenas o retorno potencial", "A opinião das redes sociais"], correta: 1, explicacao: "Uma decisão informada considera o objetivo, o prazo, a possibilidade de perdas, os custos e a necessidade de diversificar." }
         ];
 
         function iniciarQuiz() {
@@ -2033,6 +2074,8 @@
             const bar = document.getElementById("barra-quiz"); bar.style.width = (perguntaAtual / perguntasQuiz.length * 100) + "%";
             bar.parentElement.setAttribute("role", "progressbar"); bar.parentElement.setAttribute("aria-valuemin", "0"); bar.parentElement.setAttribute("aria-valuemax", String(perguntasQuiz.length)); bar.parentElement.setAttribute("aria-valuenow", String(perguntaAtual));
             setText("quiz-feedback", "");
+            const explanation = document.getElementById("quiz-explicacao");
+            if (explanation) { explanation.hidden = true; explanation.textContent = ""; }
         }
 
         function verificarQuiz(answer) {
@@ -2044,7 +2087,9 @@
                 option.disabled = true;
             });
             if (answer === quiz.correta) pontuacaoQuiz += 1;
-            setText("quiz-feedback", answer === quiz.correta ? "Certo!" : "Não é essa. A resposta correta está assinalada.");
+            setText("quiz-feedback", answer === quiz.correta ? "Certo!" : "Ainda não. A resposta correta está assinalada.");
+            const explanation = document.getElementById("quiz-explicacao");
+            if (explanation) { explanation.textContent = quiz.explicacao; explanation.hidden = false; }
             const session = quizSession;
             window.setTimeout(() => {
                 if (session !== quizSession) return;
@@ -2103,7 +2148,7 @@
                 nameInput.setAttribute("aria-describedby", message.id);
                 nameInput.focus(); return;
             }
-            appState.challenge = { name: name.slice(0, 80), target: target, days: days, saved: 0 };
+            appState.challenge = { name: name.slice(0, 80), target: target, days: days, startedAt: localDateString(), baseSaved: 0, dailyLog: [], saved: 0 };
             saveState(); renderChallenge();
             document.getElementById("desafio-poupanca").hidden = true; document.getElementById("desafio-resultado").hidden = false;
         }
@@ -2111,23 +2156,53 @@
         function renderChallenge() {
             const challenge = appState.challenge;
             if (!challenge) return;
+            const today = localDateString();
+            const elapsedRaw = dateDifference(challenge.startedAt, today) + 1;
+            const elapsed = Math.max(0, Math.min(challenge.days, elapsedRaw));
+            const remaining = Math.max(0, challenge.days - elapsed);
+            const todayEntry = challenge.dailyLog.find(entry => entry.date === today);
             setText("nome-objetivo", challenge.name); setText("valor-objetivo", formatNumber(challenge.target));
             setText("dias-objetivo", String(challenge.days)); setText("poupanca-diaria", formatNumber(challenge.target / challenge.days));
             setText("valor-meta", formatNumber(challenge.target)); setText("valor-poupado", formatNumber(challenge.saved));
+            setText("dias-registados", String(challenge.dailyLog.length)); setText("dias-decorridos", String(elapsed)); setText("dias-restantes", String(remaining));
+            setText("valor-hoje", formatNumber(todayEntry ? todayEntry.amount : 0) + " €");
             const percentage = Math.min(100, challenge.saved / challenge.target * 100);
             document.getElementById("barra-desafio").style.width = percentage + "%";
             const progress = document.getElementById("progresso-desafio");
             if (progress) progress.setAttribute("aria-valuenow", String(Math.round(percentage)));
+            const finished = challenge.saved >= challenge.target;
+            const expired = elapsedRaw > challenge.days;
+            const addButton = document.querySelector("#desafio-resultado button[onclick=\"adicionarPoupanca()\"]");
+            const status = document.getElementById("estado-desafio");
+            if (status) {
+                status.className = finished ? "mensagem sucesso" : expired ? "mensagem erro" : "mensagem";
+                status.textContent = finished ? "Meta alcançada! Podes rever o que te ajudou a poupar." : expired ? "O prazo deste desafio terminou. Podes criar uma nova meta." : todayEntry ? "Já registaste a poupança de hoje. Se necessário, podes corrigir o valor." : "Ainda não registaste a poupança de hoje.";
+            }
+            if (addButton) {
+                addButton.disabled = finished || expired;
+                addButton.textContent = todayEntry ? "Atualizar registo de hoje" : "Adicionar poupança de hoje";
+            }
             const start = document.querySelector("#card-desafio button");
             if (start) start.textContent = "Continuar desafio";
         }
 
         function adicionarPoupanca() {
             const amount = readNumber("poupanca-valor", "o valor poupado hoje");
-            if (!Number.isFinite(amount) || amount <= 0 || !appState.challenge) return;
-            appState.challenge.saved = Math.round((appState.challenge.saved + amount) * 100) / 100;
+            const challenge = appState.challenge;
+            if (!Number.isFinite(amount) || amount <= 0 || !challenge) return;
+            const today = localDateString();
+            const elapsed = dateDifference(challenge.startedAt, today) + 1;
+            if (elapsed < 1 || elapsed > challenge.days || challenge.saved >= challenge.target) return;
+            const previous = challenge.dailyLog.find(entry => entry.date === today);
+            if (previous) {
+                challenge.saved = Math.max(challenge.baseSaved, Math.round((challenge.saved - previous.amount + amount) * 100) / 100);
+                previous.amount = amount;
+            } else {
+                challenge.dailyLog.push({ date: today, amount });
+                challenge.saved = Math.round((challenge.saved + amount) * 100) / 100;
+            }
             saveState(); document.getElementById("poupanca-valor").value = ""; renderChallenge();
-            if (appState.challenge.saved >= appState.challenge.target) registerActivity("desafio-poupanca", "Atingiu o objetivo de poupança: " + appState.challenge.name, 15);
+            if (challenge.saved >= challenge.target) registerActivity("desafio-poupanca", "Atingiu o objetivo de poupança: " + challenge.name, 15);
         }
 
         function novaMeta() {
@@ -2209,6 +2284,7 @@
     <footer class="app-footer">
         <p>Conteúdo educativo. Simulações não são aconselhamento financeiro e usam hipóteses simplificadas.</p>
         <p>Fontes oficiais para consulta: <a href="https://www.igcp.pt/pt/aforristas/produtos-de-aforro/certificados-de-aforro" target="_blank" rel="noopener noreferrer">IGCP — Certificados de Aforro</a> · <a href="https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/questoes_frequentes/pages/faqs-00930.aspx" target="_blank" rel="noopener noreferrer">Autoridade Tributária — IVA</a> · <a href="https://www.seg-social.pt/ptss/pssd/menu/trabalho/reforma-invalidez/pensao-velhice" target="_blank" rel="noopener noreferrer">Segurança Social — Pensão de velhice</a></p>
+        <p class="assinatura">TIC, Educação e WEB</p>
     </footer>
 </body>
 </html>
