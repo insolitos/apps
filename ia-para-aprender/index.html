@@ -502,6 +502,22 @@
     font-size: 0.78rem; color: var(--text-dim);
   }
 
+  .learning-progress {
+    display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+    margin-top:1.2rem; padding:1rem 1.2rem; background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius); color:var(--text-muted); font-size:.88rem;
+  }
+  .learning-progress p { margin:0; font-size:.88rem; }
+  .progress-actions { display:flex; gap:.5rem; flex-wrap:wrap; }
+  .progress-actions button {
+    background:transparent; border:1px solid var(--border); color:var(--text-muted);
+    padding:.4rem .8rem; border-radius:18px; cursor:pointer; font:inherit; font-size:.78rem;
+  }
+  .progress-actions button:hover { border-color:var(--accent); color:var(--accent); }
+  .progress-actions .resume-btn { background:var(--primary); border-color:var(--primary); color:white; font-weight:bold; }
+  .progress-actions .resume-btn:hover { background:var(--primary-light); color:white; }
+  .site-footer .brand { display:block; margin-top:.45rem; color:var(--text-muted); font-weight:600; letter-spacing:.03em; }
+
   /* ===== RESPONSIVE ===== */
   @media (max-width: 600px) {
     .modules-grid { grid-template-columns: 1fr; }
@@ -593,6 +609,13 @@
     <p>Usar a IA para fazer trabalhos inteiros ou copiar respostas sem pensar não te faz aprender — faz exatamente o contrário. Este guia ensina-te a usá-la para <strong>aprender de verdade</strong>.</p>
   </div>
 
+  <div class="learning-progress" aria-live="polite">
+    <p id="progressSummary">O teu percurso fica guardado neste dispositivo.</p>
+    <div class="progress-actions">
+      <button class="resume-btn" id="resumeButton" onclick="resumeLearning()" hidden>Retomar aprendizagem</button>
+      <button onclick="resetLearningProgress()">Recomeçar percurso</button>
+    </div>
+  </div>
 </div>
 </div>
 
@@ -1275,12 +1298,15 @@
 <!-- ===== FOOTER ===== -->
 <footer class="site-footer">
   <p>IA para Aprender — Guia para Estudantes do Básico e Secundário &nbsp;·&nbsp; Use com curiosidade e honestidade.</p>
+  <span class="brand">TIC, Educação e WEB</span>
 </footer>
 
 <script>
 // ===== STATE =====
 const moduleOrder = ['m1','m2','m3','m4','m5','m6','quiz'];
-const visitedModules = new Set();
+const learningStorageKey = 'ia-para-aprender-progress-v1';
+let learningData = loadLearningProgress();
+const visitedModules = new Set(learningData.visitedModules || []);
 let currentView = 'home';
 
 // ===== NAVIGATION =====
@@ -1301,8 +1327,44 @@ function showView(id) {
 
 function goHome() { showView('home'); }
 
+function loadLearningProgress() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(learningStorageKey) || '{}');
+    return { visitedModules: Array.isArray(saved.visitedModules) ? saved.visitedModules : [], lastModule: saved.lastModule || '', checks: saved.checks && typeof saved.checks === 'object' ? saved.checks : {} };
+  } catch (error) {
+    return { visitedModules: [], lastModule: '', checks: {} };
+  }
+}
+
+function saveLearningProgress() {
+  try { localStorage.setItem(learningStorageKey, JSON.stringify(learningData)); return true; }
+  catch (error) { return false; }
+}
+
+function updateLearningProgress() {
+  const count = moduleOrder.slice(0, 6).filter(id => visitedModules.has(id)).length;
+  const summary = document.getElementById('progressSummary');
+  const resume = document.getElementById('resumeButton');
+  if (summary) summary.textContent = count + ' de 6 módulos consultados. O progresso e as listas assinaladas ficam guardados neste dispositivo.';
+  if (resume) resume.hidden = !learningData.lastModule;
+}
+
+function resumeLearning() { showModule(learningData.lastModule || 'm1'); }
+
+function resetLearningProgress() {
+  learningData = { visitedModules: [], lastModule: '', checks: {} };
+  visitedModules.clear();
+  document.querySelectorAll('.checklist li.checked').forEach(item => item.classList.remove('checked'));
+  saveLearningProgress();
+  updateLearningProgress();
+}
+
 function showModule(id) {
   visitedModules.add(id);
+  learningData.visitedModules = [...visitedModules];
+  learningData.lastModule = id;
+  saveLearningProgress();
+  updateLearningProgress();
   if (id === 'quiz') {
     initQuiz();
     document.getElementById('quiz-area').style.display = 'block';
@@ -1331,6 +1393,12 @@ function toggleAcc(header) {
 // ===== CHECKLISTS =====
 function toggleCheck(item) {
   item.classList.toggle('checked');
+  const list = item.closest('.checklist');
+  const lists = [...document.querySelectorAll('.checklist')];
+  const listId = list.id || 'checklist-' + lists.indexOf(list);
+  const itemIndex = [...list.children].indexOf(item);
+  learningData.checks[listId + '-' + itemIndex] = item.classList.contains('checked');
+  saveLearningProgress();
 }
 
 // ===== TABS =====
@@ -1609,7 +1677,15 @@ function restartQuiz() {
 }
 
 // Init
+Object.entries(learningData.checks).forEach(([key, checked]) => {
+  if (!checked) return;
+  const match = key.match(/^(.*)-(\\d+)$/);
+  if (!match) return;
+  const list = document.getElementById(match[1]) || document.querySelectorAll('.checklist')[Number(match[1].replace('checklist-', ''))];
+  if (list && list.children[Number(match[2])]) list.children[Number(match[2])].classList.add('checked');
+});
 showView('home');
+updateLearningProgress();
 </script>
 </body>
 </html>
