@@ -1679,7 +1679,7 @@ function restartQuiz() {
 // Init
 Object.entries(learningData.checks).forEach(([key, checked]) => {
   if (!checked) return;
-  const match = key.match(/^(.*)-(\\d+)$/);
+  const match = key.match(/^(.*)-(\d+)$/);
   if (!match) return;
   const list = document.getElementById(match[1]) || document.querySelectorAll('.checklist')[Number(match[1].replace('checklist-', ''))];
   if (list && list.children[Number(match[2])]) list.children[Number(match[2])].classList.add('checked');
