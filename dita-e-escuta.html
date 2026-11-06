@@ -7,6 +7,14 @@
 <style>
 :root{color-scheme:light;--bg:#edf5fb;--card:#fff;--ink:#173552;--muted:#496079;--line:#a9bfd2;--soft:#e7f2ff;--blue:#154f82;--red:#b42332;--focus:#805500}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;padding:28px 16px}main{max-width:960px;margin:auto;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:clamp(20px,4vw,40px);box-shadow:0 14px 45px #183b5610}header{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:clamp(2rem,5vw,2.8rem);letter-spacing:-.04em}h2{font-size:1.1rem;margin:0 0 12px}p{margin:8px 0 16px}header p,.hint,footer{color:var(--muted)}button,select,input,textarea{font:inherit}button,select{min-height:48px;border:1px solid var(--line);border-radius:12px;padding:10px 16px;background:var(--card);color:var(--ink)}button{cursor:pointer;font-weight:650}button:not(:disabled):hover{box-shadow:0 0 0 2px var(--blue)}button:disabled{opacity:.48;cursor:not-allowed}.primary{background:var(--blue);color:#fff;border-color:var(--blue)}#dictate.active{background:var(--red);border-color:var(--red);color:#fff;opacity:1}.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}section{margin-top:24px}.status{display:flex;align-items:center;gap:10px;background:var(--soft);border-radius:12px;padding:12px 16px;margin:22px 0 10px;font-weight:700}.dot{width:12px;height:12px;border-radius:50%;background:var(--blue);flex-shrink:0}.listening .dot{background:var(--red);animation:pulse 1.2s infinite}.reading{outline:2px solid var(--blue)}@keyframes pulse{50%{transform:scale(.65);opacity:.5}}#notice{min-height:1.6em;color:var(--muted)}label{font-weight:650;display:block}textarea{display:block;width:100%;min-height:300px;resize:vertical;border:2px solid var(--line);border-radius:14px;padding:18px;background:var(--card);color:var(--ink);line-height:1.8;margin-top:8px}textarea::placeholder{color:var(--muted)}.meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.9rem;margin-top:8px}.preview{background:var(--soft);border-left:4px solid var(--blue);padding:12px 16px;border-radius:8px;margin-top:12px;overflow-wrap:anywhere}.preview p{margin:4px 0;white-space:pre-wrap}.settings{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin:18px 0}select{width:100%;max-width:100%}input[type=range]{width:100%;min-height:44px;accent-color:var(--blue)}input[type=checkbox]{width:22px;height:22px;accent-color:var(--blue)}.selection{display:flex;gap:10px;align-items:center;margin-bottom:14px}.hint{font-size:.9rem}footer{max-width:900px;margin:22px auto 0;font-size:.82rem}a{color:var(--blue)}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}[hidden]{display:none!important}body.contrast{--bg:#000;--card:#080808;--ink:#fff;--muted:#eee;--line:#fff;--soft:#152535;--blue:#94d5ff;--focus:#ffdf00;color-scheme:dark}.contrast .primary{color:#000}.contrast button:disabled{opacity:.6}@media(max-width:600px){body{padding:12px 8px}main{border-radius:18px}.settings{grid-template-columns:1fr}.row button{flex:1 1 145px}textarea{min-height:260px}}@media(prefers-reduced-motion:reduce){.listening .dot{animation:none}}
+
+.editor-tools{margin:12px 0}.editor-tools label{font-size:.9rem}
+#editor{font-size:var(--editor-size,18px)}
+details{border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-top:18px}
+summary{cursor:pointer;font-weight:700;min-height:44px;display:list-item;padding:8px 0}
+.checklist label{display:flex;align-items:flex-start;gap:10px;font-weight:400;margin:12px 0}
+.checklist input{flex-shrink:0}
+.brand{display:block;margin-top:12px;font-weight:700}
 </style>
 </head>
 <body>
@@ -17,12 +25,39 @@
 <p id="support" class="hint"></p>
 <p id="embedded" class="hint" hidden>O microfone pode estar bloqueado nesta incorporação. <a id="openApp" target="_blank" rel="noopener">Abrir a aplicação numa nova janela</a>.</p>
 <section aria-labelledby="dictationTitle"><h2 id="dictationTitle">1. Fala</h2><div class="row"><button id="dictate" class="primary" type="button"><span aria-hidden="true">●</span> Começar a ditar</button><button id="stopDictation" type="button" disabled><span aria-hidden="true">■</span> Parar o ditado</button></div><div class="preview" id="preview" hidden><strong>A reconhecer — texto provisório</strong><p id="interim" aria-live="off"></p></div></section>
-<section aria-labelledby="editTitle"><h2 id="editTitle">2. Revê</h2><label for="editor">O teu texto</label><textarea id="editor" aria-label="Texto ditado ou escrito por ti" aria-describedby="editHelp" placeholder="A tua voz transforma-se em palavras aqui… Também podes escrever." spellcheck="true" lang="pt-PT"></textarea><div class="meta"><span id="count">0 palavras</span><span id="editHelp" class="hint">Ao escreveres, o ditado e a leitura param para poderes corrigir.</span></div></section>
+<section aria-labelledby="editTitle"><h2 id="editTitle">2. Revê</h2><div class="row editor-tools">
+<button id="undo" type="button" disabled><span aria-hidden="true">↶</span> Desfazer</button>
+<button id="redo" type="button" disabled><span aria-hidden="true">↷</span> Refazer</button>
+<button id="recover" type="button" disabled><span aria-hidden="true">↺</span> Recuperar texto apagado</button>
+<label for="fontSize">Tamanho das letras</label>
+<select id="fontSize" style="width:auto" aria-label="Tamanho das letras do texto">
+<option value="18">Normal</option><option value="22">Grande</option><option value="28">Muito grande</option>
+</select></div><label for="editor">O teu texto</label><textarea id="editor" aria-label="Texto ditado ou escrito por ti" aria-describedby="editHelp" placeholder="A tua voz transforma-se em palavras aqui… Também podes escrever." spellcheck="true" lang="pt-PT"></textarea><div class="meta"><span id="count">0 palavras</span><span id="editHelp" class="hint">Ao escreveres, o ditado e a leitura param para poderes corrigir.</span></div></section>
+<details id="review"><summary>Guia de revisão — pensa no que escreveste</summary>
+<p class="hint">Sem notas: assinala o que já verificaste. Se alterares o texto, volta a rever. Este guia não corrige por ti.</p>
+<div class="checklist">
+<label><input type="checkbox">As frases fazem sentido?</label>
+<label><input type="checkbox">Usei maiúsculas e pontuação onde eram necessárias?</label>
+<label><input type="checkbox">Há palavras repetidas que posso substituir?</label>
+<label><input type="checkbox">O texto diz o que eu queria dizer?</label>
+<label><input type="checkbox">Ouvi o texto e fiz as correções necessárias?</label>
+</div><button id="resetReview" type="button">Recomeçar a revisão</button>
+</details>
 <section aria-labelledby="readTitle"><h2 id="readTitle">3. Escuta</h2><div class="settings"><div><label for="voice">Voz portuguesa</label><select id="voice" aria-describedby="voiceHelp"></select><p id="voiceHelp" class="hint"></p></div><div><label for="rate">Velocidade: <output id="rateValue" for="rate">1×</output></label><input id="rate" aria-label="Velocidade da leitura" type="range" min="0.5" max="2" step="0.1" value="1"></div></div><label class="selection"><input id="selectionOnly" type="checkbox" disabled> Ler apenas o texto selecionado <span id="selectionInfo" class="hint"></span></label><div class="row"><button id="read" class="primary" type="button"><span aria-hidden="true">▶</span> Ouvir o texto</button><button id="pause" type="button" disabled><span aria-hidden="true">Ⅱ</span> Pausar</button><button id="resume" type="button" disabled><span aria-hidden="true">▶</span> Continuar</button><button id="stopReading" type="button" disabled><span aria-hidden="true">■</span> Parar a leitura</button></div></section>
-<section aria-label="Guardar uma cópia ou limpar o texto"><div class="row"><button id="copy" type="button" disabled><span aria-hidden="true">▣</span> Copiar</button><button id="download" type="button" disabled><span aria-hidden="true">↓</span> Descarregar</button><button id="clear" type="button" disabled><span aria-hidden="true">×</span> Limpar</button></div><p class="hint">O texto desaparece ao fechar ou atualizar a página. Descarrega uma cópia se o quiseres guardar.</p></section>
+<section aria-label="Guardar uma cópia ou limpar o texto"><div class="row">
+<button id="importText" type="button"><span aria-hidden="true">↑</span> Importar .txt</button>
+<input id="textFile" type="file" accept=".txt,text/plain" hidden>
+<button id="copy" type="button" disabled><span aria-hidden="true">▣</span> Copiar</button><button id="download" type="button" disabled><span aria-hidden="true">↓</span> Descarregar</button><button id="clear" type="button" disabled><span aria-hidden="true">×</span> Limpar</button></div><p class="hint">O texto desaparece ao fechar ou atualizar a página. Descarrega uma cópia se o quiseres guardar.</p></section>
+<details><summary>Ajuda com o microfone e a leitura</summary>
+<ul><li>Abre a aplicação diretamente no Chrome ou no Edge e permite o microfone nas definições deste site. Algumas redes escolares podem bloquear o serviço de voz.</li>
+<li>Se o microfone estiver indisponível, verifica a ligação e fecha outras aplicações que o estejam a utilizar.</li>
+<li>Se não ouvires a leitura, verifica o volume e a saída de som. Experimenta outra voz portuguesa. As vozes disponíveis dependem do dispositivo.</li>
+<li>Ao mudares de separador ou bloqueares o ecrã, o ditado e a leitura param. Volta a iniciá-los quando regressares.</li>
+<li>Importar acrescenta o texto ao fim do que já escreveste. Desfazer e recuperar funcionam apenas enquanto esta página estiver aberta. Não há gravação automática.</li>
+</ul></details>
 <noscript>Ativa o JavaScript no navegador para utilizar a aplicação.</noscript>
 </main>
-<footer>A aplicação não guarda o texto nem cria contas. O reconhecimento de voz pode ser processado pelo serviço de voz do navegador. Não digites nem dites dados pessoais ou confidenciais.</footer>
+<footer>A aplicação não guarda o texto nem cria contas. O reconhecimento de voz pode ser processado pelo serviço de voz do navegador. Não digites nem dites dados pessoais ou confidenciais.<a class="brand" href="https://jfborges.com/" target="_blank" rel="noopener">TIC, Educação e WEB</a><span>Versão 1.1 · Fala, revê e escuta.</span></footer>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
@@ -35,10 +70,90 @@ let retryTimer = null, emptySessions = 0;
 let voices = [], reading = false, paused = false, utterance = null;
 let generation = 0, chunks = [], chunkIndex = 0, chosenVoice = null, chosenRate = 1;
 let selection = {start:0,end:0};
+let history = [''], historyIndex = 0, historyBytes = 0;
+let erasedText = '', importing = false, editTimer = null, stopTimer = null;
+const HISTORY_LIMIT = 100, HISTORY_BUDGET = 4000000;
+function checkpoint(){
+  clearTimeout(editTimer);
+  if(history[historyIndex] === editor.value) return;
+  history = history.slice(0,historyIndex + 1);
+  history.push(editor.value);
+  historyBytes = history.reduce((total,text) => total + text.length,0);
+  while(history.length > 2 && (history.length > HISTORY_LIMIT || historyBytes > HISTORY_BUDGET)){
+    historyBytes -= history.shift().length;
+  }
+  historyIndex = history.length - 1;
+}
+function resetReview(){
+  document.querySelectorAll('#review input').forEach(input => {input.checked=false;});
+}
+function changed(){
+  resetReview();
+  rememberSelection();
+  sync();
+}
+function restoreHistory(offset){
+  if(wanted || recognition || importing) return;
+  checkpoint();
+  const next = historyIndex + offset;
+  if(next < 0 || next >= history.length) return;
+  cancelReading();
+  historyIndex = next;
+  editor.value = history[historyIndex];
+  changed();
+  state('Pronto para começar');
+  tell(offset < 0 ? 'Última alteração desfeita.' : 'Alteração refeita.');
+  editor.focus();
+}
+$('undo').onclick = () => restoreHistory(-1);
+$('redo').onclick = () => restoreHistory(1);
+$('recover').onclick = () => {
+  if(!erasedText || wanted || recognition || importing) return;
+  checkpoint();
+  cancelReading();
+  editor.value += (editor.value && !editor.value.endsWith('\n') ? '\n\n' : '') + erasedText;
+  erasedText = '';
+  checkpoint();
+  changed();
+  state('Pronto para começar');
+  tell('O texto apagado foi recuperado no fim do texto atual.');
+  editor.focus();
+};
+$('fontSize').onchange = () => {
+  editor.style.setProperty('--editor-size',$('fontSize').value + 'px');
+};
+$('resetReview').onclick = () => {resetReview();tell('Podes voltar a rever o texto.');};
+$('importText').onclick = () => $('textFile').click();
+$('textFile').onchange = async () => {
+  const file = $('textFile').files[0];
+  $('textFile').value = '';
+  if(!file || wanted || recognition || importing) return;
+  if(!/\.txt$/i.test(file.name)){tell('Escolhe um ficheiro de texto com a extensão .txt.');return;}
+  if(file.size > 1024 * 1024){tell('Escolhe um ficheiro .txt até 1 MB.');return;}
+  importing = true;
+  cancelReading();
+  state('A importar o texto…');
+  try{
+    const buffer = await file.arrayBuffer();
+    const text = new TextDecoder('utf-8',{fatal:true}).decode(buffer);
+    if(text.includes('\0')) throw new Error('binary');
+    if(!text.trim()){tell('Este ficheiro não contém texto para importar.');return;}
+    checkpoint();
+    editor.value += (editor.value && !editor.value.endsWith('\n') ? '\n\n' : '') + text;
+    checkpoint();
+    changed();
+    tell('Texto importado no fim do texto atual. Podes desfazer esta alteração.');
+  }catch(error){
+    tell('Não foi possível importar. Guarda o ficheiro como texto simples (.txt), com codificação UTF-8, e tenta novamente.');
+  }finally{
+    importing = false;
+    state('Pronto para começar');
+  }
+};
 function tell(message){ $('notice').textContent = message; }
 function state(message){ $('status').textContent = message; sync(); }
 function sync(){
-  const dictating = wanted || recognition !== null;
+  const dictating = wanted || recognition !== null || importing;
   const hasText = !!editor.value.trim();
   $('dictate').disabled = !Recognition || dictating || reading;
   $('dictate').classList.toggle('active', microphone);
@@ -50,6 +165,10 @@ function sync(){
   $('voice').disabled = !voices.length || reading;
   $('rate').disabled = !canSpeak || reading;
   for(const id of ['copy','download','clear']) $(id).disabled = !hasText || dictating;
+  $('importText').disabled = dictating;
+  $('undo').disabled = dictating || (historyIndex === 0 && editor.value === history[historyIndex]);
+  $('redo').disabled = dictating || editor.value !== history[historyIndex] || historyIndex >= history.length - 1;
+  $('recover').disabled = dictating || !erasedText;
   $('statusBox').classList.toggle('listening', microphone);
   $('statusBox').classList.toggle('reading', reading);
   const words = editor.value.trim().match(/\S+/gu) || [];
@@ -65,7 +184,10 @@ function append(text){
   const before = editor.value;
   const gap = before && !/\s$/u.test(before) && !/^[,.;:!?…)]/u.test(piece) ? ' ' : '';
   const start = editor.selectionStart, end = editor.selectionEnd;
+  checkpoint();
   editor.value = before + gap + piece;
+  checkpoint();
+  resetReview();
   editor.setSelectionRange(start,end);
   sync();
 }
@@ -79,7 +201,17 @@ function stopDictation(discard=false){
     try{ discard ? recognition.abort() : recognition.stop(); }
     catch(error){ tell('A aguardar que o microfone termine. Se necessário, atualiza a página depois de copiares o texto.'); }
   }
-  state('Ditado interrompido');
+  state(recognition ? 'A desligar o microfone…' : 'Ditado interrompido');
+  clearTimeout(stopTimer);
+  if(recognition){
+    const stopping = recognition;
+    stopTimer = setTimeout(() => {
+      if(recognition !== stopping) return;
+      accepting = false;
+      try{stopping.abort();}catch(error){}
+      tell('O navegador está a demorar a desligar o microfone. Se não terminar, descarrega o texto antes de atualizar a página.');
+    },4000);
+  }
 }
 function startSession(){
   if(!wanted || recognition || reading) return;
@@ -136,6 +268,7 @@ function startSession(){
   };
   r.onend = () => {
     if(recognition !== r) return;
+    clearTimeout(stopTimer);
     recognition = null;
     microphone = false;
     accepting = false;
@@ -163,6 +296,7 @@ function startSession(){
 }
 $('dictate').onclick = () => {
   if(!Recognition || recognition || wanted || reading) return;
+  checkpoint();
   wanted = true;
   emptySessions = 0;
   tell('Fala com calma. As palavras definitivas são acrescentadas ao fim do teu texto.');
@@ -270,11 +404,13 @@ $('read').onclick = () => {
 $('pause').onclick = () => {if(reading && !paused){paused=true;synth.pause();state('Leitura em pausa');}};
 $('resume').onclick = () => {if(reading && paused){paused=false;synth.resume();state('A ler o texto…');if(!utterance) speakNext(generation);}};
 $('stopReading').onclick = () => cancelReading(true);
+editor.addEventListener('beforeinput',() => {checkpoint();});
 editor.addEventListener('input',() => {
   if(wanted || recognition) stopDictation(true);
   if(reading) cancelReading(true);
-  rememberSelection();
-  sync();
+  changed();
+  clearTimeout(editTimer);
+  editTimer = setTimeout(() => {checkpoint();sync();},500);
 });
 $('rate').oninput = () => {$('rateValue').textContent = Number($('rate').value).toLocaleString('pt-PT') + '×';};
 $('contrast').onclick = () => {
@@ -282,13 +418,17 @@ $('contrast').onclick = () => {
   $('contrast').setAttribute('aria-pressed',String(active));
 };
 $('clear').onclick = () => {
-  if(!window.confirm('Queres apagar todo o texto? Esta ação não pode ser desfeita.')) return;
+  if(!window.confirm('Queres apagar todo o texto? Podes recuperá-lo enquanto esta página estiver aberta.')) return;
+  checkpoint();
+  erasedText = editor.value;
   cancelReading();
   editor.value = '';
+  checkpoint();
+  resetReview();
   preview();
   rememberSelection();
   state('Pronto para começar');
-  tell('O texto foi apagado. Podes começar de novo.');
+  tell('O texto foi apagado. Usa «Recuperar texto apagado» ou «Desfazer» se precisares dele.');
   editor.focus();
 };
 $('copy').onclick = async () => {
@@ -323,6 +463,9 @@ if(window.self !== window.top){
   else $('openApp').hidden = true;
 }
 if(canSpeak) synth.addEventListener('voiceschanged',loadVoices);
+window.addEventListener('beforeunload',event => {
+  if(editor.value.trim() || erasedText){event.preventDefault();event.returnValue='';}
+});
 window.addEventListener('pagehide',() => {stopDictation(true);cancelReading();});
 document.addEventListener('visibilitychange',() => {if(document.hidden){if(wanted || recognition) stopDictation(true);if(reading) cancelReading(true);}});
 loadVoices();
@@ -330,3 +473,4 @@ sync();
 </script>
 </body>
 </html>
+
