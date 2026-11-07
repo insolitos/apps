@@ -1,4 +1,4 @@
-# Pulso de Português
+# Diário de Observação | Português
 
 Aplicação estática de avaliação formativa para professores de Português do ensino obrigatório. Durante a aula, o professor observa, seleciona o aluno e toca num nível. A evidência fica disponível imediatamente no painel local. Os alunos não precisam de conta ou dispositivo.
 
