@@ -332,6 +332,82 @@ function classes() {
     button('new-class', 'Criar turma', 'primary')) + editor + (turma ? classDetails(turma) : empty('Ainda não há uma turma selecionada.'));
 }
 
+// Read a UTF-8 CSV with a header and either semicolon or comma delimiters.
+function readRosterCsv(text) {
+  const source = text.replace(/^\uFEFF/, '').trim();
+  const separator = source.split(/\r?\n/, 1)[0].includes(';') ? ';' : ',';
+  const field = new RegExp('(?:"((?:[^"]|"")*)"|([^"' + separator + '\\r\\n]*))(' +
+    separator + '|\\r\\n|\\r|\\n|$)', 'y');
+  const rows = [];
+  let row = [];
+  while (field.lastIndex < source.length) {
+    const match = field.exec(source);
+    if (!match) throw new Error('O CSV contém um campo com aspas inválidas.');
+    const [, quoted, plain, boundary] = match;
+    row.push((quoted === undefined ? plain : quoted.replace(/""/g, '"')).trim());
+    if (boundary !== separator || field.lastIndex === source.length) {
+      if (boundary === separator) row.push('');
+      if (row.some(Boolean)) rows.push(row);
+      row = [];
+    }
+  }
+  const header = rows.shift()?.map(value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()) || [];
+  const nameColumn = header.indexOf('nome');
+  const numberColumn = header.indexOf('numero');
+  if (nameColumn < 0 || header.lastIndexOf('nome') !== nameColumn ||
+      header.lastIndexOf('numero') !== numberColumn || !rows.length) {
+    throw new Error('Use um cabeçalho com Nome e, opcionalmente, Número, seguido dos alunos.');
+  }
+  return rows.map((cells, index) => {
+    const nome = cells[nameColumn];
+    const numero = numberColumn < 0 ? '' : cells[numberColumn];
+    if (cells.length !== header.length || !nome || nome.length > 100 || numero.length > 12 ||
+        /[\r\n\u0000\uFFFD]/.test(nome + numero)) {
+      throw new Error('Verifique a linha de aluno ' + (index + 1) + ' e confirme que o ficheiro está em UTF-8.');
+    }
+    return { nome, numero };
+  });
+}
+
+async function importRosterCsv(file, turmaId) {
+  let incoming;
+  try {
+    if (file.size > 1024 * 1024) throw new Error('O CSV deve ter até 1 MB.');
+    incoming = readRosterCsv(await file.text());
+  } catch (error) {
+    alertError(error.message || 'Não foi possível ler o CSV.');
+    return;
+  }
+  const turma = current();
+  if (locked || view !== 'turmas' || turma?.id !== turmaId) return;
+
+  const numbers = new Set(turma.alunos.map(aluno => aluno.numero).filter(Boolean));
+  const nameKey = name => name.normalize('NFC').replace(/\s+/g, ' ').toLocaleLowerCase('pt-PT');
+  const names = new Set(turma.alunos.map(aluno => nameKey(aluno.nome)));
+  const unnumbered = new Set(turma.alunos.filter(aluno => !aluno.numero).map(aluno => nameKey(aluno.nome)));
+  const additions = incoming.filter(({ nome, numero }) => {
+    const key = nameKey(nome);
+    if (numero ? numbers.has(numero) || unnumbered.has(key) : names.has(key)) return false;
+    if (numero) numbers.add(numero);
+    else unnumbered.add(key);
+    names.add(key);
+    return true;
+  });
+  const skipped = incoming.length - additions.length;
+  if (!additions.length) {
+    announce('Nenhum aluno acrescentado. Todas as entradas correspondem a alunos já presentes ou repetidos.');
+    return;
+  }
+  const message = 'Acrescentar ' + additions.length + ' aluno(s) à turma «' + turma.nome +
+    '»? Entradas repetidas ignoradas: ' + skipped + '.';
+  if (!confirm(message)) return;
+  if (!updateClass(target => {
+    target.alunos = target.alunos.concat(additions.map(aluno => ({ ...aluno, id: id(), posicao: null })));
+  })) return;
+  refresh('[data-action="roster-csv"]');
+  announce(additions.length + ' aluno(s) importado(s). Entradas ignoradas: ' + skipped + '.');
+}
+
 function classDetails(turma) {
   const pupil = turma.alunos.find(aluno => aluno.id === rosterEditing);
   const pupilForm = '<form data-form="student"><div class="fields">' +
@@ -344,6 +420,9 @@ function classDetails(turma) {
     (turma.observacoes ? empty(turma.observacoes) : '') + '</div><div class="actions">' +
     button('edit-class', 'Editar turma') + button('duplicate', 'Duplicar turma') + button('delete-class', 'Apagar turma', 'danger') +
     '</div></div><h3>Alunos · ' + turma.alunos.length + '</h3>' + pupilForm +
+    '<div class="actions">' + button('roster-csv', 'Importar alunos em CSV') +
+    '<input type="file" id="roster-csv-file" accept=".csv,text/csv" hidden></div>' +
+    '<p class="legend">CSV UTF-8 com a coluna Nome e, opcionalmente, Número. Use vírgulas ou ponto e vírgula.</p>' +
     '<details><summary>Colar lista de alunos</summary><form class="stack" data-form="roster">' +
     field('Um aluno por linha', '<textarea name="lista" rows="5" required placeholder="1 Ana\n2 · Bruno\nCarolina"></textarea>') +
     '<small>Use nomes ou iniciais. Se indicar um número, coloque-o no início da linha.</small><div><button>Adicionar lista</button></div></form></details>' +
@@ -604,6 +683,7 @@ const actions = {
     const backup = { ...data, definicoes: { ...data.definicoes, pin: '' } };
     download('pulso-backup-' + localDay(now()) + '.json', JSON.stringify(backup, null, 2), 'application/json');
   },
+  'roster-csv'() { $('#roster-csv-file').click(); },
   import() { $('#backup-file').click(); },
   erase() {
     if (!confirm('Apagar todas as turmas, registos e definições neste navegador? Tenha uma cópia de segurança antes de continuar.')) return;
@@ -763,6 +843,11 @@ document.addEventListener('change', async event => {
   if (target.dataset.filter) {
     filters[target.dataset.filter] = target.value;
     refresh('[data-filter="' + target.dataset.filter + '"]');
+  }
+  if (target.id === 'roster-csv-file' && target.files[0]) {
+    const file = target.files[0];
+    target.value = '';
+    await importRosterCsv(file, activeId);
   }
   if (target.id === 'backup-file' && target.files[0]) {
     const file = target.files[0];

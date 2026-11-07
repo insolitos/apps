@@ -9,6 +9,14 @@ Aplicação estática de avaliação formativa para professores de Português do
 3. Em **Turmas**, crie uma turma e adicione alunos individualmente ou em **Colar lista de alunos**. Aceita, por exemplo, `1 Ana`, `2 · Bruno` e `Carolina`, um aluno por linha.
 4. Em **Planta da sala**, defina as dimensões, selecione um aluno e toque num lugar. Se o lugar estiver ocupado, o outro aluno recebe o lugar anterior do aluno selecionado ou fica sem lugar. A duplicação copia a turma, os alunos e a planta. A nova turma começa com o histórico vazio.
 
+Para importar, selecione a turma em **Turmas → Importar alunos em CSV**. Use UTF-8 e um cabeçalho com a coluna **Nome** e, opcionalmente, **Número**. O separador pode ser vírgula ou ponto e vírgula. Exemplo com ponto e vírgula:
+
+    Número;Nome
+    1;Ana
+    2;Bruno
+
+O ficheiro é lido no dispositivo. A importação acrescenta alunos à turma selecionada, sem substituir registos. Ignora números repetidos e, quando falta um número, nomes repetidos. Mostra as contagens antes de guardar.
+
 A abertura local dispensa ligação à Internet. A persistência de páginas abertas com `file:` depende do navegador e pode mudar se o ficheiro for movido. Confirme a persistência com uma turma de teste. Se o navegador bloquear o armazenamento local, utilize a versão servida em HTTPS.
 
 ## Publicar no GitHub Pages
