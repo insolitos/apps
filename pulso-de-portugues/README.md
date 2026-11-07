@@ -23,11 +23,11 @@ A aplicação dispensa npm, bibliotecas e configuração de compilação. Os cam
 
 ## Registar e consultar
 
-- Em **Aula**, escolha o domínio ou uma **Tarefa rápida**. A tarefa mantém-se selecionada ao passar de aluno para aluno e define o domínio. Em observação livre, pode alterá-lo no painel rápido.
+- Em **Aula**, escolha o domínio ou uma **Tarefa rápida**. A tarefa mantém-se selecionada ao passar de aluno para aluno e define o domínio. Em observação livre, pode alterar o domínio no painel rápido e registar Insuficiente, Suficiente, Bom ou Muito bom. As tarefas rápidas usam A desenvolver, Em desenvolvimento e Consolidado. Os registos anteriores mantêm o nível original.
 - Toque no aluno e no nível. Se quiser acrescentar etiquetas ou uma nota, faça-o antes de escolher o nível. O botão de nível guarda e fecha o painel.
 - **Desfazer último registo** remove a última evidência guardada na turma selecionada, mesmo se tiver sido guardada noutra tarefa. Pode repetir o comando para remover a anterior.
-- O painel conta alunos distintos com evidência no dia ou na tarefa selecionada. A distribuição conta registos. O alerta de pontuação usa todo o histórico e conta alunos com pelo menos duas evidências «A desenvolver» com essa etiqueta. O contraste entre compreensão literal e inferencial usa o recorte visível e identifica quantos alunos têm evidências de cada tipo. O lembrete de volume usa todos os registos de hoje.
-- Em **Relatórios**, combine filtros de aluno, domínio e datas. Os indicadores individuais mostram as últimas evidências, a frequência de «A desenvolver» e a primeira e última evidência de cada domínio no período. Use **Exportar CSV**, **Exportar JSON** ou **Imprimir**. O CSV usa UTF-8 com BOM e ponto e vírgula. O JSON de relatório contém apenas o recorte escolhido.
+- O painel conta alunos distintos com evidência no dia ou na tarefa selecionada. A distribuição conta registos. O alerta de pontuação usa todo o histórico e conta alunos com pelo menos duas evidências «Insuficiente» ou «A desenvolver» com essa etiqueta. O contraste entre compreensão literal e inferencial usa o recorte visível e identifica quantos alunos têm evidências de cada tipo. O lembrete de volume usa todos os registos de hoje.
+- Em **Relatórios**, combine filtros de aluno, domínio e datas. Os indicadores individuais mostram as últimas evidências, a frequência de «Insuficiente» e «A desenvolver» e a primeira e última evidência de cada domínio no período. Use **Exportar CSV**, **Exportar JSON** ou **Imprimir**. O CSV usa UTF-8 com BOM e ponto e vírgula. O JSON de relatório contém apenas o recorte escolhido.
 
 ## Exportar e recuperar um backup
 

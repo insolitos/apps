@@ -10,7 +10,17 @@ const DOMAINS = {
   Atitudes: ['autonomia', 'cooperação', 'persistência', 'participação']
 };
 const LEVELS = ['A desenvolver', 'Em desenvolvimento', 'Consolidado'];
-const COLORS = ['low', 'mid', 'high'];
+const SCHOOL_LEVELS = ['Insuficiente', 'Suficiente', 'Bom', 'Muito bom'];
+const LEVEL_DETAILS = {
+  'A desenvolver': ['AD', 'low'],
+  'Em desenvolvimento': ['ED', 'mid'],
+  Consolidado: ['C', 'high'],
+  Insuficiente: ['I', 'low'],
+  Suficiente: ['S', 'mid'],
+  Bom: ['B', 'high'],
+  'Muito bom': ['MB', 'high']
+};
+const isDifficulty = record => record.nivel === 'Insuficiente' || record.nivel === 'A desenvolver';
 const TASKS = {
   leitura: ['Leitura em voz alta', 'Leitura'],
   ditado: ['Ditado', 'Escrita'],
@@ -143,7 +153,8 @@ function validate(source) {
   const enrolments = new Map(turmas.map(turma => [turma.id, new Set(turma.alunos.map(aluno => aluno.id))]));
   const registos = source.registos.map(record => {
     require(enrolments.get(record.turmaId)?.has(record.alunoId));
-    require(Object.hasOwn(DOMAINS, record.dominio) && LEVELS.includes(record.nivel));
+    require(Object.hasOwn(DOMAINS, record.dominio) &&
+      (LEVELS.includes(record.nivel) || (!record.tarefaId && SCHOOL_LEVELS.includes(record.nivel))));
     require(Array.isArray(record.etiquetas) && record.etiquetas.length <= 30 &&
       record.etiquetas.every(tag => Object.values(DOMAINS).flat().includes(tag)));
     require(record.tarefaId === '' || Object.hasOwn(TASKS, record.tarefaId));
@@ -227,16 +238,19 @@ function plan(turma, tile, configuring = false) {
     }).join('') + '</div></div>';
 }
 
-function counts(items) {
-  return LEVELS.map(level => items.filter(record => record.nivel === level).length);
-}
-
-function distribution(items) {
+function distribution(items, taskSelected = false) {
+  const levels = taskSelected ? LEVELS : [
+    ...SCHOOL_LEVELS, ...LEVELS.filter(level => items.some(record => record.nivel === level))
+  ];
   return '<div class="table-scroll"><table><thead><tr><th scope="col">Domínio</th>' +
-    ['AD', 'ED', 'C'].map((short, i) => '<th scope="col" class="' + COLORS[i] + '" aria-label="' + LEVELS[i] + '">' + short + '</th>').join('') +
+    levels.map(level => {
+      const [short, color] = LEVEL_DETAILS[level];
+      return '<th scope="col" class="' + color + '" aria-label="' + level + '">' + short + '</th>';
+    }).join('') +
     '</tr></thead><tbody>' + [['Total', items], ...Object.keys(DOMAINS).map(key => [key, items.filter(record => record.dominio === key)])]
-      .map(([label, group]) => '<tr><th scope="row">' + label + '</th>' + counts(group).map(n => '<td>' + n + '</td>').join('') + '</tr>').join('') +
-    '</tbody></table></div><p class="legend">AD · A desenvolver | ED · Em desenvolvimento | C · Consolidado</p>';
+      .map(([label, group]) => '<tr><th scope="row">' + label + '</th>' + levels.map(level =>
+        '<td>' + group.filter(record => record.nivel === level).length + '</td>').join('') + '</tr>').join('') +
+    '</tbody></table></div><p class="legend">' + levels.map(level => LEVEL_DETAILS[level][0] + ' · ' + level).join(' | ') + '</p>';
 }
 
 function dashboard(turma, scope, seen, today) {
@@ -244,27 +258,27 @@ function dashboard(turma, scope, seen, today) {
   const history = records();
   const punctuation = new Map();
   for (const record of history) {
-    if (record.nivel === LEVELS[0] && record.etiquetas.includes('pontuação')) {
+    if (isDifficulty(record) && record.etiquetas.includes('pontuação')) {
       punctuation.set(record.alunoId, (punctuation.get(record.alunoId) || 0) + 1);
     }
   }
   const recurring = [...punctuation.values()].filter(n => n >= 2).length;
-  const tagCount = (tag, level) => new Set(scope.filter(record => record.etiquetas.includes(tag) && record.nivel === level)
+  const tagCount = (tag, matches) => new Set(scope.filter(record => record.etiquetas.includes(tag) && matches(record))
     .map(record => record.alunoId)).size;
-  const literal = tagCount('compreensão literal', LEVELS[2]);
-  const inferential = tagCount('compreensão inferencial', LEVELS[0]);
+  const literal = tagCount('compreensão literal', record => ['Muito bom', 'Consolidado'].includes(record.nivel));
+  const inferential = tagCount('compreensão inferencial', isDifficulty);
   const alerts = [];
   if (missing) alerts.push(missing === 1 ? '1 aluno sem evidência neste recorte.' : missing + ' alunos sem evidência neste recorte.');
-  if (recurring) alerts.push(recurring + (recurring === 1 ? ' aluno com' : ' alunos com') + ' pelo menos dois registos «A desenvolver» em pontuação (histórico).');
+  if (recurring) alerts.push(recurring + (recurring === 1 ? ' aluno com' : ' alunos com') + ' pelo menos dois registos de dificuldade em pontuação (histórico).');
   if (literal >= 2 && inferential >= 2) {
-    alerts.push(literal + ' alunos com evidência consolidada em compreensão literal e ' + inferential +
-      ' com evidência a desenvolver em compreensão inferencial.');
+    alerts.push(literal + ' alunos com nível mais elevado em compreensão literal e ' + inferential +
+      ' com evidência de dificuldade em compreensão inferencial.');
   }
   if (today.length >= Math.max(15, turma.alunos.length * 2)) alerts.push('Já há várias observações hoje. Pode focar os próximos registos nas evidências mais úteis.');
   return '<p class="kicker">Hoje' + (task ? ' · ' + TASKS[task][0] : '') + '</p><h2>Pulso da turma</h2>' +
     '<div class="metrics">' + [[seen.size, 'Com evidência'], [missing, 'Sem evidência'], [scope.length, 'Registos']]
       .map(([n, label]) => '<div class="metric"><strong>' + n + '</strong>' + label + '</div>').join('') + '</div>' +
-    distribution(scope) + (alerts.length ? '<ul class="alerts">' + alerts.map(item => '<li>' + item + '</li>').join('') + '</ul>' : '');
+    distribution(scope, Boolean(task)) + (alerts.length ? '<ul class="alerts">' + alerts.map(item => '<li>' + item + '</li>').join('') + '</ul>' : '');
 }
 
 function openQuick(alunoId) {
@@ -280,7 +294,7 @@ function openQuick(alunoId) {
       options(Object.keys(DOMAINS), activeDomain) + '</select>') +
     '<p class="muted">O nível guarda o registo. Para acrescentar contexto, selecione as etiquetas ou escreva a nota primeiro.</p>' +
     '<div class="levels" aria-label="Nível da evidência">' +
-    LEVELS.map((level, i) => '<button type="submit" name="nivel" value="' + level + '" class="' + COLORS[i] + '">' + level + '</button>').join('') +
+    (task ? LEVELS : SCHOOL_LEVELS).map(level => '<button type="submit" name="nivel" value="' + level + '" class="' + LEVEL_DETAILS[level][1] + '">' + level + '</button>').join('') +
     '</div><h3>Etiquetas opcionais</h3><div class="chips" id="tags"></div>' +
     '<details><summary>Nota e últimos registos</summary>' +
     field('Nota opcional', '<textarea name="nota" maxlength="500" rows="2"></textarea>') +
@@ -388,13 +402,13 @@ function reports() {
 
 function studentReport(items) {
   const domains = Object.keys(DOMAINS).map(domainName => [domainName, items.filter(record => record.dominio === domainName)]);
-  const fragile = domains.map(([label, group]) => [label, counts(group)[0]])
+  const fragile = domains.map(([label, group]) => [label, group.filter(isDifficulty).length])
     .filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]);
   const trends = domains.filter(([, group]) => group.length >= 2);
   return '<section class="card"><h2>Indicadores do aluno</h2><h3>Últimos registos no período</h3>' + recent(items) +
-    '<h3>Domínios com evidências «A desenvolver»</h3>' +
+    '<h3>Domínios com evidências de dificuldade</h3>' +
     (fragile.length ? '<ul class="alerts">' + fragile.map(([label, n]) => '<li>' + label + ' · ' + n + '</li>').join('') + '</ul>'
-      : empty('Sem registos neste nível para os filtros selecionados.')) +
+      : empty('Sem registos «Insuficiente» ou «A desenvolver» para os filtros selecionados.')) +
     '<h3>Evolução no período</h3><p class="legend">Primeira e última evidência de cada domínio. Podem corresponder a tarefas diferentes.</p>' +
     (trends.length ? '<ul class="alerts">' + trends.map(([label, group]) =>
       '<li>' + label + ' · ' + group[0].nivel + ' → ' + group[group.length - 1].nivel + ' (' + group.length + ' registos)</li>').join('') + '</ul>'
@@ -693,7 +707,7 @@ const submissions = {
   },
   quick(form, submitter) {
     const nivel = submitter?.value;
-    if (!LEVELS.includes(nivel)) return;
+    if (!(task ? LEVELS : SCHOOL_LEVELS).includes(nivel)) return;
     const dominio = task ? TASKS[task][1] : form.get('dominio');
     const record = {
       id: id(), turmaId: activeId, alunoId: quickStudent, dataHora: now(), dominio, nivel,

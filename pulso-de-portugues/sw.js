@@ -1,7 +1,7 @@
 'use strict';
 
 const prefix = 'pulso-de-portugues:' + self.registration.scope + ':';
-const cacheName = prefix + 'v1';
+const cacheName = prefix + 'v2';
 const files = ['./index.html', './styles.css', './app.js'];
 const urls = new Set(files.map(file => new URL(file, self.registration.scope).href));
 
