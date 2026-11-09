@@ -14,6 +14,7 @@ Não requer instalação, servidor, conta ou dependências externas. O progresso
 
 - Estratégia E–C–I–L: encontrar evidências, conectar conhecimento, inferir e limitar a conclusão.
 - Oito textos originais: quatro literários e quatro dos media.
+- Opções em ordem aleatória por atividade, mantidas no navegador durante o percurso.
 - Questões com respostas comentadas, pistas, explicação e armadilhas de leitura.
 - Reflexão escrita e comparação com uma resposta possível.
 - Filtros por tipo de texto, missões por competência, resumo descarregável e progresso local.
