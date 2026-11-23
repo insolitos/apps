@@ -318,6 +318,27 @@ function recent(items) {
     ' · ' + record.dominio + ' · ' + record.nivel + '</li>').join('') + '</ul>' : empty('Ainda sem evidências.');
 }
 
+function jsonControls() {
+  return button('import', 'Importar JSON') + button('backup', 'Exportar JSON') +
+    '<input id="backup-file" type="file" accept=".json,application/json" hidden>';
+}
+
+function readClassesJson(contents) {
+  const source = JSON.parse(contents.replace(/^\uFEFF/, ''));
+  const list = Array.isArray(source) ? source : source.turmas ?? [source];
+  if (!Array.isArray(list) || !list.length) throw new Error('Sem turmas');
+  const turmas = list.map(turma => ({
+    id: turma.id ?? id(), nome: turma.nome, anoCiclo: turma.anoCiclo ?? 'Por indicar',
+    criadaEm: turma.criadaEm ?? now(), turno: turma.turno ?? '', observacoes: turma.observacoes ?? '',
+    planta: turma.planta ?? { linhas: 5, colunas: 6 },
+    alunos: turma.alunos.map(entry => {
+      const aluno = typeof entry === 'string' ? { nome: entry } : entry;
+      return { id: aluno.id ?? id(), nome: aluno.nome, numero: String(aluno.numero ?? ''), posicao: aluno.posicao ?? null };
+    })
+  }));
+  return validate({ versao: 1, turmas, registos: [], definicoes: { turmaId: '', tema: 'claro', pin: '' } }).turmas;
+}
+
 function classes() {
   const turma = current();
   const edit = editing && data.turmas.find(item => item.id === editing);
@@ -329,7 +350,11 @@ function classes() {
     '</div>' + field('Observações (opcional)', '<textarea name="obs" rows="2" maxlength="600">' + escape(edit?.observacoes) + '</textarea>') +
     '<div class="actions"><button class="primary">Guardar turma</button>' + button('cancel-class', 'Cancelar') + '</div></form></section>' : '';
   return heading('Organização', 'Turmas', 'Organize a lista de alunos e os lugares na sala.',
-    button('new-class', 'Criar turma', 'primary')) + editor + (turma ? classDetails(turma) : empty('Ainda não há uma turma selecionada.'));
+    button('new-class', 'Criar turma', 'primary')) + editor + (turma ? classDetails(turma) : empty('Ainda não há uma turma selecionada.')) +
+    '<section class="card"><h2>Turmas em JSON</h2><p>Adicione turmas e respetivos alunos a partir de um ficheiro de turma ou de uma cópia de segurança do Diário. Os registos de observação ficam fora desta transferência.</p>' +
+    '<div class="actions">' + button('add-json', 'Adicionar turmas de um ficheiro JSON') +
+    (turma ? button('class-json', 'Exportar a turma selecionada em JSON') : '') +
+    '<input id="class-file" type="file" accept=".json,application/json" hidden></div></section>';
 }
 
 // Read a UTF-8 CSV with a header and either semicolon or comma delimiters.
@@ -507,8 +532,7 @@ function settings() {
     (data.definicoes.pin ? button('lock', 'Bloquear agora') + button('clear-pin', 'Remover PIN') : '') + '</div></form></section>' +
     '<section class="card stack"><h2>Backup e reposição</h2><p>Faça backups regulares e guarde-os num local protegido. ' +
     'A importação de um backup substitui os dados atuais depois de os validar e de pedir confirmação.</p>' +
-    '<div class="actions">' + button('backup', 'Exportar backup JSON') + button('import', 'Importar backup JSON') +
-    '<input id="backup-file" type="file" accept=".json,application/json" hidden>' + button('erase', 'Apagar todos os dados', 'danger') +
+    '<div class="actions">' + jsonControls() + button('erase', 'Apagar todos os dados', 'danger') +
     '</div></section>';
 }
 
@@ -591,6 +615,12 @@ const actions = {
       refresh('[data-action="undo"]:enabled');
       announce('Último registo desfeito.');
     }
+  },
+  'add-json'() { $('#class-file').click(); },
+  'class-json'() {
+    const turma = current();
+    if (turma) download('turma-' + turma.nome.replace(/[^\p{L}\p{N}-]+/gu, '-') + '.json',
+      JSON.stringify({ versao: 1, turmas: [turma] }, null, 2), 'application/json');
   },
   'new-class'() {
     editing = 'nova';
@@ -848,6 +878,31 @@ document.addEventListener('change', async event => {
     const file = target.files[0];
     target.value = '';
     await importRosterCsv(file, activeId);
+  }
+  if (target.id === 'class-file' && target.files[0]) {
+    const file = target.files[0];
+    target.value = '';
+    let turmas;
+    try {
+      if (file.size > 10 * 1024 * 1024) throw new Error('size');
+      turmas = readClassesJson(await file.text());
+    } catch {
+      alertError('Ficheiro de turmas inválido ou superior a 10 MB.');
+      return;
+    }
+    if (locked) return;
+    const novas = turmas.filter(turma => !data.turmas.some(existing => existing.id === turma.id));
+    if (!novas.length) { announce('Todas as turmas do ficheiro já existem.'); return; }
+    if (!confirm('Adicionar as seguintes turmas?\n' + novas.map(turma => turma.nome + ' (' + turma.alunos.length + ' alunos)').join('\n'))) return;
+    if (commit(next => {
+      next.turmas.push(...novas);
+      next.definicoes.turmaId = novas[0].id;
+    })) {
+      resetClassContext(novas[0].id);
+      refresh();
+      announce('Turmas adicionadas: ' + novas.length + '.');
+    }
+    return;
   }
   if (target.id === 'backup-file' && target.files[0]) {
     const file = target.files[0];
