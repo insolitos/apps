@@ -318,6 +318,11 @@ function recent(items) {
     ' · ' + record.dominio + ' · ' + record.nivel + '</li>').join('') + '</ul>' : empty('Ainda sem evidências.');
 }
 
+function jsonControls() {
+  return button('import', 'Importar JSON') + button('backup', 'Exportar JSON') +
+    '<input id="backup-file" type="file" accept=".json,application/json" hidden>';
+}
+
 function classes() {
   const turma = current();
   const edit = editing && data.turmas.find(item => item.id === editing);
@@ -329,7 +334,9 @@ function classes() {
     '</div>' + field('Observações (opcional)', '<textarea name="obs" rows="2" maxlength="600">' + escape(edit?.observacoes) + '</textarea>') +
     '<div class="actions"><button class="primary">Guardar turma</button>' + button('cancel-class', 'Cancelar') + '</div></form></section>' : '';
   return heading('Organização', 'Turmas', 'Organize a lista de alunos e os lugares na sala.',
-    button('new-class', 'Criar turma', 'primary')) + editor + (turma ? classDetails(turma) : empty('Ainda não há uma turma selecionada.'));
+    button('new-class', 'Criar turma', 'primary')) + editor + (turma ? classDetails(turma) : empty('Ainda não há uma turma selecionada.')) +
+    '<section class="card"><h2>Cópia de segurança em JSON</h2><p>Exporte todas as turmas, alunos e registos. A importação substitui os dados deste navegador após confirmação.</p>' +
+    '<div class="actions">' + jsonControls() + '</div></section>';
 }
 
 // Read a UTF-8 CSV with a header and either semicolon or comma delimiters.
@@ -507,8 +514,7 @@ function settings() {
     (data.definicoes.pin ? button('lock', 'Bloquear agora') + button('clear-pin', 'Remover PIN') : '') + '</div></form></section>' +
     '<section class="card stack"><h2>Backup e reposição</h2><p>Faça backups regulares e guarde-os num local protegido. ' +
     'A importação de um backup substitui os dados atuais depois de os validar e de pedir confirmação.</p>' +
-    '<div class="actions">' + button('backup', 'Exportar backup JSON') + button('import', 'Importar backup JSON') +
-    '<input id="backup-file" type="file" accept=".json,application/json" hidden>' + button('erase', 'Apagar todos os dados', 'danger') +
+    '<div class="actions">' + jsonControls() + button('erase', 'Apagar todos os dados', 'danger') +
     '</div></section>';
 }
 
